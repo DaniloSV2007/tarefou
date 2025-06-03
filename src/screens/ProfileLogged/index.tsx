@@ -1,4 +1,5 @@
-import ProfileMenu from "@/components/ProfileMenu";
+import ProfileMenu from "@/components/Profile/ProfileMenu";
+import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -28,7 +29,7 @@ export default function ProfileLogged() {
   const [todayProgress, setTodayProgress] = useState(0);
   const [weekProgress, setWeekProgress] = useState(0);
 
-  const theme = useTheme();
+  const theme = useAppTheme();
 
   const router = useRouter();
 
@@ -119,7 +120,7 @@ export default function ProfileLogged() {
           </Animated.View>
           <Animated.Text
             style={{
-              color: "#fff",
+              color: theme.colors.onBackground,
               width: "94%",
               fontSize: 24,
               marginTop: -10,
@@ -132,7 +133,7 @@ export default function ProfileLogged() {
           <Animated.Text
             style={{
               fontWeight: "bold",
-              color: "#fff",
+              color: theme.colors.onBackground,
               fontSize: viewFontSize,
             }}
           >
@@ -144,13 +145,14 @@ export default function ProfileLogged() {
           contentContainerStyle={{ paddingTop: 270 }}
           onScroll={handleOuterScroll}
           scrollEventThrottle={16}
+          showsVerticalScrollIndicator={false}
         >
           <View style={styles.statisticsCardView}>
             <Card
               style={[
                 styles.statisticsCard,
                 {
-                  backgroundColor: theme.colors.cardColor,
+                  backgroundColor: theme.custom.cardColor,
                 },
               ]}
             >

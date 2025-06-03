@@ -83,6 +83,7 @@ export default function CustomTabBar() {
     <Text
       style={{
         fontSize: focused ? 14 : 12,
+        height: focused ? 20 : 18,
         textAlign: "center",
         fontWeight: focused ? "bold" : "600",
         color: focused ? theme.colors.primary : theme.colors.onBackground,
@@ -107,7 +108,6 @@ export default function CustomTabBar() {
       labeled={true}
       style={{
         backgroundColor: theme.colors.background,
-        position: "absolute",
         borderTopWidth: 1,
         borderTopColor: theme.colors.surface,
         zIndex: 0,

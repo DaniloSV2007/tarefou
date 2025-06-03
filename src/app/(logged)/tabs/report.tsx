@@ -1,18 +1,18 @@
+import TopBar from "@/components/TopBar";
+import { useAppTheme } from "@/hooks/useAppTheme";
 import { View } from "react-native";
-import { Text, useTheme } from "react-native-paper";
+import { Text } from "react-native-paper";
 
 export default function Report() {
-  const theme = useTheme();
+  const theme = useAppTheme();
   return (
     <View
       style={{
         flex: 1,
         backgroundColor: theme.colors.background,
-        justifyContent: "center",
-        alignItems: "center",
       }}
     >
-      <Text style={{ color: theme.colors.onBackground }}>Tela Home</Text>
+      <TopBar title="Family Report" />
     </View>
   );
 }

@@ -1,5 +1,5 @@
 {
-  "name": "Tarefou",
+  "name": "Tarefou!",
   "slug": "tarefou",
   "version": "1.0.8",
   "scheme": "tarefou",
@@ -7,6 +7,9 @@
   "orientation": "portrait",
   "userInterfaceStyle": "dark",
   "newArchEnabled": true,
+  "web": {
+    "bundler": "metro"
+  },
   "ios": {
     "supportsTablet": true,
     "bundleIdentifier": "com.placeholder.appid"
@@ -19,7 +22,6 @@
     },
     "edgeToEdgeEnabled": true,
     "package": "com.danilosv07.tarefou",
-    "versionCode": 10,
     "permissions": [
       "android.permission.READ_EXTERNAL_STORAGE",
       "android.permission.WRITE_EXTERNAL_STORAGE",

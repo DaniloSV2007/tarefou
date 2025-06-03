@@ -1,18 +1,55 @@
-import { View } from "react-native";
-import { Text, useTheme } from "react-native-paper";
+import MemberInfo from "@/components/Members/MemberInfo";
+import { useAppTheme } from "@/hooks/useAppTheme";
+import { View, StyleSheet } from "react-native";
+import "@/styles/global.css";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import TopBar from "@/components/TopBar";
+import { useRouter } from "expo-router";
+import { FAB } from "react-native-paper";
 
 export default function Members() {
-  const theme = useTheme();
+  const theme = useAppTheme();
+  const insets = useSafeAreaInsets();
+  const router = useRouter();
   return (
     <View
-      style={{
-        flex: 1,
-        backgroundColor: theme.colors.background,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
+      style={[
+        {
+          backgroundColor: theme.colors.background,
+        },
+        styles.container,
+      ]}
     >
-      <Text style={{ color: theme.colors.onBackground }}>Tela Home</Text>
+      <TopBar title="Family Members" />
+
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          paddingTop: "1%",
+        }}
+      >
+        <MemberInfo title="Guilherme Voiski" username="@guilherme2017" />
+
+        <FAB
+          icon={"plus"}
+          style={[{ backgroundColor: theme.colors.primary }, styles.fab]}
+          rippleColor={theme.custom.ripple}
+          onPress={() => {}}
+        />
+      </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  fab: {
+    position: "absolute",
+    bottom: 16,
+    right: 16,
+    margin: 16,
+  },
+});

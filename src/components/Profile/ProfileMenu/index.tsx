@@ -1,4 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
+import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -15,7 +16,7 @@ const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
   const router = useRouter();
-  const theme = useTheme();
+  const theme = useAppTheme();
   const { isLoggedIn, logout } = useAuth();
   const insets = useSafeAreaInsets();
   const [animation, setAnimation] = useState(false);
@@ -82,7 +83,7 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
           style={[
             styles.buttonSection,
             {
-              backgroundColor: theme.colors.cardColor,
+              backgroundColor: theme.custom.cardColor,
               paddingBottom: 24 + insets.bottom,
               transform: [{ translateY }],
             },

@@ -1,38 +1,38 @@
+import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
 import { TouchableOpacity, View } from "react-native";
 import { Appbar, useTheme } from "react-native-paper";
 
 interface Props {
-  title: string;
-  titleColor?: string;
-  iconButton?: string;
-  iconColor?: string;
+  title: void | string;
+  titleColor?: void | string;
+  iconButton?: void | string;
+  iconColor?: void | string;
   buttonSize?: number;
   onPressButton?: () => void | void;
   isBackButtonEnable?: boolean;
-  backButtonColor?: string;
-  barColor?: string;
+  backButtonColor?: void | string;
+  barColor?: void | string;
   backButtonHref?: () => void | void;
 }
 
-export default function TopBar({
-  title,
-  titleColor = "black",
-  iconButton = "",
-  iconColor = "black",
-  buttonSize = 24,
-  onPressButton = () => {},
-  isBackButtonEnable = false,
-  backButtonColor = "black",
-  barColor = "white",
-  backButtonHref = () => {
-    const router = useRouter();
-    router.back();
-  },
-  ...rest
-}: Props) {
+export default function TopBar(props: Props) {
   const router = useRouter();
-  const theme = useTheme();
+  const theme = useAppTheme();
+
+  const {
+    title = "",
+    iconButton = "",
+    buttonSize = 24,
+    onPressButton = () => {},
+    isBackButtonEnable = false,
+    backButtonHref = () => router.back(),
+  } = props;
+
+  const titleColor = props.titleColor ?? theme.colors.onBackground;
+  const iconColor = props.iconColor ?? theme.colors.primary;
+  const backButtonColor = props.backButtonColor ?? theme.colors.onBackground;
+  const barColor = props.barColor ?? theme.colors.background;
 
   return (
     <View>

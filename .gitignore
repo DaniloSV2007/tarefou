@@ -39,3 +39,16 @@ yarn-error.*
 #Devices plataforms
 android/
 ios/
+
+# Tailwind
+tailwind.config.js
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+expo-debug.log
+
+# Babel cache
+babel-cache/
+metro-cache/

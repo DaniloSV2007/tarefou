@@ -1,18 +1,19 @@
-import ProfileMenu from "@/components/ProfileMenu";
+import ProfileMenu from "@/components/Profile/ProfileMenu";
 import ProfileLogged from "@/screens/ProfileLogged";
 import ProfileNotLogged from "@/screens/ProfileNotLogged";
 import TopBar from "@/components/TopBar";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { ActivityIndicator, useTheme } from "react-native-paper";
+import { ActivityIndicator } from "react-native-paper";
 import { useAuth } from "@/context/AuthContext";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 export default function Profile() {
   const { isLoggedIn, isLoading } = useAuth();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const theme = useTheme();
+  const theme = useAppTheme();
 
   function LoadingPageIndicator() {
     return (

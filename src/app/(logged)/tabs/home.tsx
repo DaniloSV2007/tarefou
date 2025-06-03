@@ -1,11 +1,12 @@
 import { useRouter } from "expo-router";
 import { StyleSheet, View } from "react-native";
-import { Button, Text, useTheme } from "react-native-paper";
+import { Button, Text } from "react-native-paper";
 import Constants from "expo-constants";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 export default function Home() {
   const router = useRouter();
-  const theme = useTheme();
+  const theme = useAppTheme();
 
   return (
     <>

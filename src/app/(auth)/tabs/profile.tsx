@@ -1,4 +1,4 @@
-import ProfileMenu from "@/components/ProfileMenu";
+import ProfileMenu from "@/components/Profile/ProfileMenu";
 import ProfileLogged from "@/screens/ProfileLogged";
 import ProfileNotLogged from "@/screens/ProfileNotLogged";
 import TopBar from "@/components/TopBar";
