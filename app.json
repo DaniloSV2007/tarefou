@@ -1,8 +1,8 @@
 {
-  "name": "checklistapp",
-  "slug": "checklistapp",
-  "version": "1.0.7",
-  "scheme": "checklistapp",
+  "name": "Tarefou",
+  "slug": "tarefou",
+  "version": "1.0.8",
+  "scheme": "tarefou",
   "icon": "./assets/adaptive-icon.png",
   "orientation": "portrait",
   "userInterfaceStyle": "dark",
@@ -18,7 +18,7 @@
       "backgroundColor": "#ffffff"
     },
     "edgeToEdgeEnabled": true,
-    "package": "com.danilosv07.checklistapp",
+    "package": "com.danilosv07.tarefou",
     "versionCode": 10,
     "permissions": [
       "android.permission.READ_EXTERNAL_STORAGE",
