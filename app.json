@@ -1,29 +1,54 @@
 {
-  "expo": {
-    "name": "checklistapp",
-    "slug": "checklistapp",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
+  "name": "checklistapp",
+  "slug": "checklistapp",
+  "version": "1.0.7",
+  "scheme": "checklistapp",
+  "icon": "./assets/adaptive-icon.png",
+  "orientation": "portrait",
+  "userInterfaceStyle": "dark",
+  "newArchEnabled": true,
+  "ios": {
+    "supportsTablet": true,
+    "bundleIdentifier": "com.placeholder.appid"
+  },
+  "android": {
+    "adaptiveIcon": {
+      "foregroundImage": "./assets/adaptive-icon.png",
+      "monochromeImage": "./assets/adaptive-icon-monochrome.png",
       "backgroundColor": "#ffffff"
     },
-    "ios": {
-      "supportsTablet": true
+    "edgeToEdgeEnabled": true,
+    "package": "com.danilosv07.checklistapp",
+    "versionCode": 10,
+    "permissions": [
+      "android.permission.READ_EXTERNAL_STORAGE",
+      "android.permission.WRITE_EXTERNAL_STORAGE",
+      "android.permission.INTERNET"
+    ]
+  },
+  "extra": {
+    "eas": {
+      "projectId": "01ceaca2-f8cc-4c37-ace3-6cdcd37403b8"
     },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "edgeToEdgeEnabled": true
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    }
-  }
+    "router": {}
+  },
+  "plugins": [
+    "expo-router",
+    [
+      "expo-splash-screen",
+      {
+        "image": "./assets/splash-icon-light.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff",
+        "dark": {
+          "image": "./assets/splash-icon-dark.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#000000"
+        }
+      }
+    ]
+  ],
+
+  "sdkVersion": "53.0.0",
+  "platforms": ["ios", "android"]
 }
