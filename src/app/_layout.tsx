@@ -9,7 +9,6 @@ import { StatusBar } from "react-native";
 import * as Font from "expo-font";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useEffect } from "react";
-import "@/styles/global.css";
 
 function RootInnerLayout() {
   const { theme, isDark } = useThemeContext();

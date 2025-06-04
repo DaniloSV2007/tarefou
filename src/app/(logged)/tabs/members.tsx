@@ -1,7 +1,6 @@
 import MemberInfo from "@/components/Members/MemberInfo";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { View, StyleSheet } from "react-native";
-import "@/styles/global.css";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import TopBar from "@/components/TopBar";
 import { useRouter } from "expo-router";
