@@ -60,7 +60,7 @@ export default function ProfileLogged() {
   );
 
   const avatarScale = scrollY.interpolate({
-    inputRange: [0, 130],
+    inputRange: [40, 130],
     outputRange: [1, 0.75],
     extrapolate: "clamp",
   });
@@ -114,9 +114,12 @@ export default function ProfileLogged() {
         <View style={styles.nameBox}>
           <Animated.View style={{ transform: [{ scale: avatarScale }] }}>
             <Avatar.Text label="DS" size={150} />
-            <TouchableOpacity activeOpacity={0}>
-              <FAB icon={"pencil"} style={styles.editButton} />
-            </TouchableOpacity>
+
+            <FAB
+              icon={"pencil"}
+              style={styles.editButton}
+              onPress={() => console.log("Clicou!")}
+            />
           </Animated.View>
           <Animated.Text
             style={{

@@ -27,7 +27,8 @@ export default function MemberInfo({ title, username, ...rest }: Props) {
         backgroundColor: theme.custom.cardColor,
         width: "90%",
         overflow: "hidden",
-        borderRadius: 24,
+        borderRadius: 16,
+        padding: 10,
       }}
     >
       <TouchableRipple

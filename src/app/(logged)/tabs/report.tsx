@@ -1,3 +1,5 @@
+import GeneralReportCard from "@/components/Report/GeneralReportCard";
+import ReportCard from "@/components/Report/ReportCard";
 import TopBar from "@/components/TopBar";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { View } from "react-native";
@@ -13,6 +15,10 @@ export default function Report() {
       }}
     >
       <TopBar title="Family Report" />
+      <View style={{ alignItems: "center", paddingTop: "1%" }}>
+        <GeneralReportCard />
+        <ReportCard title="Danilo Voiski" username="@DaniloSV07" />
+      </View>
     </View>
   );
 }

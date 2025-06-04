@@ -30,6 +30,7 @@ export default function Members() {
         }}
       >
         <MemberInfo title="Guilherme Voiski" username="@guilherme2017" />
+        <MemberInfo title="Danilo Voiski" username="@DaniloSV07" />
 
         <FAB
           icon={"plus"}
