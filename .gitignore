@@ -52,3 +52,7 @@ expo-debug.log
 # Babel cache
 babel-cache/
 metro-cache/
+
+# User Assets
+src/assets/Danilo/
+src/assets/Guilherme/

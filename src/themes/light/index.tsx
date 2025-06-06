@@ -9,6 +9,8 @@ export const lightTheme = {
   custom: {
     cardColor: "#e3e3e3",
     ripple: "rgba(0, 0, 0, .24)",
+    cardTaskBackground: "#f0f0f0",
+    inputFocusBorder: "#c7c7c7",
   },
   colors: {
     ...DefaultTheme.colors,

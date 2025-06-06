@@ -4,9 +4,17 @@ import { useAuth } from "@/context/AuthContext";
 import { useThemeContext } from "@/context/ThemeContext";
 import { StyleSheet, View } from "react-native";
 import { Button, useTheme } from "react-native-paper";
+import React, { useEffect } from "react";
+import * as SystemUI from "expo-system-ui";
 
 export default function Settings() {
   const theme = useTheme();
+  const { isDark } = useThemeContext();
+
+  useEffect(() => {
+    SystemUI.setBackgroundColorAsync(isDark ? "#000" : "#fff");
+  }, [isDark]);
+
   return (
     <>
       <View
@@ -19,7 +27,7 @@ export default function Settings() {
           backButtonColor={theme.colors.onBackground}
           barColor={theme.colors.background}
         />
-        <View>
+        <View style={styles.content}>
           <ThemeSection />
         </View>
       </View>
@@ -30,5 +38,9 @@ export default function Settings() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  content: {
+    alignItems: "center",
+    marginTop: 10,
   },
 });

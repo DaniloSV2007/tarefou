@@ -20,6 +20,13 @@ export default function Members() {
       ]}
     >
       <TopBar title="Family Members" />
+      <FAB
+        icon={"plus"}
+        style={[{ backgroundColor: theme.colors.primary }, styles.fab]}
+        rippleColor={theme.custom.ripple}
+        onPress={() => {}}
+        color="white"
+      />
 
       <View
         style={{
@@ -30,13 +37,6 @@ export default function Members() {
       >
         <MemberInfo title="Guilherme Voiski" username="@guilherme2017" />
         <MemberInfo title="Danilo Voiski" username="@DaniloSV07" />
-
-        <FAB
-          icon={"plus"}
-          style={[{ backgroundColor: theme.colors.primary }, styles.fab]}
-          rippleColor={theme.custom.ripple}
-          onPress={() => {}}
-        />
       </View>
     </View>
   );

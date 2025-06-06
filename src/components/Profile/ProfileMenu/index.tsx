@@ -9,7 +9,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Divider, Icon, Portal, Text, useTheme } from "react-native-paper";
+import {
+  Divider,
+  Icon,
+  Portal,
+  Text,
+  TouchableRipple,
+} from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -84,73 +90,41 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
             styles.buttonSection,
             {
               backgroundColor: theme.custom.cardColor,
-              paddingBottom: 24 + insets.bottom,
+              paddingBottom: insets.bottom,
               transform: [{ translateY }],
             },
           ]}
         >
           <View
             style={{
-              height: "20%",
               width: "100%",
-              alignItems: "center",
+              paddingVertical: 12,
               justifyContent: "center",
+              alignItems: "center",
             }}
           >
             <View
               style={{
                 backgroundColor: theme.colors.onBackground,
                 paddingHorizontal: 20,
-                paddingVertical: 5,
+                paddingVertical: 3,
                 borderRadius: 40,
               }}
             ></View>
           </View>
           <Divider style={{ backgroundColor: theme.colors.onBackground }} />
-          <TouchableOpacity
+
+          <TouchableRipple
             style={styles.button}
-            onPress={() => router.push("/profile/appinfo")}
+            rippleColor={theme.custom.ripple}
+            onPress={() => {
+              setIsMenuOpen(false);
+              router.push("/profile/appinfo");
+            }}
           >
-            <Icon
-              source={"information-outline"}
-              size={25}
-              color={theme.colors.onBackground}
-            />
-            <Text
-              style={[
-                styles.buttonTextMenu,
-                { color: theme.colors.onBackground },
-              ]}
-            >
-              Application Info
-            </Text>
-          </TouchableOpacity>
-          <Divider style={{ backgroundColor: theme.colors.onBackground }} />
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/profile/settings")}
-          >
-            <Icon source={"cog"} size={25} color={theme.colors.onBackground} />
-            <Text
-              style={[
-                styles.buttonTextMenu,
-                { color: theme.colors.onBackground },
-              ]}
-            >
-              Settings
-            </Text>
-          </TouchableOpacity>
-          <Divider style={{ backgroundColor: theme.colors.onBackground }} />
-          {isLoggedIn && (
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => {
-                logout();
-                setIsMenuOpen(false);
-              }}
-            >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Icon
-                source={"logout"}
+                source={"information-outline"}
                 size={25}
                 color={theme.colors.onBackground}
               />
@@ -160,9 +134,61 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
                   { color: theme.colors.onBackground },
                 ]}
               >
-                Log Out
+                Application Info
               </Text>
-            </TouchableOpacity>
+            </View>
+          </TouchableRipple>
+          <Divider style={{ backgroundColor: theme.colors.onBackground }} />
+          <TouchableRipple
+            style={styles.button}
+            onPress={() => {
+              setIsMenuOpen(false);
+              router.push("/profile/settings");
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Icon
+                source={"cog"}
+                size={25}
+                color={theme.colors.onBackground}
+              />
+              <Text
+                style={[
+                  styles.buttonTextMenu,
+                  { color: theme.colors.onBackground },
+                ]}
+              >
+                Settings
+              </Text>
+            </View>
+          </TouchableRipple>
+
+          <Divider style={{ backgroundColor: theme.colors.onBackground }} />
+
+          {isLoggedIn && (
+            <TouchableRipple
+              style={styles.button}
+              onPress={() => {
+                setIsMenuOpen(false);
+                logout();
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Icon
+                  source={"logout"}
+                  size={25}
+                  color={theme.colors.onBackground}
+                />
+                <Text
+                  style={[
+                    styles.buttonTextMenu,
+                    { color: theme.colors.onBackground },
+                  ]}
+                >
+                  Log Out
+                </Text>
+              </View>
+            </TouchableRipple>
           )}
 
           <Divider style={{ backgroundColor: theme.colors.onBackground }} />
@@ -182,8 +208,8 @@ const styles = StyleSheet.create({
   },
   buttonSection: {
     width: "100%",
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     position: "absolute",
     bottom: 0,
   },

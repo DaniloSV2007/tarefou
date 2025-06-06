@@ -1,9 +1,9 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { StyleSheet, View } from "react-native";
 import { Card, ProgressBar, Text } from "react-native-paper";
-import CardInfo from "../CardInfo";
+import CardInfo from "../../Report/CardInfo";
 
-export default function GeneralReportCard() {
+export default function ResumeCard() {
   const theme = useAppTheme();
 
   const totalTasks = 20;
@@ -30,19 +30,18 @@ export default function GeneralReportCard() {
   return (
     <Card
       style={{
-        margin: 10,
         backgroundColor: theme.custom.cardColor,
         width: "90%",
         overflow: "hidden",
         borderRadius: 16,
         padding: 10,
+        marginTop: 16,
       }}
     >
-      <Card.Title title={"General Report"} titleStyle={{ fontSize: 28 }} />
-      <Card.Content>
-        <View style={{ gap: 16 }}>
+      <Card.Title title={"Resume"} titleStyle={{ fontSize: 28 }} />
+      <Card.Content style={{ gap: 16 }}>
+        <View>
           <CardInfo tasksInfo={totalMembersInfo.today} />
-          <CardInfo tasksInfo={totalMembersInfo.week} isWeek={true} />
         </View>
       </Card.Content>
     </Card>

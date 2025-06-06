@@ -5,6 +5,8 @@ export const darkTheme = {
   custom: {
     cardColor: "#18161c",
     ripple: "rgba(255, 255, 255, .24)",
+    cardTaskBackground: "#201e24",
+    inputFocusBorder: "#403c49",
   },
   colors: {
     ...DefaultTheme.colors,

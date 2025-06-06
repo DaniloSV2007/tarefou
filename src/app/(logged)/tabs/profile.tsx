@@ -2,11 +2,14 @@ import ProfileMenu from "@/components/Profile/ProfileMenu";
 import ProfileLogged from "@/screens/ProfileLogged";
 import ProfileNotLogged from "@/screens/ProfileNotLogged";
 import TopBar from "@/components/TopBar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 import { useAuth } from "@/context/AuthContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
+import React from "react";
+import { useThemeContext } from "@/context/ThemeContext";
+import * as SystemUI from "expo-system-ui";
 
 export default function Profile() {
   const { isLoggedIn, isLoading } = useAuth();
@@ -14,6 +17,19 @@ export default function Profile() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const theme = useAppTheme();
+  const { isDark } = useThemeContext();
+
+  useEffect(() => {
+    SystemUI.setBackgroundColorAsync(isDark ? "#000" : "#fff");
+  }, [isDark]);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      SystemUI.setBackgroundColorAsync(theme.custom.cardColor);
+    } else {
+      SystemUI.setBackgroundColorAsync(theme.colors.background);
+    }
+  }, [isMenuOpen, isDark]);
 
   function LoadingPageIndicator() {
     return (

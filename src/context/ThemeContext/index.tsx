@@ -5,7 +5,7 @@ import React, {
   useState,
   ReactNode,
 } from "react";
-import { useColorScheme } from "react-native";
+import { Appearance, useColorScheme } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { lightTheme } from "@/themes/light";
 import { darkTheme } from "@/themes/dark";
@@ -24,7 +24,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const systemColorScheme = useColorScheme();
-  const [themePreference, setThemePreference] = useState<ThemePreference>(0); // default: system
+  const [themePreference, setThemePreference] = useState<ThemePreference>(0);
   const [isDark, setIsDark] = useState(false);
 
   // Carrega a preferência salva
@@ -47,6 +47,17 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 
     setIsDark(effectiveDark);
   }, [themePreference, systemColorScheme]);
+
+  useEffect(() => {
+    Appearance.addChangeListener(({ colorScheme }) => {
+      const effectiveDark =
+        themePreference === 0
+          ? systemColorScheme === "dark"
+          : themePreference === 2;
+
+      setIsDark(effectiveDark);
+    });
+  }, []);
 
   // Alterna o tema manualmente
   const toggleTheme = async (mode?: ThemePreference) => {

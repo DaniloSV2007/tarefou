@@ -1,18 +1,45 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { StyleSheet, View } from "react-native";
 import { Avatar, Card, ProgressBar, Text } from "react-native-paper";
+import CardInfo from "../CardInfo";
 
 interface ReportCardProps {
   title: string;
   username: string;
+  avatar?: void;
 }
 
-export default function ReportCard({ title, username }: ReportCardProps) {
+export default function ReportCard({
+  title,
+  username,
+  avatar,
+}: ReportCardProps) {
   const theme = useAppTheme();
 
-  const weekCompletedTasks = 22;
-  const weekTotalTasks = 45;
+  const completedTasks = 7;
+  const totalTasks = 27;
+  const completionRate = completedTasks / totalTasks;
+
+  const weekCompletedTasks = 7;
+  const weekTotalTasks = 27;
   const weekCompletionRate = weekCompletedTasks / weekTotalTasks;
+
+  const membersInfo = {
+    danilo: {
+      tasksInfo: {
+        today: {
+          completedTasks: completedTasks,
+          totalCompletedTasks: totalTasks,
+          completionRate: completionRate,
+        },
+        week: {
+          completedTasks: weekCompletedTasks,
+          totalCompletedTasks: weekTotalTasks,
+          completionRate: weekCompletionRate,
+        },
+      },
+    },
+  };
   return (
     <Card
       style={{
@@ -33,26 +60,21 @@ export default function ReportCard({ title, username }: ReportCardProps) {
           color: theme.colors.onSurfaceVariant,
           marginLeft: 10,
         }}
-        left={(props) => <Avatar.Icon icon="account" size={48} />}
+        left={() =>
+          avatar && avatar != "" ? (
+            <Avatar.Image source={avatar} size={48} />
+          ) : (
+            <Avatar.Icon icon="account" size={48} />
+          )
+        }
       />
       <Card.Content>
-        <View>
-          <Text
-            variant="bodyMedium"
-            style={[styles.progressText, { color: theme.colors.onBackground }]}
-          >
-            Week Completed Tasks: {weekCompletedTasks} / {weekTotalTasks}
-          </Text>
-          <ProgressBar
-            progress={weekCompletionRate}
-            color={theme.colors.primary}
-            style={{ height: 10, borderRadius: 8 }}
+        <View style={{ gap: 16 }}>
+          <CardInfo tasksInfo={membersInfo.danilo.tasksInfo.today} />
+          <CardInfo
+            tasksInfo={membersInfo.danilo.tasksInfo.week}
+            isWeek={true}
           />
-          <View style={{ marginTop: 16 }}>
-            <Text variant="bodySmall" style={styles.percentageText}>
-              {Math.round(weekCompletionRate * 100)}% completed
-            </Text>
-          </View>
         </View>
       </Card.Content>
     </Card>

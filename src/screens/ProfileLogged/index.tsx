@@ -2,6 +2,7 @@ import ProfileMenu from "@/components/Profile/ProfileMenu";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
+import React from "react";
 import {
   Animated,
   NativeScrollEvent,
@@ -22,7 +23,6 @@ import {
   Icon,
   ProgressBar,
   Text,
-  useTheme,
 } from "react-native-paper";
 
 export default function ProfileLogged() {
@@ -49,6 +49,15 @@ export default function ProfileLogged() {
       if (prev !== isAtBottom) return isAtBottom;
       return prev;
     });
+
+    const currentY = event.nativeEvent.contentOffset.y;
+    if (currentY > lastScrollY.current) {
+      setShowFab(false);
+    } else if (currentY < lastScrollY.current - 10) {
+      setShowFab(true);
+    }
+
+    lastScrollY.current = currentY;
   }
 
   const handleOuterScroll = useCallback(
@@ -106,20 +115,34 @@ export default function ProfileLogged() {
     setWeekProgress(67);
   }, []);
 
+  const [showFab, setShowFab] = useState(true);
+  const lastScrollY = useRef(0);
+
   return (
     <>
       <View
         style={[styles.container, { backgroundColor: theme.colors.background }]}
       >
+        <View style={{ position: "absolute", top: 140, right: 140, zIndex: 1 }}>
+          {showFab && (
+            <FAB
+              icon="pencil"
+              onPress={() => {}}
+              rippleColor={theme.custom.ripple}
+              color="white"
+              style={[
+                styles.editButton,
+                {
+                  backgroundColor: theme.colors.primary,
+                },
+              ]}
+            />
+          )}
+        </View>
         <View style={styles.nameBox}>
           <Animated.View style={{ transform: [{ scale: avatarScale }] }}>
             <Avatar.Text label="DS" size={150} />
-
-            <FAB
-              icon={"pencil"}
-              style={styles.editButton}
-              onPress={() => console.log("Clicou!")}
-            />
+            <></>
           </Animated.View>
           <Animated.Text
             style={{
@@ -324,8 +347,6 @@ export default function ProfileLogged() {
   );
 }
 
-const useTema = () => useTheme();
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -346,16 +367,13 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   editButton: {
-    position: "absolute",
-    bottom: 0,
-    right: 0,
+    borderRadius: 99,
     width: 40,
     height: 40,
-    borderRadius: 99,
-    backgroundColor: "#337eff",
-    color: "#fff",
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "white",
   },
   statisticsCardView: {
     flex: 1,
