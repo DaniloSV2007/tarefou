@@ -31,25 +31,24 @@ export default function Home() {
           variant="displaySmall"
           style={[styles.title, { color: theme.colors.onBackground }]}
         >
-          Bem-vindo ao Tarefou!
+          Welcome to Tarefou!
         </Text>
 
         <Text
           variant="titleLarge"
           style={[styles.subtitle, { color: theme.colors.onBackground }]}
         >
-          Para acessar todos os recursos do app, você precisa fazer login
-          primeiro.
+          To access all app resources, you need to login first.
         </Text>
 
         <View style={styles.buttonContainer}>
           <Button
             mode="contained"
-            onPress={() => router.push("/(aux)/Login/login")}
+            onPress={() => router.push("/(aux)/Login")}
             style={styles.button}
             labelStyle={styles.buttonLabel}
           >
-            Fazer Login
+            Login In
           </Button>
         </View>
       </View>
@@ -88,7 +87,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   buttonLabel: {
-    fontSize: 16,
+    fontSize: 24,
     paddingVertical: 8,
   },
   settingsButton: {

@@ -14,6 +14,7 @@ interface Props {
   backButtonColor?: void | string;
   barColor?: void | string;
   backButtonHref?: () => void | void;
+  bottomBorder?: boolean;
 }
 
 export default function TopBar(props: Props) {
@@ -27,6 +28,7 @@ export default function TopBar(props: Props) {
     onPressButton = () => {},
     isBackButtonEnable = false,
     backButtonHref = () => router.back(),
+    bottomBorder = true,
   } = props;
 
   const titleColor = props.titleColor ?? theme.colors.onBackground;
@@ -40,7 +42,7 @@ export default function TopBar(props: Props) {
         style={{
           backgroundColor: barColor,
           borderBottomColor: theme.colors.surface,
-          borderBottomWidth: 1,
+          borderBottomWidth: bottomBorder ? 1 : 0,
         }}
       >
         <Appbar.Content
