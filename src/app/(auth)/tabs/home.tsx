@@ -21,10 +21,11 @@ export default function Home() {
       ]}
     >
       <TopBar
-        title="Welcome!"
+        title=""
         iconButton={"cog"}
         iconColor={theme.colors.onBackground}
         onPressButton={() => router.push("/profile/settings")}
+        bottomBorder={false}
       />
       <View style={styles.content}>
         <Text
