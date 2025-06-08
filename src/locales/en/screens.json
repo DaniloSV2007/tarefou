@@ -1,0 +1,106 @@
+{
+  "profileNotLogged": {
+    "loginButton": "Login",
+    "title": "Welcome to Tarefou!",
+    "description": "To access all app resources, you need to login first."
+  },
+  "profileLogged": {
+    "title": "Profile",
+    "personalInfo": {
+      "title": "Personal Information",
+      "name": "Name",
+      "email": "Email",
+      "username": "Username",
+      "birthday": "Birthday",
+      "edit": "Edit Profile",
+      "role": "Role",
+      "roleAdmin": "Admin"
+    },
+    "statistics": {
+      "title": "Statistics",
+      "tasksCompleted": "Tasks Completed",
+      "tasksInProgress": "Tasks in Progress",
+      "totalTasks": "Total Tasks",
+      "weeklyProgress": "Weekly Progress",
+      "monthlyProgress": "Monthly Progress",
+      "membersNumber": "Members number: {{count}}",
+      "totalMembersScore": "Total members score: {{score}}",
+      "todayProgress": "Today progress",
+      "weekProgress": "Week progress",
+      "outOf": "{{current}}/{{total}}",
+      "percentage": "{{value}}%"
+    },
+    "settings": {
+      "title": "Settings",
+      "account": "Account Settings",
+      "notifications": "Notifications",
+      "privacy": "Privacy",
+      "language": "Language",
+      "theme": "Theme"
+    }
+  },
+  "tasks": {
+    "list": {
+      "title": "My Tasks",
+      "empty": "No tasks found",
+      "addNew": "Add New Task"
+    },
+    "details": {
+      "title": "Task Details",
+      "description": "Description",
+      "status": "Status",
+      "dueDate": "Due Date",
+      "priority": "Priority",
+      "assignedTo": "Assigned To"
+    }
+  },
+  "report": {
+    "title": "Family Report",
+    "general": {
+      "title": "General Report",
+      "totalTasks": "Total Tasks",
+      "completedTasks": "Completed Tasks"
+    },
+    "member": {
+      "title": "Member Report"
+    }
+  },
+  "members": {
+    "title": "Family Members",
+    "addMember": "Add Member",
+    "memberCard": {
+      "title": "Member",
+      "username": "Username"
+    }
+  },
+  "member": {
+    "profile": {
+      "title": "Member Profile",
+      "memberName": "{{name}}'s Profile",
+      "backToMembers": "Back to Members",
+      "statistics": {
+        "title": "Statistics",
+        "tasksCompleted": "Tasks Completed",
+        "tasksInProgress": "Tasks in Progress",
+        "totalScore": "Total Score",
+        "weeklyProgress": "Weekly Progress",
+        "monthlyProgress": "Monthly Progress"
+      },
+      "personalInfo": {
+        "title": "Personal Information",
+        "name": "Name",
+        "username": "Username",
+        "email": "Email",
+        "birthday": "Birthday",
+        "joinDate": "Join Date",
+        "role": "Role"
+      },
+      "actions": {
+        "edit": "Edit Profile",
+        "delete": "Delete Member",
+        "block": "Block Member",
+        "unblock": "Unblock Member"
+      }
+    }
+  }
+}

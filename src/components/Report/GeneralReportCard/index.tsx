@@ -2,10 +2,11 @@ import { useAppTheme } from "@/hooks/useAppTheme";
 import { StyleSheet, View } from "react-native";
 import { Card, ProgressBar, Text } from "react-native-paper";
 import CardInfo from "../CardInfo";
+import { useTranslation } from "react-i18next";
 
 export default function GeneralReportCard() {
   const theme = useAppTheme();
-
+  const { t } = useTranslation();
   const totalTasks = 20;
   const completedTasks = 15;
   const completionRate = completedTasks / totalTasks;
@@ -38,7 +39,10 @@ export default function GeneralReportCard() {
         padding: 10,
       }}
     >
-      <Card.Title title={"General Report"} titleStyle={{ fontSize: 28 }} />
+      <Card.Title
+        title={t("screens:report.general.title")}
+        titleStyle={{ fontSize: 28 }}
+      />
       <Card.Content>
         <View style={{ gap: 16 }}>
           <CardInfo tasksInfo={totalMembersInfo.today} />

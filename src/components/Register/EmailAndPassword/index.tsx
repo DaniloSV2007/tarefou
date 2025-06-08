@@ -2,12 +2,13 @@ import React from "react";
 import { Pressable, StyleSheet, TextInput } from "react-native";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useState } from "react";
-import { Button, Text } from "react-native-paper";
+import { Button, IconButton, Text } from "react-native-paper";
 import { Link, useRouter } from "expo-router";
 import { ActivityIndicator } from "react-native-paper";
 import { View } from "react-native";
 import GoogleButton from "@/components/GoogleButton";
 import { isValidEmail } from "@/utils/isValidEmail";
+import { useTranslation } from "react-i18next";
 
 export default function EmailAndPassword({
   setPage,
@@ -15,6 +16,7 @@ export default function EmailAndPassword({
   setPage: (page: number) => void;
 }) {
   const theme = useAppTheme();
+  const { t } = useTranslation();
   const [isFocusedEmail, setIsFocusedEmail] = useState(false);
   const [isFocusedPassword, setIsFocusedPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -22,27 +24,23 @@ export default function EmailAndPassword({
   const [error, setError] = useState("");
   const [linkColor, setLinkColor] = useState(theme.colors.onBackground);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
-  const handleRegister = () => {
-    setIsLoading(true);
+  const handleContinue = () => {
     if (!email || !password) {
-      setError("Please fill in all fields");
-      setIsLoading(false);
+      setError(t("register.error.fillAllFields"));
       return;
     }
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters long");
-      setIsLoading(false);
-      return;
+    setPage(2);
+  };
+  const passwordHandler = (text: string) => {
+    setPassword(text);
+    if (text.length === 0 || text.length >= 8) {
+      setError("");
+    } else {
+      setError(t("register.error.passwordLength"));
     }
-    if (!isValidEmail(email)) {
-      setError("Invalid email address");
-      setIsLoading(false);
-      return;
-    }
-    setIsLoading(false);
-    router.push("/");
   };
   return (
     <>
@@ -59,8 +57,8 @@ export default function EmailAndPassword({
           },
         ]}
         cursorColor={theme.colors.onBackground}
-        placeholder="Type your email"
-        placeholderTextColor={theme.colors.onSurface}
+        placeholder={t("register.emailAndPassword.inputEmail")}
+        placeholderTextColor={theme.colors.onSurfaceDisabled}
         onFocus={() => setIsFocusedEmail(true)}
         onBlur={() => setIsFocusedEmail(false)}
         value={email}
@@ -71,38 +69,41 @@ export default function EmailAndPassword({
         autoCapitalize="none"
         autoComplete="email"
       />
-
-      <TextInput
-        style={[
-          styles.input,
-          {
-            backgroundColor: theme.custom.cardTaskBackground,
-            color: theme.colors.onBackground,
-            borderColor: isFocusedPassword
-              ? theme.colors.onBackground
-              : theme.custom.inputFocusBorder,
-            borderWidth: isFocusedPassword ? 2 : 1,
-          },
-        ]}
-        cursorColor={theme.colors.onBackground}
-        placeholder="Create a password"
-        placeholderTextColor={theme.colors.onSurface}
-        onFocus={() => setIsFocusedPassword(true)}
-        onBlur={() => setIsFocusedPassword(false)}
-        value={password}
-        onChangeText={(text) => {
-          setPassword(text);
-          setError("");
-        }}
-        secureTextEntry
-        autoCapitalize="none"
-        autoComplete="password"
-      />
+      <View>
+        <TextInput
+          style={[
+            styles.input,
+            {
+              backgroundColor: theme.custom.cardTaskBackground,
+              color: theme.colors.onBackground,
+              borderColor: isFocusedPassword
+                ? theme.colors.onBackground
+                : theme.custom.inputFocusBorder,
+              borderWidth: isFocusedPassword ? 2 : 1,
+            },
+          ]}
+          cursorColor={theme.colors.onBackground}
+          placeholder={t("register.emailAndPassword.inputPassword")}
+          placeholderTextColor={theme.colors.onSurfaceDisabled}
+          onFocus={() => setIsFocusedPassword(true)}
+          onBlur={() => setIsFocusedPassword(false)}
+          value={password}
+          onChangeText={passwordHandler}
+          secureTextEntry={!showPassword}
+          autoCapitalize="none"
+          autoComplete="password"
+        />
+        <IconButton
+          icon={showPassword ? "eye-off" : "eye"}
+          onPress={() => setShowPassword(!showPassword)}
+          style={{ position: "absolute", right: 10, top: 10, zIndex: 1000 }}
+        />
+      </View>
 
       {error && <Text style={{ color: "red", fontSize: 16 }}>*{error}</Text>}
 
       <Text style={{ fontSize: 16 }}>
-        Already have an account?{" "}
+        {t("register.emailAndPassword.alreadyHaveAccount")}
         <Link
           onPressIn={() => setLinkColor(theme.colors.primary)}
           onPressOut={() => setLinkColor(theme.colors.onBackground)}
@@ -114,23 +115,36 @@ export default function EmailAndPassword({
           ]}
           href="/(aux)/Login"
         >
-          Login
+          {" "}
+          {t("register.emailAndPassword.login")}
         </Link>
         .
       </Text>
 
-      <View style={{ borderRadius: 32, overflow: "hidden" }}>
+      <View style={{ borderRadius: 32, overflow: "hidden", marginTop: 16 }}>
         <Pressable
           onPress={() => setPage(2)}
           style={[
             styles.loginButton,
-            { backgroundColor: theme.colors.primary },
+            email === "" || password.length < 8
+              ? { backgroundColor: theme.colors.surfaceDisabled }
+              : { backgroundColor: theme.colors.primary },
           ]}
           android_ripple={{
             color: theme.custom.ripple,
           }}
+          disabled={email === "" || password.length < 8}
         >
-          <Text style={styles.loginButtonText}>Continue</Text>
+          <Text
+            style={[
+              styles.loginButtonText,
+              email === "" || password.length < 8
+                ? { color: theme.colors.onSurfaceDisabled }
+                : { color: "white" },
+            ]}
+          >
+            {t("register.emailAndPassword.continue")}
+          </Text>
           {isLoading && <ActivityIndicator color={theme.colors.onBackground} />}
         </Pressable>
       </View>
@@ -155,7 +169,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   loginButtonText: {
-    color: "white",
     fontSize: 24,
     fontWeight: "500",
   },

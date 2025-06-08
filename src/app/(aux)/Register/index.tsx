@@ -18,16 +18,20 @@ import TopBar from "@/components/TopBar";
 import EmailAndPassword from "@/components/Register/EmailAndPassword";
 import NameAndUsername from "@/components/Register/NameAndUsername";
 import Birthday from "@/components/Register/Birthday";
+import { useTranslation } from "react-i18next";
 
 export default function Register() {
+  const { t } = useTranslation();
   const theme = useAppTheme();
   const [page, setPage] = useState(1);
   const router = useRouter();
 
+  const handleRegister = () => {};
+
   return (
     <>
       <TopBar
-        title="Register"
+        title={t("register.title")}
         iconButton="cog"
         iconColor={theme.colors.onBackground}
         onPressButton={() => router.push("/profile/settings")}
@@ -56,10 +60,10 @@ export default function Register() {
                 <Card.Title
                   title={
                     page === 1
-                      ? "Register"
+                      ? t("register.emailAndPassword.title")
                       : page === 2
-                      ? "Name and\nUsername"
-                      : "Date of Birth"
+                      ? t("register.nameAndUsername.title")
+                      : t("register.birthday.title")
                   }
                   titleNumberOfLines={3}
                   titleStyle={{

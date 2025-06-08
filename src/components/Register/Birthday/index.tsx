@@ -1,5 +1,5 @@
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
-import { Button, Card, Dialog, Portal } from "react-native-paper";
+import { Button, Card, Dialog, Portal, Surface } from "react-native-paper";
 import React, { useState } from "react";
 import DateTimePicker, {
   DateTimePickerEvent,
@@ -8,6 +8,7 @@ import { useAppTheme } from "@/hooks/useAppTheme";
 import { useThemeContext } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 export default function Birthday({
   setPage,
@@ -23,10 +24,19 @@ export default function Birthday({
   const { isDark } = useThemeContext();
   const { login } = useAuth();
   const router = useRouter();
-
+  const { t, i18n } = useTranslation();
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     if (event.type === "set" && selectedDate) {
       setDate(selectedDate);
+    }
+    const today = new Date();
+    const minDate = new Date(
+      today.getFullYear() - 3,
+      today.getMonth(),
+      today.getDate()
+    );
+    if (date > minDate) {
+      setError(t("register.error.birthday"));
     }
     setShow(false);
   };
@@ -40,13 +50,18 @@ export default function Birthday({
     );
 
     if (date > minDate) {
-      setError("*You must be at least 3 years old.");
+      setError(t("register.error.birthday"));
       return;
     }
 
     setError("");
     setIsConfirmation(true);
   };
+
+  const minimumAgeDate = new Date();
+  minimumAgeDate.setFullYear(minimumAgeDate.getFullYear() - 3);
+
+  const isTooYoung = date > minimumAgeDate;
 
   return (
     <>
@@ -56,26 +71,46 @@ export default function Birthday({
           mode="date"
           display="default"
           onChange={onChange}
+          textColor="white"
           onTouchCancel={() => setShow(false)}
-          themeVariant={isDark ? "dark" : "light"}
-          maximumDate={
-            new Date(new Date().setFullYear(new Date().getFullYear() - 3))
-          }
+          maximumDate={new Date()}
         />
       )}
-      <Pressable
-        onPress={() => setShow(true)}
-        android_ripple={{ color: theme.custom.ripple }}
+
+      <View
+        style={{
+          backgroundColor: theme.custom.cardTaskBackground,
+          borderRadius: 12,
+          padding: 4,
+        }}
       >
-        <Card style={{ backgroundColor: theme.custom.cardTaskBackground }}>
-          <Card.Content>
-            <Text style={[styles.text, { color: theme.colors.onBackground }]}>
-              {date.toLocaleDateString()}
-            </Text>
-          </Card.Content>
-        </Card>
-      </Pressable>
-      <Text style={{ color: "red" }}>{error}</Text>
+        <Pressable
+          onPress={() => setShow(true)}
+          android_ripple={{ color: theme.custom.ripple }}
+          style={{
+            borderRadius: 12,
+            padding: 8,
+          }}
+        >
+          <Text
+            style={[
+              styles.text,
+              {
+                color:
+                  date.toLocaleDateString() === new Date().toLocaleDateString()
+                    ? theme.colors.onSurfaceDisabled
+                    : theme.colors.onBackground,
+              },
+            ]}
+          >
+            {date.toLocaleDateString(
+              ["pt", "en"].includes(i18n.language) ? i18n.language : "en"
+            )}
+          </Text>
+        </Pressable>
+      </View>
+
+      <Text style={{ color: "red" }}>{error !== "" && "*" + error}</Text>
       <View
         style={{
           flexDirection: "row",
@@ -90,49 +125,59 @@ export default function Birthday({
             styles.backButton,
             { backgroundColor: theme.custom.cardTaskBackground },
           ]}
-          labelStyle={styles.buttonText}
+          labelStyle={[styles.buttonText, { color: theme.colors.onBackground }]}
         >
-          Back
+          {t("register.birthday.back")}
         </Button>
         <Button
           mode="contained"
           onPress={handleConfirm}
-          style={[styles.button, { backgroundColor: theme.colors.primary }]}
+          style={[
+            styles.button,
+            {
+              backgroundColor: isTooYoung
+                ? theme.colors.surfaceDisabled
+                : theme.colors.primary,
+            },
+          ]}
           labelStyle={styles.buttonText}
+          disabled={isTooYoung}
         >
-          Confirm
+          {t("register.birthday.confirm")}
         </Button>
       </View>
+
       <Portal>
         <Dialog
           visible={isConfirmation}
           onDismiss={() => setIsConfirmation(false)}
         >
           <Dialog.Title style={{ color: theme.colors.onBackground }}>
-            Confirmation
+            {t("register.birthday.confirmation")}
           </Dialog.Title>
           <Dialog.Content>
             <Text style={{ color: theme.colors.onBackground, fontSize: 18 }}>
-              Are you sure you want to confirm?
+              {t("register.birthday.confirmationMessage")}
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button
-              style={{ backgroundColor: theme.custom.cardColor }}
               labelStyle={{ color: theme.colors.onBackground }}
               onPress={() => setIsConfirmation(false)}
             >
-              Cancel
+              {t("register.birthday.cancel")}
             </Button>
             <Button
-              style={{ backgroundColor: theme.colors.primary }}
-              labelStyle={{ color: theme.colors.onBackground }}
+              style={{
+                backgroundColor: theme.colors.primary,
+              }}
+              labelStyle={{ color: "white" }}
               onPress={() => {
                 login();
                 router.push("/");
               }}
             >
-              Confirm
+              {t("register.birthday.confirm")}
             </Button>
           </Dialog.Actions>
         </Dialog>
@@ -164,5 +209,6 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 24,
     fontWeight: "500",
+    color: "white",
   },
 });

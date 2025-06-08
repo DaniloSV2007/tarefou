@@ -11,13 +11,14 @@ import { lightTheme } from "@/themes/light";
 import { darkTheme } from "@/themes/dark";
 import { ThemeBase } from "react-native-paper";
 
-type ThemePreference = 0 | 1 | 2; // 0 = system, 1 = light, 2 = dark
+type ThemePreference = 0 | 1 | 2;
 
 interface ThemeContextType {
   theme: ThemeBase;
-  toggleTheme: (mode?: ThemePreference) => void;
+  toggleTheme: (mode?: ThemePreference) => Promise<void>;
   isDark: boolean;
   themePreference: ThemePreference;
+  error: string | null;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -26,19 +27,24 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const systemColorScheme = useColorScheme();
   const [themePreference, setThemePreference] = useState<ThemePreference>(0);
   const [isDark, setIsDark] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Carrega a preferência salva
   useEffect(() => {
     const loadThemePref = async () => {
-      const stored = await AsyncStorage.getItem("theme");
-      if (stored !== null) {
-        setThemePreference(parseInt(stored, 10) as ThemePreference);
+      try {
+        const stored = await AsyncStorage.getItem("theme");
+        if (stored !== null) {
+          setThemePreference(parseInt(stored, 10) as ThemePreference);
+        }
+        setError(null);
+      } catch (error) {
+        console.error("Error loading theme preference:", error);
+        setError("Failed to load theme preference");
       }
     };
     loadThemePref();
   }, []);
 
-  // Atualiza o tema com base na preferência ou no sistema
   useEffect(() => {
     const effectiveDark =
       themePreference === 0
@@ -49,28 +55,35 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   }, [themePreference, systemColorScheme]);
 
   useEffect(() => {
-    Appearance.addChangeListener(({ colorScheme }) => {
+    const subscription = Appearance.addChangeListener(({ colorScheme }) => {
       const effectiveDark =
-        themePreference === 0
-          ? systemColorScheme === "dark"
-          : themePreference === 2;
+        themePreference === 0 ? colorScheme === "dark" : themePreference === 2;
 
       setIsDark(effectiveDark);
     });
-  }, []);
 
-  // Alterna o tema manualmente
+    return () => {
+      subscription.remove();
+    };
+  }, [themePreference]);
+
   const toggleTheme = async (mode?: ThemePreference) => {
-    const newPref = mode ?? (isDark ? 1 : 2); // alterna entre claro/escuro se não especificado
-    await AsyncStorage.setItem("theme", newPref.toString());
-    setThemePreference(newPref);
+    try {
+      const newPref = mode ?? (isDark ? 1 : 2);
+      await AsyncStorage.setItem("theme", newPref.toString());
+      setThemePreference(newPref);
+      setError(null);
+    } catch (error) {
+      console.error("Error saving theme preference:", error);
+      setError("Failed to save theme preference");
+    }
   };
 
   const theme = isDark ? darkTheme : lightTheme;
 
   return (
     <ThemeContext.Provider
-      value={{ theme, toggleTheme, isDark, themePreference }}
+      value={{ theme, toggleTheme, isDark, themePreference, error }}
     >
       {children}
     </ThemeContext.Provider>

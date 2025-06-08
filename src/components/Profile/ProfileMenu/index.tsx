@@ -1,4 +1,4 @@
-import { useAuth } from "@/context/AuthContext";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -10,6 +10,8 @@ import {
   View,
 } from "react-native";
 import {
+  Button,
+  Dialog,
   Divider,
   Icon,
   Portal,
@@ -17,6 +19,8 @@ import {
   TouchableRipple,
 } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import ConfirmLogout from "./ConfirmLogout";
+import { useTranslation } from "react-i18next";
 
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 
@@ -26,6 +30,8 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
   const { isLoggedIn, logout } = useAuth();
   const insets = useSafeAreaInsets();
   const [animation, setAnimation] = useState(false);
+  const [isConfirmation, setIsConfirmation] = useState(false);
+  const { t } = useTranslation();
 
   const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
@@ -134,7 +140,7 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
                   { color: theme.colors.onBackground },
                 ]}
               >
-                Application Info
+                {t("components:profileMenu.appInfo")}
               </Text>
             </View>
           </TouchableRipple>
@@ -158,7 +164,7 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
                   { color: theme.colors.onBackground },
                 ]}
               >
-                Settings
+                {t("components:profileMenu.settings")}
               </Text>
             </View>
           </TouchableRipple>
@@ -169,8 +175,7 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
             <TouchableRipple
               style={styles.button}
               onPress={() => {
-                setIsMenuOpen(false);
-                logout();
+                setIsConfirmation(true);
               }}
             >
               <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -185,7 +190,7 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
                     { color: theme.colors.onBackground },
                   ]}
                 >
-                  Log Out
+                  {t("components:profileMenu.logout")}
                 </Text>
               </View>
             </TouchableRipple>
@@ -194,6 +199,15 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
           <Divider style={{ backgroundColor: theme.colors.onBackground }} />
         </Animated.View>
       </View>
+      {isConfirmation && (
+        <AuthProvider>
+          <ConfirmLogout
+            isConfirmation={isConfirmation}
+            setIsConfirmation={setIsConfirmation}
+            setIsMenuOpen={setIsMenuOpen}
+          />
+        </AuthProvider>
+      )}
     </Portal>
   );
 }

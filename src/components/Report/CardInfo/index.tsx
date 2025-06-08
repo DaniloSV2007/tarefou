@@ -1,6 +1,7 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { View, StyleSheet } from "react-native";
 import { Text, ProgressBar } from "react-native-paper";
+import { useTranslation } from "react-i18next";
 
 interface CardInfoProps {
   tasksInfo: {
@@ -12,14 +13,16 @@ interface CardInfoProps {
 }
 export default function CardInfo({ tasksInfo, isWeek = false }: CardInfoProps) {
   const theme = useAppTheme();
+  const { t } = useTranslation();
+
   return (
     <View>
       <Text
         variant="bodyMedium"
         style={[styles.progressText, { color: theme.colors.onBackground }]}
       >
-        {isWeek ? "Week" : "Today"} Completed Tasks: {tasksInfo.completedTasks}/
-        {tasksInfo.totalCompletedTasks}
+        {t(isWeek ? "home.resume.week" : "home.resume.today")}:{" "}
+        {tasksInfo.completedTasks}/{tasksInfo.totalCompletedTasks}
       </Text>
       <ProgressBar
         progress={tasksInfo.completionRate}
@@ -32,7 +35,8 @@ export default function CardInfo({ tasksInfo, isWeek = false }: CardInfoProps) {
       />
       <View style={{ marginTop: 16 }}>
         <Text variant="bodySmall" style={styles.percentageText}>
-          {Math.round(tasksInfo.completionRate * 100)}% completed
+          {Math.round(tasksInfo.completionRate * 100)}%{" "}
+          {t("home.resume.completed")}
         </Text>
       </View>
     </View>

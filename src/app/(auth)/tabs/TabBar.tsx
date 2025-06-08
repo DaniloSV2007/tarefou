@@ -1,4 +1,3 @@
-// app/(auth)/tabs/_layout.tsx
 import { Tabs, usePathname, useRouter, useSegments } from "expo-router";
 import { BottomNavigation, Icon, Text, useTheme } from "react-native-paper";
 import { View } from "react-native";

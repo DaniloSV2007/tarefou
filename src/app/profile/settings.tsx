@@ -1,4 +1,5 @@
 import ThemeSection from "@/components/ThemeSection";
+import LanguageSection from "@/components/LanguageSection";
 import TopBar from "@/components/TopBar";
 import { useAuth } from "@/context/AuthContext";
 import { useThemeContext } from "@/context/ThemeContext";
@@ -6,10 +7,12 @@ import { StyleSheet, View } from "react-native";
 import { Button, useTheme } from "react-native-paper";
 import React, { useEffect } from "react";
 import * as SystemUI from "expo-system-ui";
+import { useTranslation } from "react-i18next";
 
 export default function Settings() {
   const theme = useTheme();
   const { isDark } = useThemeContext();
+  const { t } = useTranslation();
 
   useEffect(() => {
     SystemUI.setBackgroundColorAsync(isDark ? "#000" : "#fff");
@@ -21,7 +24,7 @@ export default function Settings() {
         style={[styles.container, { backgroundColor: theme.colors.background }]}
       >
         <TopBar
-          title="Settings"
+          title={t("settings.title")}
           titleColor={theme.colors.onBackground}
           isBackButtonEnable={true}
           backButtonColor={theme.colors.onBackground}
@@ -29,6 +32,7 @@ export default function Settings() {
         />
         <View style={styles.content}>
           <ThemeSection />
+          <LanguageSection />
         </View>
       </View>
     </>

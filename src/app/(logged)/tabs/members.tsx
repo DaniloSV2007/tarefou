@@ -5,11 +5,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import TopBar from "@/components/TopBar";
 import { useRouter } from "expo-router";
 import { FAB } from "react-native-paper";
+import { useTranslation } from "react-i18next";
 
 export default function Members() {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { t } = useTranslation();
+
   return (
     <View
       style={[
@@ -19,7 +22,7 @@ export default function Members() {
         styles.container,
       ]}
     >
-      <TopBar title="Family Members" />
+      <TopBar title={t("screens:members.title")} />
       <FAB
         icon={"plus"}
         style={[{ backgroundColor: theme.colors.primary }, styles.fab]}

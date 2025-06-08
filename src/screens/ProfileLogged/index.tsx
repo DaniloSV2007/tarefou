@@ -24,17 +24,17 @@ import {
   ProgressBar,
   Text,
 } from "react-native-paper";
+import { useTranslation } from "react-i18next";
 
 export default function ProfileLogged() {
   const [todayProgress, setTodayProgress] = useState(0);
   const [weekProgress, setWeekProgress] = useState(0);
+  const { t } = useTranslation();
 
   const theme = useAppTheme();
-
   const router = useRouter();
 
   const [internalScrollEnabled, setInternalScrollEnabled] = useState(false);
-
   const scrollY = useRef(new Animated.Value(0)).current;
 
   function handleScrollListener(
@@ -154,7 +154,7 @@ export default function ProfileLogged() {
               opacity: 0.8,
             }}
           >
-            Admin
+            {t("screens:profileLogged.personalInfo.roleAdmin")}
           </Animated.Text>
           <Animated.Text
             style={{
@@ -208,7 +208,7 @@ export default function ProfileLogged() {
                     },
                   ]}
                 >
-                  Statistics
+                  {t("screens:profileLogged.statistics.title")}
                 </Animated.Text>
               </Animated.View>
 
@@ -227,7 +227,9 @@ export default function ProfileLogged() {
                     ]}
                     variant="bodyMedium"
                   >
-                    Members number: 2
+                    {t("screens:profileLogged.statistics.membersNumber", {
+                      count: 2,
+                    })}
                   </Text>
                   <Text
                     style={[
@@ -236,7 +238,9 @@ export default function ProfileLogged() {
                     ]}
                     variant="bodyMedium"
                   >
-                    Total members score: 2430
+                    {t("screens:profileLogged.statistics.totalMembersScore", {
+                      score: 2430,
+                    })}
                   </Text>
                   <Text
                     style={[
@@ -245,7 +249,7 @@ export default function ProfileLogged() {
                     ]}
                     variant="bodyMedium"
                   >
-                    Today progress:
+                    {t("screens:profileLogged.statistics.todayProgress")}:
                   </Text>
                   <View
                     style={{
@@ -274,7 +278,10 @@ export default function ProfileLogged() {
                         { color: theme.colors.onBackground },
                       ]}
                     >
-                      {todayProgress / 10}/10
+                      {t("screens:profileLogged.statistics.outOf", {
+                        current: todayProgress / 10,
+                        total: 10,
+                      })}
                     </Text>
                   </View>
                   <Text
@@ -284,7 +291,7 @@ export default function ProfileLogged() {
                     ]}
                     variant="bodyMedium"
                   >
-                    Week progress:
+                    {t("screens:profileLogged.statistics.weekProgress")}:
                   </Text>
                   <View
                     style={{
@@ -313,12 +320,10 @@ export default function ProfileLogged() {
                         { color: theme.colors.onBackground },
                       ]}
                     >
-                      {weekProgress}%
+                      {t("screens:profileLogged.statistics.percentage", {
+                        value: weekProgress,
+                      })}
                     </Text>
-                    <Button
-                      children="Teste"
-                      onPress={() => router.push("/profile/appinfo")}
-                    />
                   </View>
                   <View
                     style={{

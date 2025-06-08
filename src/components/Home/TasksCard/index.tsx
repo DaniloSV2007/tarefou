@@ -1,47 +1,94 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { Card, Checkbox, Divider, Icon, Text } from "react-native-paper";
 import React from "react";
+import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
+
+interface Task {
+  id: number;
+  name: string;
+  status: boolean;
+  description: string;
+}
 
 interface TasksCardProps {
   name: string;
-  tasks: any[];
-  setTasks: (tasks: any[]) => void;
+  tasks: Task[];
+  setTasks: (tasks: Task[]) => void;
 }
 
 export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
   const theme = useAppTheme();
+  const { t } = useTranslation();
+
+  const handleTaskPress = (task: Task) => {
+    try {
+      router.push({
+        pathname: "/tasks/[userFullName]/[taskId]",
+        params: {
+          userFullName: name,
+          taskId: task.id.toString(),
+        },
+      });
+    } catch (error) {
+      console.error("Error navigating to task:", error);
+    }
+  };
+
+  const handleTaskStatusChange = (taskIndex: number) => {
+    try {
+      const updatedTasks = [...tasks];
+      updatedTasks[taskIndex] = {
+        ...updatedTasks[taskIndex],
+        status: !updatedTasks[taskIndex].status,
+      };
+      setTasks(updatedTasks);
+    } catch (error) {
+      console.error("Error updating task status:", error);
+    }
+  };
+
   return (
-    <Card style={[styles.card, { backgroundColor: theme.custom.cardColor }]}>
-      <Card.Title title={`${name}'s Tasks`} titleStyle={{ fontSize: 24 }} />
-      <Card.Content
-        style={[
-          styles.cardContent,
-          { backgroundColor: theme.custom.cardTaskBackground },
-        ]}
-      >
-        {tasks.length === 0 ? (
-          <Text>No tasks found.</Text>
-        ) : (
-          <>
-            {tasks.map((task, index) => (
+    <Card
+      style={[styles.card, { backgroundColor: theme.custom.cardColor }]}
+      mode="contained"
+    >
+      <Card.Title
+        title={name}
+        titleStyle={{
+          fontSize: 24,
+          fontWeight: "bold",
+          color: theme.colors.onBackground,
+        }}
+      />
+      <Card.Content>
+        <View style={styles.tasksContainer}>
+          {tasks
+            .sort((a, b) => {
+              if (a.status === b.status) return 0;
+              return a.status ? 1 : -1;
+            })
+            .map((task, index) => (
               <React.Fragment key={task.id}>
-                <View style={styles.taskContainer}>
-                  <Checkbox
-                    status={task.status ? "checked" : "unchecked"}
-                    onPress={() => {
-                      setTasks(
-                        tasks.map((t) =>
-                          t.id === task.id ? { ...t, status: !t.status } : t
-                        )
-                      );
-                    }}
-                  />
+                <Pressable
+                  style={styles.taskContainer}
+                  android_ripple={{ color: theme.custom.ripple }}
+                  onPress={() => handleTaskPress(task)}
+                >
+                  {task.status ? (
+                    <Icon source="check" size={24} />
+                  ) : (
+                    <Icon source="clock" size={24} />
+                  )}
+
                   <Text
                     style={[
                       styles.progressText,
                       {
-                        color: theme.colors.onBackground,
+                        color: task.status
+                          ? theme.colors.onSurfaceDisabled
+                          : theme.colors.onBackground,
                         textDecorationLine: task.status
                           ? "line-through"
                           : "none",
@@ -70,48 +117,43 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
                       color={theme.colors.secondary}
                     />
                   </View>
-                </View>
-
+                </Pressable>
                 {index < tasks.length - 1 && (
-                  <Divider
-                    style={{
-                      marginVertical: 12,
-                      backgroundColor: theme.colors.onBackground,
-                    }}
-                  />
+                  <Divider style={{ backgroundColor: theme.colors.surface }} />
                 )}
               </React.Fragment>
             ))}
-          </>
-        )}
+        </View>
       </Card.Content>
     </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  progressText: {
-    fontSize: 16,
-  },
-  descriptionText: {
-    fontSize: 16,
-    maxWidth: "50%",
-  },
-  percentageText: {
-    fontSize: 16,
-  },
   card: {
-    padding: 10,
-    borderRadius: 12,
     width: "90%",
+    marginBottom: 16,
+    paddingVertical: 12,
+    borderRadius: 16,
+  },
+  tasksContainer: {
+    gap: 8,
   },
   taskContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 4,
   },
-  cardContent: {
-    borderRadius: 12,
-    padding: 20,
+  progressText: {
+    fontSize: 16,
+    flex: 1,
+  },
+  descriptionText: {
+    fontSize: 14,
+    opacity: 0.7,
+    flex: 1,
+    marginRight: 22,
   },
 });

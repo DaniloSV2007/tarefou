@@ -8,6 +8,7 @@ import { ActivityIndicator } from "react-native-paper";
 import { useAuth } from "@/context/AuthContext";
 import React from "react";
 import { useAppTheme } from "@/hooks/useAppTheme";
+import { useTranslation } from "react-i18next";
 
 export default function Profile() {
   const { isLoggedIn, isLoading } = useAuth();
@@ -15,7 +16,7 @@ export default function Profile() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const theme = useAppTheme();
-
+  const { t } = useTranslation();
   function LoadingPageIndicator() {
     return (
       <View
@@ -35,7 +36,7 @@ export default function Profile() {
     return (
       <>
         <TopBar
-          title="Profile"
+          title={t("screens:profile.title")}
           titleColor={theme.colors.onBackground}
           iconButton="menu"
           iconColor={theme.colors.onBackground}

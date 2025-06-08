@@ -1,0 +1,79 @@
+{
+  "profile": {
+    "editButton": "Editar Perfil",
+    "analytics": "Análises",
+    "settings": "Configurações",
+    "appInfo": "Informações do App",
+    "statistics": "Estatísticas",
+    "personalInfo": "Informações Pessoais",
+    "tasks": "Tarefas",
+    "completed": "Concluídas",
+    "inProgress": "Em Andamento"
+  },
+  "topBar": {
+    "settings": "Configurações",
+    "back": "Voltar",
+    "menu": "Menu"
+  },
+  "languageSection": {
+    "switchToPortuguese": "Mudar para Português",
+    "switchToEnglish": "Mudar para Inglês",
+    "currentLanguage": "Idioma Atual"
+  },
+  "themeSection": {
+    "title": "Tema",
+    "light": "Claro",
+    "dark": "Escuro",
+    "system": "Sistema"
+  },
+  "taskList": {
+    "empty": "Nenhuma tarefa encontrada",
+    "addTask": "Adicionar Tarefa",
+    "status": {
+      "completed": "Concluída",
+      "inProgress": "Em Andamento",
+      "pending": "Pendente"
+    }
+  },
+  "taskCard": {
+    "title": "Tarefas de {{name}}",
+    "noTasks": "Nenhuma tarefa encontrada",
+    "status": {
+      "completed": "Concluída",
+      "inProgress": "Em Andamento"
+    }
+  },
+  "memberCard": {
+    "title": "Informações do Membro",
+    "placeholder": "Este é um espaço reservado para informações do membro.",
+    "memberSince": "Membro desde {{date}}",
+    "actions": {
+      "edit": "Editar",
+      "delete": "Excluir",
+      "block": "Bloquear",
+      "unblock": "Desbloquear",
+      "viewProfile": "Ver Perfil"
+    }
+  },
+  "memberInfo": {
+    "title": "Informações do Membro",
+    "addMember": "Adicionar Membro"
+  },
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "confirm": "Confirmar",
+    "back": "Voltar",
+    "next": "Próximo"
+  },
+  "profileMenu": {
+    "appInfo": "Informações do App",
+    "settings": "Configurações",
+    "logout": "Sair"
+  }
+}

@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { Button, TouchableRipple } from "react-native-paper";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 interface GoogleButtonProps {
   onPress: () => void;
@@ -18,6 +19,7 @@ interface GoogleButtonProps {
 export default function GoogleButton({ onPress }: GoogleButtonProps) {
   const theme = useAppTheme();
   const { isDark } = useThemeContext();
+  const { t } = useTranslation();
   return (
     <View style={{ borderRadius: 32, overflow: "hidden" }}>
       <Pressable
@@ -37,7 +39,7 @@ export default function GoogleButton({ onPress }: GoogleButtonProps) {
           style={styles.logo}
         />
         <Text style={[styles.text, { color: theme.colors.onBackground }]}>
-          Sign in with Google
+          {t("login.loginWithGoogle")}
         </Text>
       </Pressable>
     </View>

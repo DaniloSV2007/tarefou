@@ -1,0 +1,98 @@
+{
+  "home": {
+    "notLogged": {
+      "title": "Welcome to Tarefou!",
+      "description": "To access all app resources, you need to login first.",
+      "loginButton": "Login"
+    },
+    "title": "Home",
+    "resume": {
+      "title": "Resume",
+      "today": "Today Completed Tasks",
+      "week": "Week Completed Tasks",
+      "completed": "completed"
+    },
+    "tasks": {
+      "title": "Tasks",
+      "add": "Add Task",
+      "description": "Description",
+      "status": "Status"
+    }
+  },
+  "login": {
+    "title": "Login",
+    "inputEmail": "Email",
+    "inputPassword": "Password",
+    "loginButton": "Login",
+    "forgotPassword": "Forgot your password?",
+    "dontHaveAccount": "Don't have an account?",
+    "loginWithGoogle": "Sign in with Google",
+    "register": "Register",
+    "error": {
+      "emailAndPasswordMissing": "Email and password are required",
+      "emailAndPasswordInvalid": "Email or password is invalid"
+    }
+  },
+  "register": {
+    "title": "Register",
+    "error": {
+      "emailAndPasswordMissing": "Email and password are required",
+      "emailAndPasswordInvalid": "Email or password is invalid",
+      "passwordLength": "Password must be at least 8 characters long",
+      "nameLength": "Name must be at least 3 characters long",
+      "usernameLength": "Username must be at least 3 characters long",
+      "fillAllFields": "Please fill in all fields",
+      "birthday": "You must be at least 3 years old"
+    },
+    "emailAndPassword": {
+      "title": "Enter your email and password",
+      "inputEmail": "Email",
+      "inputPassword": "Password",
+      "alreadyHaveAccount": "Already have an account?",
+      "login": "Login",
+      "continue": "Continue"
+    },
+    "nameAndUsername": {
+      "title": "Enter your name and username",
+      "inputName": "Name",
+      "inputUsername": "Username",
+      "continue": "Continue",
+      "back": "Back",
+      "next": "Next"
+    },
+    "birthday": {
+      "title": "Enter your birthday",
+      "back": "Back",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "confirmation": "Confirmation",
+      "confirmationMessage": "Are you sure you want to confirm?"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "theme": {
+      "title": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "language": {
+      "title": "Language",
+      "english": "English",
+      "portuguese": "Portuguese",
+      "system": "System"
+    }
+  },
+  "appInfo": {
+    "title": "App Info",
+    "version": "App Version",
+    "madeBy": "Made By"
+  },
+  "navigation": {
+    "home": "Home",
+    "report": "Report",
+    "members": "Members",
+    "profile": "Profile"
+  }
+}

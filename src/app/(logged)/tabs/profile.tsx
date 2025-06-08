@@ -10,6 +10,7 @@ import { useAppTheme } from "@/hooks/useAppTheme";
 import React from "react";
 import { useThemeContext } from "@/context/ThemeContext";
 import * as SystemUI from "expo-system-ui";
+import { useTranslation } from "react-i18next";
 
 export default function Profile() {
   const { isLoggedIn, isLoading } = useAuth();
@@ -18,7 +19,7 @@ export default function Profile() {
 
   const theme = useAppTheme();
   const { isDark } = useThemeContext();
-
+  const { t } = useTranslation();
   useEffect(() => {
     SystemUI.setBackgroundColorAsync(isDark ? "#000" : "#fff");
   }, [isDark]);
@@ -50,7 +51,7 @@ export default function Profile() {
     return (
       <>
         <TopBar
-          title="Profile"
+          title={t("screens:profileLogged.title")}
           titleColor={theme.colors.onBackground}
           iconButton="menu"
           iconColor={theme.colors.onBackground}
@@ -69,7 +70,7 @@ export default function Profile() {
   return (
     <>
       <TopBar
-        title="Profile"
+        title={t("screens:profileNotLogged.title")}
         titleColor={theme.colors.onBackground}
         iconButton="menu"
         iconColor={theme.colors.onBackground}

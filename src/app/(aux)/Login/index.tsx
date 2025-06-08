@@ -9,18 +9,28 @@ import {
   Platform,
   StyleSheet,
 } from "react-native";
-import { ActivityIndicator, Button, Card, Text } from "react-native-paper";
+import {
+  ActivityIndicator,
+  Button,
+  Card,
+  IconButton,
+  Text,
+} from "react-native-paper";
 import { Link, useRouter } from "expo-router";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useState } from "react";
 import React from "react";
 import TopBar from "@/components/TopBar";
 import GoogleButton from "@/components/GoogleButton";
+import { useTranslation } from "react-i18next";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Login() {
   const { login } = useAuth();
   const router = useRouter();
   const theme = useAppTheme();
+  const { t } = useTranslation();
+
   const [isLoading, setIsLoading] = useState(false);
   const [isFocusedEmail, setIsFocusedEmail] = useState(false);
   const [isFocusedPassword, setIsFocusedPassword] = useState(false);
@@ -28,16 +38,18 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [linkColor, setLinkColor] = useState(theme.colors.onBackground);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleLogin = () => {
     setIsLoading(true);
     if (email === "" || password === "") {
-      setError("Email and password are required");
+      setError(t("login.error.emailAndPasswordMissing"));
     } else {
-      if (email === "admin" && password === "admin") {
+      if (email === "admin" && password === "12345678") {
         login();
       } else {
-        setError("Email or password is invalid");
+        setError(t("login.error.emailAndPasswordInvalid"));
       }
     }
     setEmail("");
@@ -45,10 +57,22 @@ export default function Login() {
     setIsLoading(false);
   };
 
+  const loadLoginState = async () => {
+    try {
+      const state = await AsyncStorage.getItem("isLoggedIn");
+      setIsLoggedIn(state === "true");
+    } catch (error) {
+      console.error("Error loading login state:", error);
+      // Handle error appropriately
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
       <TopBar
-        title="Log In"
+        title={t("login.title")}
         iconButton="cog"
         iconColor={theme.colors.onBackground}
         onPressButton={() => router.push("/profile/settings")}
@@ -76,7 +100,7 @@ export default function Login() {
                 ]}
               >
                 <Card.Title
-                  title="Log In"
+                  title={t("login.title")}
                   titleStyle={{ fontSize: 32, fontWeight: "bold" }}
                 />
                 <Card.Content style={styles.cardContent}>
@@ -93,8 +117,8 @@ export default function Login() {
                       },
                     ]}
                     cursorColor={theme.colors.onBackground}
-                    placeholder="Email or username"
-                    placeholderTextColor={theme.colors.onSurface}
+                    placeholder={t("login.inputEmail")}
+                    placeholderTextColor={theme.colors.onSurfaceDisabled}
                     onFocus={() => setIsFocusedEmail(true)}
                     onBlur={() => setIsFocusedEmail(false)}
                     value={email}
@@ -105,40 +129,52 @@ export default function Login() {
                     autoCapitalize="none"
                     autoComplete="email"
                   />
+                  <View>
+                    <TextInput
+                      style={[
+                        styles.input,
+                        {
+                          backgroundColor: theme.custom.cardTaskBackground,
+                          color: theme.colors.onBackground,
+                          borderColor: isFocusedPassword
+                            ? theme.colors.onBackground
+                            : theme.custom.inputFocusBorder,
+                          borderWidth: isFocusedPassword ? 2 : 1,
+                        },
+                      ]}
+                      cursorColor={theme.colors.onBackground}
+                      placeholder={t("login.inputPassword")}
+                      placeholderTextColor={theme.colors.onSurfaceDisabled}
+                      onFocus={() => setIsFocusedPassword(true)}
+                      onBlur={() => setIsFocusedPassword(false)}
+                      value={password}
+                      onChangeText={(text) => {
+                        setPassword(text);
+                        setError("");
+                      }}
+                      secureTextEntry={!showPassword}
+                      autoCapitalize="none"
+                      autoComplete="password"
+                    />
 
-                  <TextInput
-                    style={[
-                      styles.input,
-                      {
-                        backgroundColor: theme.custom.cardTaskBackground,
-                        color: theme.colors.onBackground,
-                        borderColor: isFocusedPassword
-                          ? theme.colors.onBackground
-                          : theme.custom.inputFocusBorder,
-                        borderWidth: isFocusedPassword ? 2 : 1,
-                      },
-                    ]}
-                    cursorColor={theme.colors.onBackground}
-                    placeholder="Password"
-                    placeholderTextColor={theme.colors.onSurface}
-                    onFocus={() => setIsFocusedPassword(true)}
-                    onBlur={() => setIsFocusedPassword(false)}
-                    value={password}
-                    onChangeText={(text) => {
-                      setPassword(text);
-                      setError("");
-                    }}
-                    secureTextEntry
-                    autoCapitalize="none"
-                    autoComplete="password"
-                  />
+                    <IconButton
+                      icon={showPassword ? "eye-off" : "eye"}
+                      onPress={() => setShowPassword(!showPassword)}
+                      style={{
+                        position: "absolute",
+                        right: 10,
+                        top: 10,
+                        zIndex: 1000,
+                      }}
+                    />
+                  </View>
 
                   {error && (
                     <Text style={{ color: "red", fontSize: 16 }}>*{error}</Text>
                   )}
 
                   <Text style={{ fontSize: 16 }}>
-                    Don't have an account?{" "}
+                    {t("login.dontHaveAccount")}
                     <Link
                       onPressIn={() => setLinkColor(theme.colors.primary)}
                       onPressOut={() => setLinkColor(theme.colors.onBackground)}
@@ -150,7 +186,8 @@ export default function Login() {
                       ]}
                       href="/(aux)/Register"
                     >
-                      Register
+                      {" "}
+                      {t("login.register")}
                     </Link>
                     .
                   </Text>
@@ -160,12 +197,22 @@ export default function Login() {
                     onPress={handleLogin}
                     rippleColor={theme.custom.ripple}
                     style={styles.loginButton}
+                    disabled={email === "" || password.length < 8}
                   >
                     <View style={styles.loginButtonContent}>
                       {isLoading ? (
                         <ActivityIndicator color="white" />
                       ) : (
-                        <Text style={styles.loginButtonText}>Login</Text>
+                        <Text
+                          style={[
+                            styles.loginButtonText,
+                            email === "" || password.length < 8
+                              ? { color: theme.colors.onSurfaceDisabled }
+                              : { color: "white" },
+                          ]}
+                        >
+                          {t("login.loginButton")}
+                        </Text>
                       )}
                     </View>
                   </Button>
@@ -214,7 +261,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   loginButtonText: {
-    color: "white",
     fontSize: 24,
     textAlign: "center",
   },

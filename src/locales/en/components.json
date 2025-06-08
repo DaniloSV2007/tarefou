@@ -1,0 +1,79 @@
+{
+  "profile": {
+    "editButton": "Edit Profile",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "appInfo": "App Info",
+    "statistics": "Statistics",
+    "personalInfo": "Personal Information",
+    "tasks": "Tasks",
+    "completed": "Completed",
+    "inProgress": "In Progress"
+  },
+  "topBar": {
+    "settings": "Settings",
+    "back": "Back",
+    "menu": "Menu"
+  },
+  "languageSection": {
+    "switchToPortuguese": "Switch to Portuguese",
+    "switchToEnglish": "Switch to English",
+    "currentLanguage": "Current Language"
+  },
+  "themeSection": {
+    "title": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "taskList": {
+    "empty": "No tasks found",
+    "addTask": "Add Task",
+    "status": {
+      "completed": "Completed",
+      "inProgress": "In Progress",
+      "pending": "Pending"
+    }
+  },
+  "taskCard": {
+    "title": "{{name}}'s Tasks",
+    "noTasks": "No tasks found",
+    "status": {
+      "completed": "Completed",
+      "inProgress": "In Progress"
+    }
+  },
+  "memberCard": {
+    "title": "Member Information",
+    "placeholder": "This is a placeholder for member information.",
+    "memberSince": "Member since {{date}}",
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "block": "Block",
+      "unblock": "Unblock",
+      "viewProfile": "View Profile"
+    }
+  },
+  "memberInfo": {
+    "title": "Member Info",
+    "addMember": "Add Member"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next"
+  },
+  "profileMenu": {
+    "appInfo": "App Info",
+    "settings": "Settings",
+    "logout": "Logout"
+  }
+}

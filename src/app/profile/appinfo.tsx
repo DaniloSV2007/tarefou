@@ -3,14 +3,18 @@ import { StyleSheet, View } from "react-native";
 import { Divider, Text, TouchableRipple, useTheme } from "react-native-paper";
 import Constants from "expo-constants";
 import TopBar from "@/components/TopBar";
+import { useTranslation } from "react-i18next";
+import React from "react";
 
 export default function AppInfo() {
   const router = useRouter();
   const theme = useTheme();
+  const { t } = useTranslation();
+
   return (
     <>
       <TopBar
-        title="App Info"
+        title={t("appInfo.title")}
         titleColor={theme.colors.onBackground}
         isBackButtonEnable={true}
         backButtonColor={theme.colors.onBackground}
@@ -23,7 +27,7 @@ export default function AppInfo() {
           variant="headlineMedium"
           style={[styles.text, { color: theme.colors.onBackground }]}
         >
-          App Version:
+          {t("appInfo.version")}:
         </Text>
         <Text
           variant="headlineSmall"
@@ -38,7 +42,7 @@ export default function AppInfo() {
           variant="headlineMedium"
           style={[styles.text, { color: theme.colors.onBackground }]}
         >
-          Made By:
+          {t("appInfo.madeBy")}:
         </Text>
         <Text
           variant="headlineSmall"

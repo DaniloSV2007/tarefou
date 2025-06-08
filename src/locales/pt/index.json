@@ -1,0 +1,100 @@
+{
+  "home": {
+    "notLogged": {
+      "title": "Bem-vindo ao Tarefou!",
+      "description": "Para acessar todos os recursos da aplicação, você precisa fazer login primeiro.",
+      "loginButton": "Entrar"
+    },
+    "title": "Início",
+    "resume": {
+      "title": "Resumo",
+      "today": "Tarefas Concluídas Hoje",
+      "week": "Tarefas Concluídas na Semana",
+      "completed": "concluído"
+    },
+    "tasks": {
+      "title": "Tarefas",
+      "add": "Adicionar Tarefa",
+      "description": "Descrição",
+      "status": "Status"
+    }
+  },
+  "login": {
+    "title": "Fazer login",
+    "inputEmail": "Email",
+    "inputPassword": "Senha",
+    "loginButton": "Entrar",
+    "forgotPassword": "Esqueceu sua senha?",
+    "loginWithGoogle": "Entrar com Google",
+    "dontHaveAccount": "Não tem uma conta?",
+    "register": "Registrar",
+    "error": {
+      "emailAndPasswordMissing": "Email e senha são obrigatórios",
+      "emailAndPasswordInvalid": "Email ou senha inválidos"
+    }
+  },
+  "register": {
+    "title": "Criar conta",
+    "insertNameAndUsername": "Insira seu nome e username",
+    "insertBirthday": "Insira sua data de nascimento",
+    "error": {
+      "emailAndPasswordMissing": "Email e senha são obrigatórios",
+      "emailAndPasswordInvalid": "Email ou senha inválidos",
+      "passwordLength": "A senha deve ter pelo menos 8 caracteres",
+      "nameLength": "O nome deve ter pelo menos 3 caracteres",
+      "usernameLength": "O username deve ter pelo menos 3 caracteres",
+      "fillAllFields": "Por favor, preencha todos os campos",
+      "birthday": "Você deve ter pelo menos 3 anos"
+    },
+    "emailAndPassword": {
+      "title": "Insira seu email e senha",
+      "inputEmail": "Email",
+      "inputPassword": "Senha",
+      "alreadyHaveAccount": "Já tem uma conta?",
+      "login": "Entrar",
+      "continue": "Continuar"
+    },
+    "nameAndUsername": {
+      "title": "Insira seu nome e username",
+      "inputName": "Nome",
+      "inputUsername": "Username",
+      "continue": "Continuar",
+      "back": "Voltar",
+      "next": "Avançar"
+    },
+    "birthday": {
+      "title": "Insira sua data de nascimento",
+      "back": "Voltar",
+      "confirm": "Confirmar",
+      "cancel": "Cancelar",
+      "confirmation": "Confirmação",
+      "confirmationMessage": "Tem certeza que deseja confirmar?"
+    }
+  },
+  "settings": {
+    "title": "Configurações",
+    "theme": {
+      "title": "Tema",
+      "light": "Claro",
+      "dark": "Escuro",
+      "system": "Sistema"
+    },
+    "language": {
+      "title": "Idioma",
+      "english": "Inglês",
+      "portuguese": "Português",
+      "system": "Sistema"
+    }
+  },
+  "appInfo": {
+    "title": "Informações do App",
+    "version": "Versão do App",
+    "madeBy": "Feito Por"
+  },
+  "navigation": {
+    "home": "Início",
+    "report": "Relatório",
+    "members": "Membros",
+    "profile": "Perfil"
+  }
+}

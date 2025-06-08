@@ -2,7 +2,8 @@ import { StyleSheet, TextInput, View } from "react-native";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useState } from "react";
 import React from "react";
-import { Button } from "react-native-paper";
+import { Button, Text } from "react-native-paper";
+import { useTranslation } from "react-i18next";
 
 export default function NameAndUsername({
   setPage,
@@ -14,7 +15,25 @@ export default function NameAndUsername({
   const [isFocusedUsername, setIsFocusedUsername] = useState(false);
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
+  const [error, setError] = useState("");
+  const { t } = useTranslation();
+  const nameHandler = (text: string) => {
+    setName(text);
+    if (text.length === 0 || text.length >= 3) {
+      setError("");
+    } else {
+      setError(t("register.error.nameLength"));
+    }
+  };
 
+  const usernameHandler = (text: string) => {
+    setUsername(text);
+    if (text.length === 0 || text.length >= 3) {
+      setError("");
+    } else {
+      setError(t("register.error.usernameLength"));
+    }
+  };
   return (
     <>
       <TextInput
@@ -30,33 +49,51 @@ export default function NameAndUsername({
           },
         ]}
         cursorColor={theme.colors.onBackground}
-        placeholder="Name"
-        placeholderTextColor={theme.colors.onSurface}
+        placeholder={t("register.nameAndUsername.inputName")}
+        placeholderTextColor={theme.colors.onSurfaceDisabled}
         onFocus={() => setIsFocusedName(true)}
         onBlur={() => setIsFocusedName(false)}
         value={name}
-        onChangeText={(text) => setName(text)}
+        onChangeText={nameHandler}
       />
+      <View>
+        <Text
+          style={{
+            fontSize: 20,
+            color: theme.colors.onSurfaceDisabled,
+            position: "absolute",
+            left: 12,
+            top: 16,
+            zIndex: 1000,
+          }}
+        >
+          @
+        </Text>
+        <TextInput
+          style={[
+            styles.input,
+            {
+              backgroundColor: theme.custom.cardTaskBackground,
+              color: theme.colors.onBackground,
+              borderColor: isFocusedUsername
+                ? theme.colors.onBackground
+                : theme.custom.inputFocusBorder,
+              borderWidth: isFocusedUsername ? 2 : 1,
+              paddingLeft: 32,
+            },
+          ]}
+          placeholder={t("register.nameAndUsername.inputUsername")}
+          placeholderTextColor={theme.colors.onSurfaceDisabled}
+          onFocus={() => setIsFocusedUsername(true)}
+          onBlur={() => setIsFocusedUsername(false)}
+          value={username}
+          onChangeText={usernameHandler}
+          autoCapitalize="none"
+        />
+      </View>
 
-      <TextInput
-        style={[
-          styles.input,
-          {
-            backgroundColor: theme.custom.cardTaskBackground,
-            color: theme.colors.onBackground,
-            borderColor: isFocusedUsername
-              ? theme.colors.onBackground
-              : theme.custom.inputFocusBorder,
-            borderWidth: isFocusedUsername ? 2 : 1,
-          },
-        ]}
-        placeholder="Username"
-        placeholderTextColor={theme.colors.onSurface}
-        onFocus={() => setIsFocusedUsername(true)}
-        onBlur={() => setIsFocusedUsername(false)}
-        value={username}
-        onChangeText={(text) => setUsername(text)}
-      />
+      {error && <Text style={{ color: "red", fontSize: 16 }}>*{error}</Text>}
+
       <View
         style={{
           flexDirection: "row",
@@ -73,16 +110,33 @@ export default function NameAndUsername({
           ]}
           labelStyle={[styles.buttonText, { color: theme.colors.onSurface }]}
         >
-          Back
+          {t("register.nameAndUsername.back")}
         </Button>
 
         <Button
           mode="contained"
           onPress={() => setPage(3)}
-          style={[styles.button, { backgroundColor: theme.colors.primary }]}
-          labelStyle={[styles.buttonText, { color: theme.colors.onBackground }]}
+          style={[
+            styles.button,
+            {
+              backgroundColor:
+                name.length < 3 || username.length < 3 || error !== ""
+                  ? theme.colors.surfaceDisabled
+                  : theme.colors.primary,
+            },
+          ]}
+          labelStyle={[
+            styles.buttonText,
+            {
+              color:
+                name.length < 3 || username.length < 3 || error !== ""
+                  ? theme.colors.onSurfaceDisabled
+                  : "white",
+            },
+          ]}
+          disabled={name.length < 3 || username.length < 3 || error !== ""}
         >
-          Next
+          {t("register.nameAndUsername.next")}
         </Button>
       </View>
     </>
@@ -102,6 +156,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 32,
     paddingVertical: 5,
+    color: "white",
   },
   buttonText: {
     fontSize: 24,

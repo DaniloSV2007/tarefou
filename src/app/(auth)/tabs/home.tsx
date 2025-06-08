@@ -1,16 +1,19 @@
 import { useRouter } from "expo-router";
 import { StyleSheet, View, Image, Pressable } from "react-native";
-import { Button, Icon, Text, useTheme } from "react-native-paper";
+import { Button, Icon, Text } from "react-native-paper";
 import React from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import TopBar from "@/components/TopBar";
+import { useTranslation } from "react-i18next";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 export default function Home() {
   const router = useRouter();
-  const theme = useTheme();
+  const theme = useAppTheme();
   const { login } = useAuth();
   const insets = useSafeAreaInsets();
+  const { i18n, t } = useTranslation();
   return (
     <View
       style={[
@@ -32,14 +35,14 @@ export default function Home() {
           variant="displaySmall"
           style={[styles.title, { color: theme.colors.onBackground }]}
         >
-          Welcome to Tarefou!
+          {t("home.notLogged.title")}
         </Text>
 
         <Text
           variant="titleLarge"
           style={[styles.subtitle, { color: theme.colors.onBackground }]}
         >
-          To access all app resources, you need to login first.
+          {t("home.notLogged.description")}
         </Text>
 
         <View style={styles.buttonContainer}>
@@ -49,7 +52,24 @@ export default function Home() {
             style={styles.button}
             labelStyle={styles.buttonLabel}
           >
-            Login In
+            {t("home.notLogged.loginButton")}
+          </Button>
+          <Button
+            mode="outlined"
+            onPress={() => {
+              const newLang = i18n.language === "en" ? "pt" : "en";
+              i18n.changeLanguage(newLang);
+            }}
+            style={{
+              backgroundColor: theme.custom.cardTaskBackground,
+              marginTop: 12,
+            }}
+            rippleColor={theme.custom.ripple}
+            labelStyle={{ color: theme.colors.onBackground }}
+          >
+            {i18n.language === "en"
+              ? "Mudar para Português"
+              : "Switch to English"}
           </Button>
         </View>
       </View>

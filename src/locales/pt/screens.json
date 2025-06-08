@@ -1,0 +1,106 @@
+{
+  "profileNotLogged": {
+    "loginButton": "Entrar",
+    "title": "Bem-vindo ao Tarefou!",
+    "description": "Para acessar todos os recursos do app, você precisa fazer login primeiro."
+  },
+  "profileLogged": {
+    "title": "Perfil",
+    "personalInfo": {
+      "title": "Informações Pessoais",
+      "name": "Nome",
+      "email": "Email",
+      "username": "Nome de usuário",
+      "birthday": "Data de nascimento",
+      "edit": "Editar Perfil",
+      "role": "Função",
+      "roleAdmin": "Administrador"
+    },
+    "statistics": {
+      "title": "Estatísticas",
+      "tasksCompleted": "Tarefas Concluídas",
+      "tasksInProgress": "Tarefas em Andamento",
+      "totalTasks": "Total de Tarefas",
+      "weeklyProgress": "Progresso Semanal",
+      "monthlyProgress": "Progresso Mensal",
+      "membersNumber": "Número de membros: {{count}}",
+      "totalMembersScore": "Pontuação total dos membros: {{score}}",
+      "todayProgress": "Progresso de hoje",
+      "weekProgress": "Progresso da semana",
+      "outOf": "{{current}}/{{total}}",
+      "percentage": "{{value}}%"
+    },
+    "settings": {
+      "title": "Configurações",
+      "account": "Configurações da Conta",
+      "notifications": "Notificações",
+      "privacy": "Privacidade",
+      "language": "Idioma",
+      "theme": "Tema"
+    }
+  },
+  "tasks": {
+    "list": {
+      "title": "Minhas Tarefas",
+      "empty": "Nenhuma tarefa encontrada",
+      "addNew": "Adicionar Nova Tarefa"
+    },
+    "details": {
+      "title": "Detalhes da Tarefa",
+      "description": "Descrição",
+      "status": "Status",
+      "dueDate": "Data de Vencimento",
+      "priority": "Prioridade",
+      "assignedTo": "Atribuído a"
+    }
+  },
+  "report": {
+    "title": "Relatório Familiar",
+    "general": {
+      "title": "Relatório Geral",
+      "totalTasks": "Total de Tarefas",
+      "completedTasks": "Tarefas Concluídas"
+    },
+    "member": {
+      "title": "Relatório do Membro"
+    }
+  },
+  "members": {
+    "title": "Membros da Família",
+    "addMember": "Adicionar Membro",
+    "memberCard": {
+      "title": "Membro",
+      "username": "Nome de usuário"
+    }
+  },
+  "member": {
+    "profile": {
+      "title": "Perfil do Membro",
+      "memberName": "Perfil de {{name}}",
+      "backToMembers": "Voltar para Membros",
+      "statistics": {
+        "title": "Estatísticas",
+        "tasksCompleted": "Tarefas Concluídas",
+        "tasksInProgress": "Tarefas em Andamento",
+        "totalScore": "Pontuação Total",
+        "weeklyProgress": "Progresso Semanal",
+        "monthlyProgress": "Progresso Mensal"
+      },
+      "personalInfo": {
+        "title": "Informações Pessoais",
+        "name": "Nome",
+        "username": "Nome de usuário",
+        "email": "Email",
+        "birthday": "Data de Nascimento",
+        "joinDate": "Data de Entrada",
+        "role": "Função"
+      },
+      "actions": {
+        "edit": "Editar Perfil",
+        "delete": "Excluir Membro",
+        "block": "Bloquear Membro",
+        "unblock": "Desbloquear Membro"
+      }
+    }
+  }
+}

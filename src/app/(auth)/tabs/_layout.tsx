@@ -1,4 +1,3 @@
-// app/(auth)/tabs/_layout.tsx
 import { Slot, Tabs } from "expo-router";
 import { Icon, useTheme } from "react-native-paper";
 import { View } from "react-native";
