@@ -1,3 +1,4 @@
+import "@/i18n";
 import { AuthProvider } from "@/context/AuthContext";
 import { Slot } from "expo-router";
 import { PaperProvider } from "react-native-paper";
@@ -9,7 +10,6 @@ import * as SystemUI from "expo-system-ui";
 import * as Font from "expo-font";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { useAppTheme } from "@/hooks/useAppTheme";
 import { Text, ActivityIndicator } from "react-native";
 
 function RootInnerLayout() {

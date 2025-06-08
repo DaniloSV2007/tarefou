@@ -9,6 +9,19 @@ import ptComponents from "@/locales/pt/components.json";
 import enScreens from "@/locales/en/screens.json";
 import ptScreens from "@/locales/pt/screens.json";
 
+export const resources = {
+  en: {
+    translation: enIndex,
+    components: enComponents,
+    screens: enScreens,
+  },
+  pt: {
+    translation: ptIndex,
+    components: ptComponents,
+    screens: ptScreens,
+  },
+} as const;
+
 const locales = Localization.getLocales();
 const deviceLanguage = locales.length > 0 ? locales[0].languageCode : "en";
 
@@ -16,18 +29,7 @@ i18n.use(initReactI18next).init({
   compatibilityJSON: "v4",
   lng: deviceLanguage ?? "en",
   fallbackLng: "en",
-  resources: {
-    en: {
-      translation: enIndex,
-      components: enComponents,
-      screens: enScreens,
-    },
-    pt: {
-      translation: ptIndex,
-      components: ptComponents,
-      screens: ptScreens,
-    },
-  },
+  resources,
   interpolation: {
     escapeValue: false,
   },

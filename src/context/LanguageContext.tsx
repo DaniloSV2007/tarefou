@@ -30,7 +30,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const loadLanguagePreference = async () => {
     try {
       const value = await AsyncStorage.getItem("@language_preference");
-      if (value !== null) {
+      if (value !== null && Number(value) <= 2) {
         setLanguagePreference(Number(value));
       }
     } catch (error) {

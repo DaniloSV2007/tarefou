@@ -1,12 +1,12 @@
 {
   "name": "Tarefou!",
   "slug": "checklistapp",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "scheme": "tarefou",
   "icon": "./assets/adaptive-icon.png",
   "orientation": "portrait",
   "userInterfaceStyle": "automatic",
-  "newArchEnabled": true,
+  "newArchEnabled": false,
   "web": {
     "bundler": "metro"
   },

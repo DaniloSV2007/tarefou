@@ -74,6 +74,7 @@
   "profileMenu": {
     "appInfo": "App Info",
     "settings": "Settings",
-    "logout": "Logout"
+    "logout": "Logout",
+    "logoutConfirmation": "Are you sure you want to log out?"
   }
 }

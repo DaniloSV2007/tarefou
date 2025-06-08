@@ -1,18 +1,20 @@
-import { useAuth } from "@/context/AuthContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
+import { useTranslation } from "react-i18next";
 import { Button, Dialog, Portal, Text } from "react-native-paper";
 
 export default function ConfirmLogout({
   isConfirmation,
   setIsConfirmation,
   setIsMenuOpen,
+  logout,
 }: {
   isConfirmation: boolean;
   setIsConfirmation: (isConfirmation: boolean) => void;
   setIsMenuOpen: (isMenuOpen: boolean) => void;
+  logout: () => void;
 }) {
   const theme = useAppTheme();
-  const { logout } = useAuth();
+  const { t } = useTranslation();
   return (
     <Portal>
       <Dialog
@@ -20,11 +22,11 @@ export default function ConfirmLogout({
         onDismiss={() => setIsConfirmation(false)}
       >
         <Dialog.Title style={{ color: theme.colors.onBackground }}>
-          Logout
+          {t("components:profileMenu.logout")}
         </Dialog.Title>
         <Dialog.Content>
           <Text style={{ color: theme.colors.onBackground, fontSize: 18 }}>
-            Are you sure you want to log out?
+            {t("components:profileMenu.logoutConfirmation")}
           </Text>
         </Dialog.Content>
         <Dialog.Actions>
@@ -35,7 +37,7 @@ export default function ConfirmLogout({
               setIsMenuOpen(false);
             }}
           >
-            Cancel
+            {t("components:common.cancel")}
           </Button>
           <Button
             style={{ backgroundColor: theme.colors.primary }}
@@ -45,7 +47,7 @@ export default function ConfirmLogout({
               setIsMenuOpen(false);
             }}
           >
-            Confirm
+            {t("components:profileMenu.logout")}
           </Button>
         </Dialog.Actions>
       </Dialog>

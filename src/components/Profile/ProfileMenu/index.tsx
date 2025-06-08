@@ -1,4 +1,4 @@
-import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -10,8 +10,6 @@ import {
   View,
 } from "react-native";
 import {
-  Button,
-  Dialog,
   Divider,
   Icon,
   Portal,
@@ -48,12 +46,12 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
         Animated.timing(translateY, {
           toValue: 0,
           duration: 300,
-          useNativeDriver: true,
+          useNativeDriver: false,
         }),
         Animated.timing(backdropOpacity, {
           toValue: 0.5,
           duration: 400,
-          useNativeDriver: true,
+          useNativeDriver: false,
         }),
       ]);
       animationSet.start();
@@ -62,12 +60,12 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
         Animated.timing(translateY, {
           toValue: SCREEN_HEIGHT,
           duration: 400,
-          useNativeDriver: true,
+          useNativeDriver: false,
         }),
         Animated.timing(backdropOpacity, {
           toValue: 0,
           duration: 300,
-          useNativeDriver: true,
+          useNativeDriver: false,
         }),
       ]);
       animationSet.start();
@@ -84,7 +82,6 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
 
   const handleClose = () => {
     setAnimation(false);
-    // Use requestAnimationFrame to ensure animation starts before state update
     requestAnimationFrame(() => {
       setTimeout(() => {
         setIsMenuOpen(false);
@@ -217,13 +214,12 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
         </Animated.View>
       </View>
       {isConfirmation && (
-        <AuthProvider>
-          <ConfirmLogout
-            isConfirmation={isConfirmation}
-            setIsConfirmation={setIsConfirmation}
-            setIsMenuOpen={setIsMenuOpen}
-          />
-        </AuthProvider>
+        <ConfirmLogout
+          isConfirmation={isConfirmation}
+          setIsConfirmation={setIsConfirmation}
+          setIsMenuOpen={setIsMenuOpen}
+          logout={logout}
+        />
       )}
     </Portal>
   );

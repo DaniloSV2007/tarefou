@@ -1,7 +1,6 @@
 import { useRouter } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { Button, FAB, Text } from "react-native-paper";
-import Constants from "expo-constants";
+import { FAB } from "react-native-paper";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import React, { useState } from "react";
 import TopBar from "@/components/TopBar";
@@ -100,7 +99,6 @@ export default function Home() {
     );
     const completionRate = totalTasks > 0 ? completedTasks / totalTasks : 0;
 
-    // Simulated weekly stats - in a real app, these would come from an API or database
     const weekTotalTasks = 45;
     const weekCompletedTasks = 22;
     const weekCompletionRate =
@@ -134,7 +132,6 @@ export default function Home() {
       }
     } catch (error) {
       console.error("Error updating tasks:", error);
-      // Here you could show an error message to the user
     }
   };
 

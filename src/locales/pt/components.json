@@ -74,6 +74,7 @@
   "profileMenu": {
     "appInfo": "Informações do App",
     "settings": "Configurações",
-    "logout": "Sair"
+    "logout": "Sair",
+    "logoutConfirmation": "Tem certeza que deseja sair?"
   }
 }

@@ -78,7 +78,7 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
   return (
     <Card
       style={[styles.card, { backgroundColor: theme.custom.cardColor }]}
-      mode="contained"
+      mode="elevated"
     >
       <Card.Title
         title={name}
@@ -158,7 +158,6 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
 const styles = StyleSheet.create({
   card: {
     width: "90%",
-    marginBottom: 16,
     paddingVertical: 12,
     borderRadius: 16,
   },

@@ -1,7 +1,7 @@
 {
   "profileNotLogged": {
     "loginButton": "Entrar",
-    "title": "Bem-vindo ao Tarefou!",
+    "title": "Perfil",
     "description": "Para acessar todos os recursos do app, você precisa fazer login primeiro."
   },
   "profileLogged": {

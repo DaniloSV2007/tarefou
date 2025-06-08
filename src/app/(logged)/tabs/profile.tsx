@@ -1,6 +1,5 @@
 import ProfileMenu from "@/components/Profile/ProfileMenu";
 import ProfileLogged from "@/screens/ProfileLogged";
-import ProfileNotLogged from "@/screens/ProfileNotLogged";
 import TopBar from "@/components/TopBar";
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -47,26 +46,6 @@ export default function Profile() {
 
   if (isLoading) return <LoadingPageIndicator />;
 
-  if (isLoggedIn) {
-    return (
-      <>
-        <TopBar
-          title={t("screens:profileLogged.title")}
-          titleColor={theme.colors.onBackground}
-          iconButton="menu"
-          iconColor={theme.colors.onBackground}
-          onPressButton={() => setIsMenuOpen(true)}
-          barColor={theme.colors.background}
-        />
-        <ProfileLogged />
-
-        {isMenuOpen && (
-          <ProfileMenu isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
-        )}
-      </>
-    );
-  }
-
   return (
     <>
       <TopBar
@@ -77,7 +56,7 @@ export default function Profile() {
         onPressButton={() => setIsMenuOpen(true)}
         barColor={theme.colors.background}
       />
-      <ProfileNotLogged />
+      <ProfileLogged />
 
       {isMenuOpen && (
         <ProfileMenu isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />

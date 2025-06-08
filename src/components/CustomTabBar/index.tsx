@@ -1,7 +1,7 @@
 import { BottomNavigation, Icon, Text, useTheme } from "react-native-paper";
 import { usePathname, useRouter } from "expo-router";
 import { useThemeContext } from "@/context/ThemeContext";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
