@@ -38,6 +38,7 @@
   "taskCard": {
     "title": "{{name}}'s Tasks",
     "noTasks": "No tasks found",
+    "viewAll": "View All",
     "status": {
       "completed": "Completed",
       "inProgress": "In Progress"

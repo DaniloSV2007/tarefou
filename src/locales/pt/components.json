@@ -38,6 +38,7 @@
   "taskCard": {
     "title": "Tarefas de {{name}}",
     "noTasks": "Nenhuma tarefa encontrada",
+    "viewAll": "Ver Todas",
     "status": {
       "completed": "Concluída",
       "inProgress": "Em Andamento"

@@ -1,8 +1,8 @@
 import ProfileMenu from "@/components/Profile/ProfileMenu";
-import ProfileLogged from "@/screens/ProfileLogged";
+import ProfileLogged from "@/components/ProfileLogged";
 import TopBar from "@/components/TopBar";
 import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StatusBar, StyleSheet, View } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 import { useAuth } from "@/context/AuthContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
@@ -13,12 +13,12 @@ import { useTranslation } from "react-i18next";
 
 export default function Profile() {
   const { isLoggedIn, isLoading } = useAuth();
-
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const [menuAnimation, setMenuAnimation] = useState(false);
   const theme = useAppTheme();
   const { isDark } = useThemeContext();
   const { t } = useTranslation();
+
   useEffect(() => {
     SystemUI.setBackgroundColorAsync(isDark ? "#000" : "#fff");
   }, [isDark]);
@@ -49,17 +49,30 @@ export default function Profile() {
   return (
     <>
       <TopBar
-        title={t("screens:profileNotLogged.title")}
+        title={t("screens:profileLogged.title")}
         titleColor={theme.colors.onBackground}
         iconButton="menu"
         iconColor={theme.colors.onBackground}
         onPressButton={() => setIsMenuOpen(true)}
         barColor={theme.colors.background}
       />
+      {menuAnimation && !isDark ? (
+        <StatusBar barStyle={"light-content"} backgroundColor={"#808181"} />
+      ) : (
+        <StatusBar
+          barStyle={isDark ? "light-content" : "dark-content"}
+          backgroundColor={theme.colors.background}
+        />
+      )}
       <ProfileLogged />
 
       {isMenuOpen && (
-        <ProfileMenu isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+        <ProfileMenu
+          isMenuOpen={isMenuOpen}
+          setIsMenuOpen={setIsMenuOpen}
+          menuAnimation={menuAnimation}
+          setMenuAnimation={setMenuAnimation}
+        />
       )}
     </>
   );

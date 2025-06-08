@@ -3,7 +3,7 @@
     "notLogged": {
       "title": "Welcome to Tarefou!",
       "description": "To access all app resources, you need to login first.",
-      "loginButton": "Login"
+      "loginButton": "Login with Email"
     },
     "title": "Home",
     "resume": {
@@ -15,6 +15,11 @@
     "tasks": {
       "title": "Tasks",
       "add": "Add Task",
+      "description": "Description",
+      "status": "Status"
+    },
+    "newTask": {
+      "title": "New Task",
       "description": "Description",
       "status": "Status"
     }
@@ -80,7 +85,7 @@
     "language": {
       "title": "Language",
       "english": "English",
-      "portuguese": "Portuguese",
+      "portuguese": "Português",
       "system": "System"
     }
   },

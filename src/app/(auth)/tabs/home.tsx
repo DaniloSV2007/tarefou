@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import TopBar from "@/components/TopBar";
 import { useTranslation } from "react-i18next";
 import { useAppTheme } from "@/hooks/useAppTheme";
+import GoogleButton from "@/components/GoogleButton";
 
 export default function Home() {
   const router = useRouter();
@@ -54,6 +55,9 @@ export default function Home() {
           >
             {t("home.notLogged.loginButton")}
           </Button>
+
+          <GoogleButton onPress={() => {}} />
+
           <Button
             mode="outlined"
             onPress={() => {
@@ -101,10 +105,11 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: "100%",
     paddingHorizontal: 32,
+    gap: 12,
   },
   button: {
     width: "100%",
-    borderRadius: 12,
+    borderRadius: 32,
     marginTop: 16,
   },
   buttonLabel: {

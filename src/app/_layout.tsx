@@ -32,8 +32,8 @@ function RootInnerLayout() {
         <LanguageProvider>
           <AuthProvider>
             <StatusBar
-              barStyle={!isDark ? "dark-content" : "light-content"}
-              backgroundColor={!isDark ? "#fff" : "#000"}
+              barStyle={isDark ? "light-content" : "dark-content"}
+              backgroundColor={isDark ? "#000" : "#fff"}
             />
             <Slot />
           </AuthProvider>

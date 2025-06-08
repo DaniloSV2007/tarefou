@@ -1,15 +1,8 @@
 import { useThemeContext } from "@/context/ThemeContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useState } from "react";
-import { StyleSheet, View } from "react-native";
-import {
-  Card,
-  Divider,
-  Icon,
-  RadioButton,
-  Text,
-  TouchableRipple,
-} from "react-native-paper";
+import { TouchableOpacity, StyleSheet, View } from "react-native";
+import { Card, Divider, Icon, RadioButton, Text } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 
 export default function ThemeSection() {
@@ -29,8 +22,7 @@ export default function ThemeSection() {
         )}
       />
       <Card.Content style={[{}, styles.cardContent]}>
-        <TouchableRipple
-          rippleColor={theme.custom.ripple}
+        <TouchableOpacity
           onPress={() => toggleTheme(0)}
           style={styles.themeContainer}
         >
@@ -45,12 +37,11 @@ export default function ThemeSection() {
               />
             </View>
           </View>
-        </TouchableRipple>
+        </TouchableOpacity>
 
         <Divider style={styles.divider} />
 
-        <TouchableRipple
-          rippleColor={theme.custom.ripple}
+        <TouchableOpacity
           onPress={() => toggleTheme(1)}
           style={styles.themeContainer}
         >
@@ -65,12 +56,11 @@ export default function ThemeSection() {
               />
             </View>
           </View>
-        </TouchableRipple>
+        </TouchableOpacity>
 
         <Divider style={styles.divider} />
 
-        <TouchableRipple
-          rippleColor={theme.custom.ripple}
+        <TouchableOpacity
           onPress={() => toggleTheme(2)}
           style={styles.themeContainer}
         >
@@ -88,7 +78,7 @@ export default function ThemeSection() {
               />
             </View>
           </View>
-        </TouchableRipple>
+        </TouchableOpacity>
       </Card.Content>
     </Card>
   );

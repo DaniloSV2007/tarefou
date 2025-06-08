@@ -3,7 +3,7 @@
     "notLogged": {
       "title": "Bem-vindo ao Tarefou!",
       "description": "Para acessar todos os recursos da aplicação, você precisa fazer login primeiro.",
-      "loginButton": "Entrar"
+      "loginButton": "Entrar com Email"
     },
     "title": "Início",
     "resume": {
@@ -15,6 +15,11 @@
     "tasks": {
       "title": "Tarefas",
       "add": "Adicionar Tarefa",
+      "description": "Descrição",
+      "status": "Status"
+    },
+    "newTask": {
+      "title": "Nova Tarefa",
       "description": "Descrição",
       "status": "Status"
     }
@@ -81,7 +86,7 @@
     },
     "language": {
       "title": "Idioma",
-      "english": "Inglês",
+      "english": "English",
       "portuguese": "Português",
       "system": "Sistema"
     }

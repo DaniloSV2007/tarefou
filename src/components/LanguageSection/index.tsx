@@ -1,18 +1,12 @@
 import React from "react";
 import { useLanguageContext } from "@/context/LanguageContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { StyleSheet, View } from "react-native";
-import {
-  Card,
-  Divider,
-  Icon,
-  RadioButton,
-  Text,
-  TouchableRipple,
-  Button,
-} from "react-native-paper";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Card, Divider, Icon, RadioButton, Text } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import { useTranslations } from "@/hooks/useTranslations";
+import BrazilFlag from "@/assets/flags/br.png";
+import UsaFlag from "@/assets/flags/usa.png";
 
 export default function LanguageSection() {
   const { toggleLanguage, languagePreference } = useLanguageContext();
@@ -31,8 +25,7 @@ export default function LanguageSection() {
         )}
       />
       <Card.Content style={[{}, styles.cardContent]}>
-        <TouchableRipple
-          rippleColor={theme.custom.ripple}
+        <TouchableOpacity
           onPress={() => toggleLanguage(0)}
           style={styles.languageContainer}
         >
@@ -49,17 +42,16 @@ export default function LanguageSection() {
               />
             </View>
           </View>
-        </TouchableRipple>
+        </TouchableOpacity>
 
         <Divider style={styles.divider} />
 
-        <TouchableRipple
-          rippleColor={theme.custom.ripple}
+        <TouchableOpacity
           onPress={() => toggleLanguage(1)}
           style={styles.languageContainer}
         >
           <View style={styles.languageContainer}>
-            <Icon source="flag-variant" size={32} />
+            <Icon source={UsaFlag} size={32} />
             <Text style={styles.languageText}>
               {t("settings.language.english")}
             </Text>
@@ -71,17 +63,16 @@ export default function LanguageSection() {
               />
             </View>
           </View>
-        </TouchableRipple>
+        </TouchableOpacity>
 
         <Divider style={styles.divider} />
 
-        <TouchableRipple
-          rippleColor={theme.custom.ripple}
+        <TouchableOpacity
           onPress={() => toggleLanguage(2)}
           style={styles.languageContainer}
         >
           <View style={styles.languageContainer}>
-            <Icon source="flag-variant" size={32} />
+            <Icon source={BrazilFlag} size={32} />
             <Text style={styles.languageText}>
               {t("settings.language.portuguese")}
             </Text>
@@ -93,7 +84,7 @@ export default function LanguageSection() {
               />
             </View>
           </View>
-        </TouchableRipple>
+        </TouchableOpacity>
       </Card.Content>
     </Card>
   );

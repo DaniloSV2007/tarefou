@@ -96,7 +96,6 @@
         "role": "Função"
       },
       "actions": {
-        "edit": "Editar Perfil",
         "delete": "Excluir Membro",
         "block": "Bloquear Membro",
         "unblock": "Desbloquear Membro"

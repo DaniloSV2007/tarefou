@@ -13,7 +13,7 @@ export default function NewTask() {
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <TopBar
-        title={t("tasks.new.title")}
+        title={t("home.newTask.title")}
         isBackButtonEnable={true}
         backButtonHref={() => router.push("/(logged)/tabs/home")}
       />

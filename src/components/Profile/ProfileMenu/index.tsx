@@ -20,14 +20,25 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ConfirmLogout from "./ConfirmLogout";
 import { useTranslation } from "react-i18next";
 
+interface ProfileMenuProps {
+  isMenuOpen: boolean;
+  setIsMenuOpen: (value: boolean) => void;
+  menuAnimation: boolean;
+  setMenuAnimation: (value: boolean) => void;
+}
+
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 
-export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
+export default function ProfileMenu({
+  isMenuOpen,
+  setIsMenuOpen,
+  menuAnimation,
+  setMenuAnimation,
+}: ProfileMenuProps) {
   const router = useRouter();
   const theme = useAppTheme();
   const { isLoggedIn, logout } = useAuth();
   const insets = useSafeAreaInsets();
-  const [animation, setAnimation] = useState(false);
   const [isConfirmation, setIsConfirmation] = useState(false);
   const { t } = useTranslation();
 
@@ -35,18 +46,18 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
   const backdropOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    setAnimation(isMenuOpen);
+    setMenuAnimation(isMenuOpen);
   }, [isMenuOpen]);
 
   useEffect(() => {
     let animationSet: Animated.CompositeAnimation | null = null;
 
-    if (animation) {
+    if (menuAnimation) {
       animationSet = Animated.parallel([
         Animated.timing(translateY, {
           toValue: 0,
-          duration: 300,
-          useNativeDriver: false,
+          duration: 400,
+          useNativeDriver: true,
         }),
         Animated.timing(backdropOpacity, {
           toValue: 0.5,
@@ -58,13 +69,13 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
     } else {
       animationSet = Animated.parallel([
         Animated.timing(translateY, {
-          toValue: SCREEN_HEIGHT,
+          toValue: SCREEN_HEIGHT - 100,
           duration: 400,
-          useNativeDriver: false,
+          useNativeDriver: true,
         }),
         Animated.timing(backdropOpacity, {
           toValue: 0,
-          duration: 300,
+          duration: 400,
           useNativeDriver: false,
         }),
       ]);
@@ -75,18 +86,15 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
       if (animationSet) {
         animationSet.stop();
       }
-      translateY.setValue(SCREEN_HEIGHT);
-      backdropOpacity.setValue(0);
     };
-  }, [animation]);
+  }, [menuAnimation]);
 
   const handleClose = () => {
-    setAnimation(false);
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        setIsMenuOpen(false);
-      }, 300);
-    });
+    setMenuAnimation(false);
+
+    setTimeout(() => {
+      setIsMenuOpen(false);
+    }, 400);
   };
 
   return (

@@ -1,9 +1,4 @@
 {
-  "profileNotLogged": {
-    "loginButton": "Login",
-    "title": "Welcome to Tarefou!",
-    "description": "To access all app resources, you need to login first."
-  },
   "profileLogged": {
     "title": "Profile",
     "personalInfo": {
@@ -96,7 +91,6 @@
         "role": "Role"
       },
       "actions": {
-        "edit": "Edit Profile",
         "delete": "Delete Member",
         "block": "Block Member",
         "unblock": "Unblock Member"

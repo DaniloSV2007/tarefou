@@ -40,7 +40,10 @@ export default function ConfirmLogout({
             {t("components:common.cancel")}
           </Button>
           <Button
-            style={{ backgroundColor: theme.colors.primary }}
+            style={{
+              backgroundColor: theme.colors.primary,
+              paddingHorizontal: 10,
+            }}
             labelStyle={{ color: "white" }}
             onPress={() => {
               logout();

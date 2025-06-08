@@ -12,12 +12,13 @@ import {
   Text,
 } from "react-native-paper";
 import { useTranslation } from "react-i18next";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function UserProfile() {
   const theme = useAppTheme();
   const router = useRouter();
   const { t } = useTranslation();
-
+  const insets = useSafeAreaInsets();
   const memberData = {
     name: "Guilherme Voiski",
     username: "@guilherme2017",
@@ -36,7 +37,13 @@ export default function UserProfile() {
 
   return (
     <View
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.colors.background,
+          paddingBottom: 20,
+        },
+      ]}
     >
       <TopBar
         title={t("screens:member.profile.memberName", {
@@ -104,14 +111,18 @@ export default function UserProfile() {
             </View>
           </Card.Content>
         </Card>
-
-        <FAB
-          icon="pencil"
-          label={t("screens:member.profile.actions.edit")}
-          onPress={() => {}}
-          style={[styles.fab, { backgroundColor: theme.colors.primary }]}
-        />
       </View>
+      <View
+        style={{
+          height: insets.bottom,
+          paddingBottom: insets.bottom,
+          width: "100%",
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+        }}
+      />
     </View>
   );
 }

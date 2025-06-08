@@ -1,8 +1,8 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 import { Card, Checkbox, Divider, Icon, Text } from "react-native-paper";
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 interface Task {
@@ -22,7 +22,7 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
   const theme = useAppTheme();
   const router = useRouter();
   const { t } = useTranslation();
-
+  const [linkColor, setLinkColor] = useState(theme.colors.onBackground);
   const handleTaskPress = (task: Task) => {
     if (!task || !task.id) {
       console.error("Invalid task data");
@@ -150,6 +150,33 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
               </React.Fragment>
             ))}
         </View>
+        <Link
+          href="/(logged)/tabs/home"
+          onPressIn={() => setLinkColor(theme.colors.primary)}
+          onPressOut={() => setLinkColor(theme.colors.onSurface)}
+          style={[
+            { color: linkColor, paddingTop: 4 },
+            linkColor === theme.colors.primary && {
+              textDecorationLine: "underline",
+            },
+          ]}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+            <Text style={{ color: linkColor }}>
+              {t("components:taskCard.viewAll")}
+            </Text>
+
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: 3,
+              }}
+            >
+              <Icon source="chevron-right" size={24} color={linkColor} />
+            </View>
+          </View>
+        </Link>
       </Card.Content>
     </Card>
   );
@@ -159,6 +186,7 @@ const styles = StyleSheet.create({
   card: {
     width: "90%",
     paddingVertical: 12,
+    paddingBottom: 0,
     borderRadius: 16,
   },
   tasksContainer: {
