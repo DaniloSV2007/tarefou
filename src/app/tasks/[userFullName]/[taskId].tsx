@@ -1,8 +1,9 @@
 import { View, Text, ActivityIndicator } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import TopBar from "@/components/TopBar";
+import { Button } from "react-native-paper";
 
 interface Task {
   id: number;
@@ -31,7 +32,6 @@ export default function TaskDetails() {
     taskDescription: string;
   } | null>(null);
 
-  // Mock data - in a real app, this would come from an API or database
   const members: Member[] = [
     {
       name: "Guilherme Voiski",
@@ -83,36 +83,38 @@ export default function TaskDetails() {
     },
   ];
 
-  useEffect(() => {
-    loadTaskData();
-  }, [params.userFullName, params.taskId]);
-
-  const loadTaskData = () => {
+  const loadTaskData = useCallback(() => {
     try {
       setLoading(true);
       setError(null);
 
-      if (!params.userFullName || !params.taskId) {
+      if (!params?.userFullName || !params?.taskId) {
         throw new Error("Missing required parameters");
       }
 
+      const userFullName = params.userFullName.trim();
+      const taskId = parseInt(params.taskId, 10);
+
+      if (isNaN(taskId)) {
+        throw new Error("Invalid task ID");
+      }
+
       const user = members.find(
-        (member) =>
-          member.name.toLowerCase() === params.userFullName.toLowerCase()
+        (member) => member.name.toLowerCase() === userFullName.toLowerCase()
       );
 
       if (!user) {
-        throw new Error(`User "${params.userFullName}" not found`);
+        throw new Error(`User "${userFullName}" not found`);
       }
 
-      const task = user.tasks.find((t) => t.id === Number(params.taskId));
+      const task = user.tasks.find((t) => t.id === taskId);
       if (!task) {
-        throw new Error(`Task with ID "${params.taskId}" not found`);
+        throw new Error(`Task with ID "${taskId}" not found`);
       }
 
       setTaskData({
-        taskName: task.name,
-        taskDescription: task.description,
+        taskName: task.name || "Untitled Task",
+        taskDescription: task.description || "No description available",
       });
     } catch (error) {
       console.error("Error loading task data:", error);
@@ -121,7 +123,25 @@ export default function TaskDetails() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params?.userFullName, params?.taskId]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    (async () => {
+      try {
+        await loadTaskData();
+      } catch (error) {
+        if (isMounted) {
+          setError("Failed to load task data");
+        }
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [loadTaskData]);
 
   if (loading) {
     return (
@@ -159,6 +179,14 @@ export default function TaskDetails() {
           <Text style={{ color: theme.colors.error, textAlign: "center" }}>
             {error || "Could not load task data"}
           </Text>
+
+          <Button
+            mode="contained"
+            onPress={loadTaskData}
+            style={{ marginTop: 16 }}
+          >
+            Tentar novamente
+          </Button>
         </View>
       </View>
     );

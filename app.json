@@ -1,7 +1,7 @@
 {
   "name": "Tarefou!",
   "slug": "checklistapp",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "scheme": "tarefou",
   "icon": "./assets/adaptive-icon.png",
   "orientation": "portrait",
@@ -50,5 +50,11 @@
     "backgroundColor": "#00000000"
   },
   "sdkVersion": "53.0.0",
-  "platforms": ["ios", "android"]
+  "platforms": ["ios", "android"],
+  "runtimeVersion": {
+    "policy": "appVersion"
+  },
+  "updates": {
+    "url": "https://u.expo.dev/01ceaca2-f8cc-4c37-ace3-6cdcd37403b8"
+  }
 }

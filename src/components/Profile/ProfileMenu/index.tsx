@@ -41,8 +41,10 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
   }, [isMenuOpen]);
 
   useEffect(() => {
+    let animationSet: Animated.CompositeAnimation | null = null;
+
     if (animation) {
-      Animated.parallel([
+      animationSet = Animated.parallel([
         Animated.timing(translateY, {
           toValue: 0,
           duration: 300,
@@ -53,9 +55,10 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
           duration: 400,
           useNativeDriver: true,
         }),
-      ]).start();
+      ]);
+      animationSet.start();
     } else {
-      Animated.parallel([
+      animationSet = Animated.parallel([
         Animated.timing(translateY, {
           toValue: SCREEN_HEIGHT,
           duration: 400,
@@ -66,9 +69,28 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
           duration: 300,
           useNativeDriver: true,
         }),
-      ]).start();
+      ]);
+      animationSet.start();
     }
+
+    return () => {
+      if (animationSet) {
+        animationSet.stop();
+      }
+      translateY.setValue(SCREEN_HEIGHT);
+      backdropOpacity.setValue(0);
+    };
   }, [animation]);
+
+  const handleClose = () => {
+    setAnimation(false);
+    // Use requestAnimationFrame to ensure animation starts before state update
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        setIsMenuOpen(false);
+      }, 300);
+    });
+  };
 
   return (
     <Portal>
@@ -83,13 +105,8 @@ export default function ProfileMenu({ isMenuOpen, setIsMenuOpen }: any) {
           <TouchableOpacity
             activeOpacity={1}
             style={{ width: "100%", height: "100%" }}
-            onPress={() => {
-              setAnimation(false);
-              setTimeout(() => {
-                setIsMenuOpen(false);
-              }, 300);
-            }}
-          ></TouchableOpacity>
+            onPress={handleClose}
+          />
         </Animated.View>
         <Animated.View
           style={[

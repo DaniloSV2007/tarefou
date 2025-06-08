@@ -2,10 +2,13 @@ import "@/i18n";
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
+import { LogBox } from "react-native";
 
 export default function Index() {
   const { isLoggedIn, isLoading } = useAuth();
   const router = useRouter();
+
+  LogBox.ignoreAllLogs(false);
 
   useEffect(() => {
     if (!isLoading) {

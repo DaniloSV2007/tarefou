@@ -1,8 +1,8 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
+import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 import { Card, Checkbox, Divider, Icon, Text } from "react-native-paper";
 import React from "react";
-import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 
 interface Task {
@@ -20,9 +20,15 @@ interface TasksCardProps {
 
 export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
   const theme = useAppTheme();
+  const router = useRouter();
   const { t } = useTranslation();
 
   const handleTaskPress = (task: Task) => {
+    if (!task || !task.id) {
+      console.error("Invalid task data");
+      return;
+    }
+
     try {
       router.push({
         pathname: "/tasks/[userFullName]/[taskId]",
@@ -37,6 +43,11 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
   };
 
   const handleTaskStatusChange = (taskIndex: number) => {
+    if (!Array.isArray(tasks) || taskIndex < 0 || taskIndex >= tasks.length) {
+      console.error("Invalid task index or tasks array");
+      return;
+    }
+
     try {
       const updatedTasks = [...tasks];
       updatedTasks[taskIndex] = {
@@ -48,6 +59,21 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
       console.error("Error updating task status:", error);
     }
   };
+
+  if (!Array.isArray(tasks) || tasks.length === 0) {
+    return (
+      <Card
+        style={{ backgroundColor: theme.custom.cardColor, marginBottom: 16 }}
+      >
+        <Card.Title title={name} />
+        <Card.Content>
+          <Text style={{ color: theme.colors.onBackground }}>
+            {t("components:tasksCard.noTasks")}
+          </Text>
+        </Card.Content>
+      </Card>
+    );
+  }
 
   return (
     <Card
@@ -95,7 +121,7 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
                         fontWeight: "bold",
                       },
                     ]}
-                    numberOfLines={0}
+                    numberOfLines={1}
                     ellipsizeMode="tail"
                   >
                     {task.name}

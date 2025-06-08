@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useState,
   ReactNode,
+  useMemo,
 } from "react";
 import { Appearance, useColorScheme } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -30,19 +31,32 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     const loadThemePref = async () => {
       try {
         const stored = await AsyncStorage.getItem("theme");
-        if (stored !== null) {
-          setThemePreference(parseInt(stored, 10) as ThemePreference);
+        if (stored !== null && isMounted) {
+          const parsed = parseInt(stored, 10);
+          if ([0, 1, 2].includes(parsed)) {
+            setThemePreference(parsed as ThemePreference);
+          }
         }
-        setError(null);
+        if (isMounted) {
+          setError(null);
+        }
       } catch (error) {
         console.error("Error loading theme preference:", error);
-        setError("Failed to load theme preference");
+        if (isMounted) {
+          setError("Failed to load theme preference");
+        }
       }
     };
+
     loadThemePref();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -79,7 +93,16 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const theme = isDark ? darkTheme : lightTheme;
+  const theme = useMemo(() => {
+    const baseTheme = isDark ? darkTheme : lightTheme;
+    return {
+      ...baseTheme,
+      colors: {
+        ...baseTheme.colors,
+        secondaryContainer: "transparent",
+      },
+    };
+  }, [isDark]);
 
   return (
     <ThemeContext.Provider
