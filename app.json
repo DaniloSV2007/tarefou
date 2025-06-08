@@ -21,12 +21,7 @@
       "backgroundColor": "#ffffff"
     },
     "edgeToEdgeEnabled": true,
-    "package": "com.danilosv07.tarefou",
-    "permissions": [
-      "android.permission.READ_EXTERNAL_STORAGE",
-      "android.permission.WRITE_EXTERNAL_STORAGE",
-      "android.permission.INTERNET"
-    ]
+    "package": "com.danilosv07.tarefou"
   },
   "extra": {
     "eas": {
