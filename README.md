@@ -23,6 +23,3 @@ React Native com Expo
 Expo Router
 
 React Native Paper (UI)
-
-Backend em Node.js com Express e Prisma (ajustar conforme seu stack)
-
