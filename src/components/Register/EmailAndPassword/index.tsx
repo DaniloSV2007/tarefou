@@ -10,17 +10,26 @@ import GoogleButton from "@/components/GoogleButton";
 import { isValidEmail } from "@/utils/isValidEmail";
 import { useTranslation } from "react-i18next";
 
+interface EmailAndPasswordProps {
+  setPage: (page: number) => void;
+  email: string;
+  setEmail: (email: string) => void;
+  password: string;
+  setPassword: (password: string) => void;
+}
+
 export default function EmailAndPassword({
   setPage,
-}: {
-  setPage: (page: number) => void;
-}) {
+  email,
+  setEmail,
+  password,
+  setPassword,
+}: EmailAndPasswordProps) {
   const theme = useAppTheme();
   const { t } = useTranslation();
   const [isFocusedEmail, setIsFocusedEmail] = useState(false);
   const [isFocusedPassword, setIsFocusedPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+
   const [error, setError] = useState("");
   const [linkColor, setLinkColor] = useState(theme.colors.onBackground);
   const [isLoading, setIsLoading] = useState(false);
@@ -30,6 +39,9 @@ export default function EmailAndPassword({
   const handleContinue = () => {
     if (!email || !password) {
       setError(t("register.error.fillAllFields"));
+      return;
+    } else if (!isValidEmail(email)) {
+      setError(t("register.error.invalidEmail"));
       return;
     }
     setPage(2);
@@ -96,7 +108,7 @@ export default function EmailAndPassword({
         <IconButton
           icon={showPassword ? "eye-off" : "eye"}
           onPress={() => setShowPassword(!showPassword)}
-          style={{ position: "absolute", right: 10, top: 10, zIndex: 1000 }}
+          style={{ position: "absolute", right: 10, top: 7, zIndex: 1000 }}
         />
       </View>
 
@@ -123,7 +135,7 @@ export default function EmailAndPassword({
 
       <View style={{ borderRadius: 32, overflow: "hidden", marginTop: 16 }}>
         <Pressable
-          onPress={() => setPage(2)}
+          onPress={handleContinue}
           style={[
             styles.loginButton,
             email === "" || password.length < 8
@@ -159,7 +171,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     fontSize: 24,
     borderRadius: 8,
-    height: 64,
+    height: 65,
   },
   loginButton: {
     flexDirection: "row",

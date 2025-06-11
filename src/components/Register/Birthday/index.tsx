@@ -1,5 +1,13 @@
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
-import { Button, Card, Dialog, Portal, Surface } from "react-native-paper";
+import {
+  ActivityIndicator,
+  Button,
+  Card,
+  Checkbox,
+  Dialog,
+  Portal,
+  Surface,
+} from "react-native-paper";
 import React, { useState } from "react";
 import DateTimePicker, {
   DateTimePickerEvent,
@@ -10,21 +18,34 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 
+interface BirthdayProps {
+  setPage: (page: number) => void;
+  setBirthday: (birthday: string) => void;
+  birthday: string;
+  age: number;
+  setAge: (age: number) => void;
+}
+
 export default function Birthday({
   setPage,
-}: {
-  setPage: (page: number) => void;
-}) {
+  setBirthday,
+  birthday,
+  age,
+  setAge,
+}: BirthdayProps) {
   const theme = useAppTheme();
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState<"date" | "time" | "datetime">("date");
   const [show, setShow] = useState(false);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [isConfirmation, setIsConfirmation] = useState(false);
+  const [isTermsChecked, setIsTermsChecked] = useState(false);
   const { isDark } = useThemeContext();
   const { login } = useAuth();
   const router = useRouter();
   const { t, i18n } = useTranslation();
+
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     if (event.type === "set" && selectedDate) {
       setDate(selectedDate);
@@ -55,6 +76,9 @@ export default function Birthday({
     }
 
     setError("");
+    setBirthday(date.toISOString().split("T")[0]);
+    setAge(new Date().getFullYear() - date.getFullYear());
+    setPage(4);
     setIsConfirmation(true);
   };
 
@@ -143,45 +167,9 @@ export default function Birthday({
           labelStyle={styles.buttonText}
           disabled={isTooYoung}
         >
-          {t("register.birthday.confirm")}
+          {t("components:common.next")}
         </Button>
       </View>
-
-      <Portal>
-        <Dialog
-          visible={isConfirmation}
-          onDismiss={() => setIsConfirmation(false)}
-        >
-          <Dialog.Title style={{ color: theme.colors.onBackground }}>
-            {t("register.birthday.confirmation")}
-          </Dialog.Title>
-          <Dialog.Content>
-            <Text style={{ color: theme.colors.onBackground, fontSize: 18 }}>
-              {t("register.birthday.confirmationMessage")}
-            </Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button
-              labelStyle={{ color: theme.colors.onBackground }}
-              onPress={() => setIsConfirmation(false)}
-            >
-              {t("register.birthday.cancel")}
-            </Button>
-            <Button
-              style={{
-                backgroundColor: theme.colors.primary,
-              }}
-              labelStyle={{ color: "white" }}
-              onPress={() => {
-                login();
-                router.push("/");
-              }}
-            >
-              {t("register.birthday.confirm")}
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
     </>
   );
 }

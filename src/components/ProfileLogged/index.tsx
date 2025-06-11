@@ -49,7 +49,7 @@ export default function ProfileLogged() {
             icon="pencil"
             onPress={() => {}}
             rippleColor={theme.custom.ripple}
-            color="white"
+            color={theme.colors.onBackground}
             mode="flat"
             style={[
               styles.editButton,

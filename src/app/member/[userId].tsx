@@ -60,6 +60,7 @@ export default function UserProfile() {
           <Card.Title
             title={t("screens:member.profile.personalInfo.title")}
             left={(props) => <Icon {...props} source="account" />}
+            titleStyle={styles.title}
           />
           <Card.Content>
             <View style={styles.infoRow}>
@@ -89,6 +90,7 @@ export default function UserProfile() {
           <Card.Title
             title={t("screens:member.profile.statistics.title")}
             left={(props) => <Icon {...props} source="chart-bar" />}
+            titleStyle={styles.title}
           />
           <Card.Content>
             <View style={styles.infoRow}>
@@ -137,7 +139,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   card: {
-    borderRadius: 12,
+    borderRadius: 16,
   },
   infoRow: {
     flexDirection: "row",
@@ -150,5 +152,10 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 0,
     bottom: 0,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginTop: 16,
   },
 });

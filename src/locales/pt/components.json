@@ -70,7 +70,8 @@
     "success": "Sucesso",
     "confirm": "Confirmar",
     "back": "Voltar",
-    "next": "Próximo"
+    "next": "Próximo",
+    "continue": "Continuar"
   },
   "profileMenu": {
     "appInfo": "Informações do App",

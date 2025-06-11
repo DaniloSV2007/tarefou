@@ -1,7 +1,7 @@
 {
   "name": "Tarefou!",
   "slug": "checklistapp",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "scheme": "tarefou",
   "icon": "./assets/adaptive-icon.png",
   "orientation": "portrait",
@@ -43,7 +43,9 @@
         }
       }
     ],
-    "expo-localization"
+    "expo-localization",
+    "expo-sqlite",
+    "@prisma/react-native"
   ],
   "androidNavigationBar": {
     "backgroundColor": "#00000000"

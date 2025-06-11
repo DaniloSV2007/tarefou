@@ -47,7 +47,8 @@
       "nameLength": "Name must be at least 3 characters long",
       "usernameLength": "Username must be at least 3 characters long",
       "fillAllFields": "Please fill in all fields",
-      "birthday": "You must be at least 3 years old"
+      "birthday": "You must be at least 3 years old",
+      "invalidEmail": "Invalid email"
     },
     "emailAndPassword": {
       "title": "Enter your email and password",
@@ -59,7 +60,7 @@
     },
     "nameAndUsername": {
       "title": "Enter your name and username",
-      "inputName": "Name",
+      "inputName": "Full Name",
       "inputUsername": "Username",
       "continue": "Continue",
       "back": "Back",
@@ -72,6 +73,23 @@
       "cancel": "Cancel",
       "confirmation": "Confirmation",
       "confirmationMessage": "Are you sure you want to confirm?"
+    },
+    "roleSelection": {
+      "title": "Select your role",
+      "card": {
+        "member": "Member",
+        "familyAdmin": "Family Admin"
+      }
+    },
+    "familyName": {
+      "title": "Enter your family name",
+      "placeholder": "Family Name",
+      "value": "{{name}}'s Family"
+    },
+    "termsOfService": {
+      "title": "Terms of Service",
+      "content": "By continuing, you agree to the terms of service of the application.",
+      "checkbox": "I have read and agree to the terms of service"
     }
   },
   "settings": {

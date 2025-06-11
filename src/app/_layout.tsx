@@ -11,6 +11,8 @@ import * as Font from "expo-font";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { Text, ActivityIndicator } from "react-native";
+import { SQLiteProvider } from "expo-sqlite";
+import { initializeDB } from "@/database/initializeDB";
 
 function RootInnerLayout() {
   const { theme, isDark } = useThemeContext();
@@ -27,19 +29,21 @@ function RootInnerLayout() {
   }, [isDark]);
 
   return (
-    <SafeAreaProvider>
-      <PaperProvider theme={theme}>
-        <LanguageProvider>
-          <AuthProvider>
-            <StatusBar
-              barStyle={isDark ? "light-content" : "dark-content"}
-              backgroundColor={isDark ? "#000" : "#fff"}
-            />
-            <Slot />
-          </AuthProvider>
-        </LanguageProvider>
-      </PaperProvider>
-    </SafeAreaProvider>
+    <SQLiteProvider databaseName="family-tasks.db" onInit={initializeDB}>
+      <SafeAreaProvider>
+        <PaperProvider theme={theme}>
+          <LanguageProvider>
+            <AuthProvider>
+              <StatusBar
+                barStyle={isDark ? "light-content" : "dark-content"}
+                backgroundColor={isDark ? "#000" : "#fff"}
+              />
+              <Slot />
+            </AuthProvider>
+          </LanguageProvider>
+        </PaperProvider>
+      </SafeAreaProvider>
+    </SQLiteProvider>
   );
 }
 

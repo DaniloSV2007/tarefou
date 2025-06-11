@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "100%",
-    paddingHorizontal: 32,
+    paddingHorizontal: 20,
     gap: 12,
   },
   button: {

@@ -1,39 +1,51 @@
 import { StyleSheet, TextInput, View } from "react-native";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 import { Button, Text } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 
+interface NameAndUsernameProps {
+  setPage: (page: number) => void;
+  name: string;
+  setName: (name: string) => void;
+  username: string;
+  setUsername: (username: string) => void;
+  setDoneName: (doneName: boolean) => void;
+}
+
 export default function NameAndUsername({
   setPage,
-}: {
-  setPage: (page: number) => void;
-}) {
+  name,
+  setName,
+  username,
+  setUsername,
+  setDoneName,
+}: NameAndUsernameProps) {
   const theme = useAppTheme();
   const [isFocusedName, setIsFocusedName] = useState(false);
   const [isFocusedUsername, setIsFocusedUsername] = useState(false);
-  const [name, setName] = useState("");
-  const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (name.length > 0 && name.length < 3) {
+      setError(t("register.error.nameLength"));
+    } else if (username.length > 0 && username.length < 3) {
+      setError(t("register.error.usernameLength"));
+    } else {
+      setError("");
+    }
+  }, [name, username, t]);
+
   const nameHandler = (text: string) => {
     setName(text);
-    if (text.length === 0 || text.length >= 3) {
-      setError("");
-    } else {
-      setError(t("register.error.nameLength"));
-    }
   };
 
   const usernameHandler = (text: string) => {
     setUsername(text);
-    if (text.length === 0 || text.length >= 3) {
-      setError("");
-    } else {
-      setError(t("register.error.usernameLength"));
-    }
   };
+
   return (
     <>
       <TextInput
@@ -115,7 +127,10 @@ export default function NameAndUsername({
 
         <Button
           mode="contained"
-          onPress={() => setPage(3)}
+          onPress={() => {
+            setPage(3);
+            setDoneName(true);
+          }}
           style={[
             styles.button,
             {

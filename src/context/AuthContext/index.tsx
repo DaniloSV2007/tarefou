@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import { useDatabase } from "@/database/useDatabase";
 
 interface AuthContextType {
   isLoggedIn: boolean;
-  login: () => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   isLoading: boolean;
   error: string | null;
@@ -35,13 +36,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     loadLoginState();
   }, []);
 
-  const login = async () => {
+  const login = async (email: string, password: string) => {
+    const database = useDatabase();
     try {
       setIsLoading(true);
-      await AsyncStorage.setItem("isLoggedIn", "true");
-      setIsLoggedIn(true);
-      setError(null);
-      router.replace("/(logged)/tabs/home");
+
+      const response = await database.login(email, password);
+
+      if (response.success) {
+        await AsyncStorage.setItem("isLoggedIn", "true");
+        setIsLoggedIn(true);
+        setError(null);
+        router.replace("/(logged)/tabs/home");
+      } else {
+        setError("Failed to login");
+        setIsLoggedIn(false);
+      }
     } catch (error) {
       console.error("Error during login:", error);
       setError("Failed to login");

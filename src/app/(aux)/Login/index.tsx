@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
+  Pressable,
 } from "react-native";
 import {
   ActivityIndicator,
@@ -41,20 +42,15 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setIsLoading(true);
-    if (email === "" || password === "") {
-      setError(t("login.error.emailAndPasswordMissing"));
-    } else {
-      if (email === "admin" && password === "12345678") {
-        login();
-      } else {
-        setError(t("login.error.emailAndPasswordInvalid"));
-      }
+    try {
+      await login(email, password);
+    } catch (error) {
+      console.error("Error logging in:", error);
+    } finally {
+      setIsLoading(false);
     }
-    setEmail("");
-    setPassword("");
-    setIsLoading(false);
   };
 
   const loadLoginState = async () => {
@@ -163,7 +159,7 @@ export default function Login() {
                       style={{
                         position: "absolute",
                         right: 10,
-                        top: 10,
+                        top: 7,
                         zIndex: 1000,
                       }}
                     />
@@ -192,30 +188,36 @@ export default function Login() {
                     .
                   </Text>
 
-                  <Button
-                    mode="contained"
+                  <Pressable
                     onPress={handleLogin}
-                    rippleColor={theme.custom.ripple}
-                    style={styles.loginButton}
+                    style={[
+                      styles.loginButton,
+                      {
+                        backgroundColor:
+                          email === "" || password.length < 8
+                            ? theme.colors.surfaceDisabled
+                            : theme.colors.primary,
+                      },
+                    ]}
                     disabled={email === "" || password.length < 8}
                   >
-                    <View style={styles.loginButtonContent}>
-                      {isLoading ? (
-                        <ActivityIndicator color="white" />
-                      ) : (
-                        <Text
-                          style={[
-                            styles.loginButtonText,
-                            email === "" || password.length < 8
-                              ? { color: theme.colors.onSurfaceDisabled }
-                              : { color: "white" },
-                          ]}
-                        >
-                          {t("login.loginButton")}
-                        </Text>
-                      )}
-                    </View>
-                  </Button>
+                    {isLoading ? (
+                      <ActivityIndicator color="white" size={32} />
+                    ) : (
+                      <Text
+                        style={[
+                          styles.loginButtonText,
+                          isLoading
+                            ? { display: "none" }
+                            : email === "" || password.length < 8
+                            ? { color: theme.colors.onSurfaceDisabled }
+                            : { color: "white" },
+                        ]}
+                      >
+                        {t("login.loginButton")}
+                      </Text>
+                    )}
+                  </Pressable>
 
                   <GoogleButton onPress={() => {}} />
                 </Card.Content>
@@ -246,13 +248,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     fontSize: 24,
     borderRadius: 8,
-    height: 64,
+    height: 65,
   },
   loginButton: {
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 24,
+    borderRadius: 32,
     paddingHorizontal: 0,
+    paddingVertical: 10,
     marginTop: 16,
   },
   loginButtonContent: {
@@ -263,5 +266,6 @@ const styles = StyleSheet.create({
   loginButtonText: {
     fontSize: 24,
     textAlign: "center",
+    fontWeight: "600",
   },
 });

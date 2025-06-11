@@ -36,7 +36,7 @@
     }
   },
   "taskCard": {
-    "title": "{{name}}'s Tasks",
+    "title": "{{name}} Tasks",
     "noTasks": "No tasks found",
     "viewAll": "View All",
     "status": {
@@ -70,7 +70,8 @@
     "success": "Success",
     "confirm": "Confirm",
     "back": "Back",
-    "next": "Next"
+    "next": "Next",
+    "continue": "Continue"
   },
   "profileMenu": {
     "appInfo": "App Info",

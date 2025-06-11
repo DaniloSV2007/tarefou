@@ -49,7 +49,8 @@
       "nameLength": "O nome deve ter pelo menos 3 caracteres",
       "usernameLength": "O username deve ter pelo menos 3 caracteres",
       "fillAllFields": "Por favor, preencha todos os campos",
-      "birthday": "Você deve ter pelo menos 3 anos"
+      "birthday": "Você deve ter pelo menos 3 anos",
+      "invalidEmail": "Email inválido"
     },
     "emailAndPassword": {
       "title": "Insira seu email e senha",
@@ -61,7 +62,7 @@
     },
     "nameAndUsername": {
       "title": "Insira seu nome e username",
-      "inputName": "Nome",
+      "inputName": "Nome Completo",
       "inputUsername": "Username",
       "continue": "Continuar",
       "back": "Voltar",
@@ -74,6 +75,23 @@
       "cancel": "Cancelar",
       "confirmation": "Confirmação",
       "confirmationMessage": "Tem certeza que deseja confirmar?"
+    },
+    "roleSelection": {
+      "title": "Selecione seu papel",
+      "card": {
+        "member": "Membro",
+        "familyAdmin": "Administrador da Família"
+      }
+    },
+    "familyName": {
+      "title": "Insira o nome da sua família",
+      "placeholder": "Nome da Família",
+      "value": "Família do(a) {{name}}"
+    },
+    "termsOfService": {
+      "title": "Termos de Serviço",
+      "content": "Ao continuar, você concorda com os termos de serviço do aplicativo.",
+      "checkbox": "Li os termos e condições"
     }
   },
   "settings": {

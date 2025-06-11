@@ -81,7 +81,7 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
       mode="elevated"
     >
       <Card.Title
-        title={name}
+        title={t("components:taskCard.title", { name: name.split(" ")[0] })}
         titleStyle={{
           fontSize: 24,
           fontWeight: "bold",
@@ -152,7 +152,7 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
         </View>
         <Link
           href="/(logged)/tabs/home"
-          onPressIn={() => setLinkColor(theme.colors.primary)}
+          onPressIn={() => setLinkColor(theme.colors.onSurfaceDisabled)}
           onPressOut={() => setLinkColor(theme.colors.onSurface)}
           style={[
             { color: linkColor, paddingTop: 4 },
