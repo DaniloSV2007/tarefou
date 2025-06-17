@@ -26,7 +26,7 @@
   },
   "login": {
     "title": "Login",
-    "inputEmail": "Email",
+    "inputEmail": "Email or Username",
     "inputPassword": "Password",
     "loginButton": "Login",
     "forgotPassword": "Forgot your password?",
@@ -48,7 +48,11 @@
       "usernameLength": "Username must be at least 3 characters long",
       "fillAllFields": "Please fill in all fields",
       "birthday": "You must be at least 3 years old",
-      "invalidEmail": "Invalid email"
+      "invalidEmail": "Invalid email",
+      "usernameExists": "This username is already taken",
+      "emailExists": "This email is already registered",
+      "checkingUsername": "Error checking username. Please try again.",
+      "checkingEmail": "Error checking email. Please try again."
     },
     "emailAndPassword": {
       "title": "Enter your email and password",
@@ -56,7 +60,11 @@
       "inputPassword": "Password",
       "alreadyHaveAccount": "Already have an account?",
       "login": "Login",
-      "continue": "Continue"
+      "continue": "Continue",
+      "inputName": "Full Name",
+      "inputUsername": "Username",
+      "back": "Back",
+      "next": "Next"
     },
     "nameAndUsername": {
       "title": "Enter your name and username",
@@ -64,7 +72,8 @@
       "inputUsername": "Username",
       "continue": "Continue",
       "back": "Back",
-      "next": "Next"
+      "next": "Next",
+      "usernameAvailable": "Username is available"
     },
     "birthday": {
       "title": "Enter your birthday",

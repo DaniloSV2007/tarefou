@@ -9,6 +9,8 @@ import { View } from "react-native";
 import GoogleButton from "@/components/GoogleButton";
 import { isValidEmail } from "@/utils/isValidEmail";
 import { useTranslation } from "react-i18next";
+import { useDatabase } from "@/database/useDatabase";
+import api from "@/services/api";
 
 interface EmailAndPasswordProps {
   setPage: (page: number) => void;
@@ -35,8 +37,9 @@ export default function EmailAndPassword({
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const database = useDatabase();
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!email || !password) {
       setError(t("register.error.fillAllFields"));
       return;
@@ -44,8 +47,27 @@ export default function EmailAndPassword({
       setError(t("register.error.invalidEmail"));
       return;
     }
-    setPage(2);
+
+    const data = {
+      email: email.trim(),
+    };
+
+    try {
+      const res = await api.post("/users/email", data);
+      const existingEmail = res.data.code === 200;
+
+      if (existingEmail) {
+        setError(t("register.error.emailExists"));
+      } else {
+        setError("");
+        setPage(2);
+      }
+    } catch (error) {
+      console.error("Error checking email:", error);
+      setError(t("register.error.checkingEmail"));
+    }
   };
+
   const passwordHandler = (text: string) => {
     setPassword(text);
     if (text.length === 0 || text.length >= 8) {
@@ -53,6 +75,10 @@ export default function EmailAndPassword({
     } else {
       setError(t("register.error.passwordLength"));
     }
+  };
+
+  const emailHandler = async (text: string) => {
+    setEmail(text);
   };
   return (
     <>
@@ -74,13 +100,11 @@ export default function EmailAndPassword({
         onFocus={() => setIsFocusedEmail(true)}
         onBlur={() => setIsFocusedEmail(false)}
         value={email}
-        onChangeText={(text) => {
-          setEmail(text);
-          setError("");
-        }}
+        onChangeText={emailHandler}
         autoCapitalize="none"
         autoComplete="email"
       />
+
       <View>
         <TextInput
           style={[

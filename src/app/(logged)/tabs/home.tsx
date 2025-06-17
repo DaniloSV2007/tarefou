@@ -9,7 +9,7 @@ import TasksCard from "@/components/Home/TasksCard";
 import { useTranslation } from "react-i18next";
 
 interface Task {
-  id: number;
+  id: string;
   name: string;
   status: boolean;
   description: string;
@@ -41,48 +41,59 @@ export default function Home() {
     {
       name: "Guilherme Voiski",
       username: "@guilherme2017",
-      tasks: [
-        {
-          id: 1,
-          name: "Task 1",
-          status: true,
-          description: "Task 1 description",
-        },
-        {
-          id: 2,
-          name: "Task 2",
-          status: false,
-          description: "Task 2 description",
-        },
-      ],
+      tasks: [],
     },
     {
       name: "Danilo Voiski",
       username: "@DaniloSV07",
       tasks: [
         {
-          id: 1,
+          id: "1",
           name: "Find a bug",
           status: true,
           description: "Find a bug in the code",
         },
         {
-          id: 2,
+          id: "2",
           name: "Fix a bug",
           status: false,
           description: "Fix a bug in the code",
         },
         {
-          id: 3,
+          id: "3",
           name: "Task 3",
           status: true,
           description: "Task 3 description",
         },
         {
-          id: 4,
+          id: "4",
           name: "Task 4",
           status: false,
           description: "Task 4 description",
+        },
+        {
+          id: "5",
+          name: "Task 5",
+          status: false,
+          description: "Task 5 description",
+        },
+        {
+          id: "6",
+          name: "Task 6",
+          status: false,
+          description: "Task 6 description",
+        },
+        {
+          id: "7",
+          name: "Task 7",
+          status: false,
+          description: "Task 7 description",
+        },
+        {
+          id: "8",
+          name: "Task 8",
+          status: false,
+          description: "Task 8 description",
         },
       ],
     },
@@ -192,8 +203,8 @@ const styles = StyleSheet.create({
   fab: {
     position: "absolute",
     margin: 16,
-    right: 16,
-    bottom: 16,
+    right: 0,
+    bottom: 0,
     zIndex: 1000,
   },
 });

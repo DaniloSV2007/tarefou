@@ -5,7 +5,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import TopBar from "@/components/TopBar";
 
 interface Task {
-  id: number;
+  id: string;
   name: string;
   status: boolean;
   description: string;
@@ -25,6 +25,7 @@ export default function Task() {
   const [taskData, setTaskData] = useState<{
     taskName: string;
     taskDescription: string;
+    taskStatus: string;
   } | null>(null);
 
   const userFullName = params?.userFullName as string;
@@ -35,36 +36,59 @@ export default function Task() {
     {
       name: "Guilherme Voiski",
       username: "@guilherme2017",
-      tasks: [
-        {
-          id: 1,
-          name: "Task 1",
-          status: true,
-          description: "Task 1 description",
-        },
-        {
-          id: 2,
-          name: "Task 2",
-          status: false,
-          description: "Task 2 description",
-        },
-      ],
+      tasks: [],
     },
     {
       name: "Danilo Voiski",
       username: "@DaniloSV07",
       tasks: [
         {
-          id: 1,
+          id: "1",
           name: "Find a bug",
           status: true,
           description: "Find a bug in the code",
         },
         {
-          id: 2,
+          id: "2",
           name: "Fix a bug",
           status: false,
           description: "Fix a bug in the code",
+        },
+        {
+          id: "3",
+          name: "Task 3",
+          status: true,
+          description: "Task 3 description",
+        },
+        {
+          id: "4",
+          name: "Task 4",
+          status: false,
+          description: "Task 4 description",
+        },
+        {
+          id: "5",
+          name: "Task 5",
+          status: false,
+          description: "Task 5 description",
+        },
+        {
+          id: "6",
+          name: "Task 6",
+          status: false,
+          description: "Task 6 description",
+        },
+        {
+          id: "7",
+          name: "Task 7",
+          status: false,
+          description: "Task 7 description",
+        },
+        {
+          id: "8",
+          name: "Task 8",
+          status: false,
+          description: "Task 8 description",
         },
       ],
     },
@@ -91,7 +115,7 @@ export default function Task() {
         throw new Error("User not found");
       }
 
-      const task = user.tasks.find((t) => t.id === Number(taskId));
+      const task = user.tasks.find((t) => t.id === taskId);
       if (!task) {
         throw new Error("Task not found");
       }
@@ -99,6 +123,7 @@ export default function Task() {
       setTaskData({
         taskName: task.name,
         taskDescription: task.description,
+        taskStatus: task.status ? "Completed" : "In Progress",
       });
     } catch (error) {
       console.error("Error loading task data:", error);
@@ -111,11 +136,7 @@ export default function Task() {
 
   return (
     <View style={{ flex: 1 }}>
-      <TopBar
-        title={taskData?.taskName ?? ""}
-        isBackButtonEnable={true}
-        backButtonHref={() => router.push("/tabs/home")}
-      />
+      <TopBar title={taskData?.taskName ?? ""} isBackButtonEnable={true} />
       <View
         style={{
           flex: 1,

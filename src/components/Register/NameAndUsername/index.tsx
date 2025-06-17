@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import React from "react";
 import { Button, Text } from "react-native-paper";
 import { useTranslation } from "react-i18next";
-
+import { useDatabase } from "@/database/useDatabase";
+import api from "@/services/api";
 interface NameAndUsernameProps {
   setPage: (page: number) => void;
   name: string;
@@ -27,6 +28,8 @@ export default function NameAndUsername({
   const [isFocusedUsername, setIsFocusedUsername] = useState(false);
   const [error, setError] = useState("");
   const { t } = useTranslation();
+  const database = useDatabase();
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     if (name.length > 0 && name.length < 3) {
@@ -42,8 +45,28 @@ export default function NameAndUsername({
     setName(text);
   };
 
-  const usernameHandler = (text: string) => {
+  const usernameHandler = async (text: string) => {
     setUsername(text);
+
+    if (text.trim() === "") {
+      setError("");
+      setSuccess("");
+      return;
+    }
+
+    try {
+      const res = await api.get(`/users/${text}/exists`);
+      const existingUsername = res.data.username;
+
+      if (existingUsername) {
+        setError(t("register.error.usernameExists"));
+      } else {
+        setSuccess(t("register.nameAndUsername.usernameAvailable"));
+      }
+    } catch (error) {
+      console.error("Error checking username:", error);
+      setError(t("register.error.checkingUsername"));
+    }
   };
 
   return (
@@ -105,6 +128,10 @@ export default function NameAndUsername({
       </View>
 
       {error && <Text style={{ color: "red", fontSize: 16 }}>*{error}</Text>}
+
+      {success && error === "" && (
+        <Text style={{ color: "green", fontSize: 16 }}>*{success}</Text>
+      )}
 
       <View
         style={{

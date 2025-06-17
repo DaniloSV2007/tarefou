@@ -27,8 +27,6 @@ export default function RoleSelection({
     }
   };
 
-  console.log(age);
-
   return (
     <>
       <View style={styles.container}>

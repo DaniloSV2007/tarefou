@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 interface Task {
-  id: number;
+  id: string;
   name: string;
   status: boolean;
   description: string;
@@ -23,6 +23,7 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
   const router = useRouter();
   const { t } = useTranslation();
   const [linkColor, setLinkColor] = useState(theme.colors.onBackground);
+
   const handleTaskPress = (task: Task) => {
     if (!task || !task.id) {
       console.error("Invalid task data");
@@ -63,17 +64,51 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
   if (!Array.isArray(tasks) || tasks.length === 0) {
     return (
       <Card
-        style={{ backgroundColor: theme.custom.cardColor, marginBottom: 16 }}
+        style={[
+          styles.card,
+          {
+            backgroundColor: theme.custom.cardColor,
+            marginBottom: 16,
+            paddingBottom: 12,
+          },
+        ]}
       >
-        <Card.Title title={name} />
-        <Card.Content>
-          <Text style={{ color: theme.colors.onBackground }}>
-            {t("components:tasksCard.noTasks")}
+        <Card.Title
+          title={t("components:taskCard.title", { name: name.split(" ")[0] })}
+          titleStyle={{
+            fontSize: 24,
+            fontWeight: "bold",
+            color: theme.colors.onBackground,
+          }}
+        />
+        <Card.Content style={{ alignItems: "center" }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              position: "absolute",
+              top: 0,
+              left: 64,
+            }}
+          >
+            <Icon source="magnify" size={24} />
+          </View>
+          <Text style={{ color: theme.colors.onSurface }}>
+            {t("components:taskCard.noTasks")}
           </Text>
         </Card.Content>
       </Card>
     );
   }
+
+  const user = [
+    {
+      name,
+      tasks: tasks,
+    },
+  ];
+
+  const json = encodeURIComponent(JSON.stringify(user));
 
   return (
     <Card
@@ -95,6 +130,7 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
               if (a.status === b.status) return 0;
               return a.status ? 1 : -1;
             })
+            .slice(0, 4)
             .map((task, index) => (
               <React.Fragment key={task.id}>
                 <Pressable
@@ -151,7 +187,7 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
             ))}
         </View>
         <Link
-          href="/(logged)/tabs/home"
+          href={`/tasks/${json}`}
           onPressIn={() => setLinkColor(theme.colors.onSurfaceDisabled)}
           onPressOut={() => setLinkColor(theme.colors.onSurface)}
           style={[

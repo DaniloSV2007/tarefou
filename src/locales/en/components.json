@@ -44,6 +44,14 @@
       "inProgress": "In Progress"
     }
   },
+  "taskInfo": {
+    "description": "Description",
+    "status": "Status",
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    }
+  },
   "memberCard": {
     "title": "Member Information",
     "placeholder": "This is a placeholder for member information.",

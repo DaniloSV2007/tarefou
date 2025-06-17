@@ -25,6 +25,9 @@ import TopBar from "@/components/TopBar";
 import GoogleButton from "@/components/GoogleButton";
 import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDatabase } from "@/database/useDatabase";
+import { isValidEmail } from "@/utils/isValidEmail";
+import api from "@/services/api";
 
 export default function Login() {
   const { login } = useAuth();
@@ -41,13 +44,33 @@ export default function Login() {
   const [linkColor, setLinkColor] = useState(theme.colors.onBackground);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const database = useDatabase();
 
   const handleLogin = async () => {
     setIsLoading(true);
+    let data;
+    if (isValidEmail(email)) {
+      data = {
+        email: email,
+        password: password,
+      };
+    } else {
+      data = {
+        username: email,
+        password: password,
+      };
+    }
+
     try {
-      await login(email, password);
+      const res = await api.post("/login", data);
+      if (res.status === 200) {
+        login(res.data.token);
+      } else {
+        setError("Email ou senha inválidos");
+        console.error("Login failed: ", res.data.error);
+      }
     } catch (error) {
-      console.error("Error logging in:", error);
+      console.error("Error logging in: ", error);
     } finally {
       setIsLoading(false);
     }
@@ -59,7 +82,6 @@ export default function Login() {
       setIsLoggedIn(state === "true");
     } catch (error) {
       console.error("Error loading login state:", error);
-      // Handle error appropriately
     } finally {
       setIsLoading(false);
     }

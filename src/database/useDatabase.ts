@@ -1,137 +1,123 @@
-import { useSQLiteContext } from "expo-sqlite";
-import { v4 as uuidv4 } from "uuid";
+import * as SQLite from "expo-sqlite";
+import "react-native-get-random-values";
+import uuid from "react-native-uuid";
+import { type SQLiteDatabase } from "expo-sqlite";
 
-export type FamilyWithAdminUser = {
-  idFamily: string;
-  familyName: string;
-  familyCreatedAt: string;
-  idUser: string;
-  email: string;
-  passwordHash: string;
-  userName: string;
-  username: string;
-  userCreatedAt: string;
-  birthday: string;
-};
-
-export type Family = {
-  id: string;
-  name: string;
-  createdAt: string;
-};
-
-export type User = {
-  id: string;
-  email: string;
-  passwordHash: string;
-  name: string;
-  birthday: string;
-  role: string;
-  familyId: string;
-};
-
-export type Task = {
+type Task = {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   createdAt: string;
-  updatedAt: string;
-  deadline: string;
-  isCompleted: boolean;
+  updatedAt?: string;
+  deadline?: string;
+  isCompleted: number;
   userId: string;
 };
 
 export function useDatabase() {
-  const database = useSQLiteContext();
+  let dbInstance: SQLiteDatabase | null = null;
 
-  async function findUserByEmail(email: string) {
-    const statement = await database.prepareAsync(
-      "SELECT email FROM User WHERE email = $email"
-    );
-    const result = (await statement.executeAsync({
-      email,
-    })) as unknown as Array<{ email: string }>;
-    return result[0]?.email;
+  async function getDatabase() {
+    if (!dbInstance) {
+      dbInstance = await SQLite.openDatabaseAsync("tarefou.db");
+    }
+    return dbInstance;
   }
 
-  async function createFamilyAndAdminUser(
-    data: Omit<FamilyWithAdminUser, "idFamily" | "idUser">
-  ) {
-    const statementFamily = await database.prepareAsync(
-      "INSERT INTO Family (id, name, createdAt) VALUES ($id, $name, $createdAt)"
-    );
-
-    const statementUser = await database.prepareAsync(
-      "INSERT INTO User (id, email, passwordHash, name, userName, birthday, role, familyId) VALUES ($id, $email, $passwordHash, $name, $userName, $birthday, $role, $familyId)"
-    );
-
+  async function createTask(data: Task) {
     try {
-      const idFamily = uuidv4();
-      const resultFamily = await statementFamily.executeAsync({
-        id: idFamily,
-        name: data.familyName,
-        createdAt: data.familyCreatedAt,
-      });
+      const db = await getDatabase();
+      const statement = await db.prepareAsync(
+        `INSERT INTO Task (id, title, description, createdAt, updatedAt, deadline, isCompleted, userId)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+      );
 
-      const idUser = uuidv4();
-      const existingEmail = await findUserByEmail(data.email);
-      if (existingEmail) {
-        throw new Error("Email already exists");
-      }
-      const resultUser = await statementUser.executeAsync({
-        id: idUser,
-        email: data.email,
-        passwordHash: data.passwordHash,
-        name: data.userName,
-        userName: data.userName,
-        birthday: data.birthday,
-        role: "FAMILY_ADMIN",
-        familyId: idFamily,
-      });
+      await statement.executeAsync([
+        data.id,
+        data.title,
+        data.description ?? null,
+        data.createdAt ?? new Date().toISOString(),
+        data.updatedAt ?? null,
+        data.deadline ?? null,
+        data.isCompleted ?? 0,
+        data.userId,
+      ]);
+
+      await statement.finalizeAsync();
+      return { success: true, taskId: data.id };
     } catch (error) {
-      throw error;
+      console.error("Error creating user:", error);
+      return { success: false, error };
     }
   }
 
-  async function createTask(data: Omit<Task, "id">) {
-    const statement = await database.prepareAsync(
-      "INSERT INTO Task (id, title, description, createdAt, updatedAt, deadline, isCompleted, userId) VALUES ($id, $title, $description, $createdAt, $updatedAt, $deadline, $isCompleted, $userId)"
-    );
-
+  async function getTasks() {
     try {
-      const id = uuidv4();
-      const result = await statement.executeAsync({
+      const db = await getDatabase();
+      const statement = await db.prepareAsync(`SELECT * FROM Task`);
+      const result = await statement.executeAsync();
+      return result;
+    } catch (error) {
+      console.error("Error getting tasks:", error);
+      return { success: false, error };
+    }
+  }
+
+  async function getTaskById(id: string) {
+    try {
+      const db = await getDatabase();
+      const statement = await db.prepareAsync(
+        `SELECT * FROM Task WHERE id = ?`
+      );
+      const result = await statement.executeAsync([id]);
+      return result;
+    } catch (error) {
+      console.error("Error getting task by id:", error);
+      return { success: false, error };
+    }
+  }
+
+  async function updateTask(id: string, data: Task) {
+    try {
+      const db = await getDatabase();
+      const statement = await db.prepareAsync(
+        `UPDATE Task SET title = ?, description = ?, updatedAt = ?, deadline = ?, isCompleted = ? WHERE id = ?`
+      );
+      await statement.executeAsync([
+        data.title,
+        data.description ?? null,
+        data.updatedAt ?? null,
+        data.deadline ?? null,
+        data.isCompleted ?? 0,
         id,
-        title: data.title,
-        description: data.description,
-        createdAt: data.createdAt,
-        deadline: data.deadline ?? null,
-        userId: data.userId,
-      });
+      ]);
+      await statement.finalizeAsync();
+      return { success: true, taskId: id };
     } catch (error) {
-      throw error;
+      console.error("Error updating task:", error);
+      return { success: false, error };
     }
   }
 
-  async function login(email: string, password: string) {
-    const statement = await database.prepareAsync(
-      "SELECT COUNT(*) as count FROM User WHERE email = $email AND passwordHash = $password"
-    );
-
+  async function deleteTask(id: string) {
     try {
-      const result = (await statement.executeAsync({
-        email,
-        password,
-      })) as unknown as Array<{ count: number }>;
-      return { success: result[0]?.count > 0 };
+      const db = await getDatabase();
+      const statement = await db.prepareAsync(`DELETE FROM Task WHERE id = ?`);
+      await statement.executeAsync([id]);
+      await statement.finalizeAsync();
+      return { success: true, taskId: id };
     } catch (error) {
-      throw error;
+      console.error("Error deleting task:", error);
+      return { success: false, error };
     }
   }
 
   return {
-    createFamilyAndAdminUser,
+    getDatabase,
     createTask,
-    login,
+    getTasks,
+    getTaskById,
+    updateTask,
+    deleteTask,
   };
 }

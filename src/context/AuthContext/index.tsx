@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { useDatabase } from "@/database/useDatabase";
 
 interface AuthContextType {
   isLoggedIn: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  token: string | null;
+  login: (token: string) => Promise<void>;
   logout: () => Promise<void>;
   isLoading: boolean;
   error: string | null;
@@ -15,47 +15,47 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const loadLoginState = async () => {
+  const loadAuthState = async () => {
     try {
-      const state = await AsyncStorage.getItem("isLoggedIn");
-      setIsLoggedIn(state === "true");
+      const storedToken = await AsyncStorage.getItem("userToken");
+      if (storedToken) {
+        setToken(storedToken);
+        setIsLoggedIn(true);
+      } else {
+        setToken(null);
+        setIsLoggedIn(false);
+      }
       setError(null);
     } catch (error) {
-      console.error("Error loading login state:", error);
-      setError("Failed to load login state");
+      console.error("Error loading auth state:", error);
+      setError("Failed to load authentication state");
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    loadLoginState();
+    loadAuthState();
   }, []);
 
-  const login = async (email: string, password: string) => {
-    const database = useDatabase();
+  const login = async (newToken: string) => {
     try {
       setIsLoading(true);
-
-      const response = await database.login(email, password);
-
-      if (response.success) {
-        await AsyncStorage.setItem("isLoggedIn", "true");
-        setIsLoggedIn(true);
-        setError(null);
-        router.replace("/(logged)/tabs/home");
-      } else {
-        setError("Failed to login");
-        setIsLoggedIn(false);
-      }
+      await AsyncStorage.setItem("userToken", newToken);
+      setToken(newToken);
+      setIsLoggedIn(true);
+      setError(null);
+      router.replace("/(logged)/tabs/home");
     } catch (error) {
       console.error("Error during login:", error);
       setError("Failed to login");
       setIsLoggedIn(false);
+      setToken(null);
     } finally {
       setIsLoading(false);
     }
@@ -64,7 +64,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = async () => {
     try {
       setIsLoading(true);
-      await AsyncStorage.setItem("isLoggedIn", "false");
+      await AsyncStorage.removeItem("userToken");
+      setToken(null);
       setIsLoggedIn(false);
       setError(null);
       router.replace("/(auth)/tabs/home");
@@ -78,7 +79,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, login, logout, isLoading, error }}
+      value={{ isLoggedIn, token, login, logout, isLoading, error }}
     >
       {children}
     </AuthContext.Provider>

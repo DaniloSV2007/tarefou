@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
+  Alert,
 } from "react-native";
 import { ActivityIndicator, Button, Card, Text } from "react-native-paper";
 import { useRouter } from "expo-router";
@@ -23,6 +24,7 @@ import RoleSelection from "@/components/Register/RoleSelection";
 import FamilyName from "@/components/Register/FamilyName";
 import TermsOfService from "@/components/Register/TermsOfService";
 import { useDatabase } from "@/database/useDatabase";
+import api from "@/services/api";
 
 const steps = [
   "",
@@ -53,33 +55,85 @@ export default function Register() {
   const database = useDatabase();
   const { login } = useAuth();
 
-  const handleRegister = async () => {
-    setIsLoading(true);
-    try {
-      const response = await database.createFamilyAndAdminUser({
-        email,
-        passwordHash: password,
-        username,
-        userName: name,
-        birthday,
-        familyName,
-        familyCreatedAt: new Date().toISOString(),
-        userCreatedAt: new Date().toISOString(),
-      });
-      await handleLogin(email, password);
-    } catch (error) {
-      console.error("Error registering user:", error);
+  const handleLogin = async (email: string, password: string) => {
+    const data = {
+      email: email,
+      password: password,
+    };
+    console.log("Login data: ", data);
+    const res = await api.post("/login", data);
+    if (res.status === 200) {
+      login(res.data.token);
+      console.log("Login successful");
+    } else {
+      console.log(res.data);
     }
   };
 
-  const handleLogin = async (email: string, password: string) => {
-    await login(email, password);
+  const handleRegister = async () => {
+    if (role === "FAMILY_ADMIN") {
+      const familyData = {
+        name: familyName
+          ? familyName.trim()
+          : t("register.familyName.value", { name: name.split(" ")[0] }),
+      };
+      try {
+        const resFamily = await api.post("/families", familyData);
+        if (resFamily.status !== 201) {
+          throw new Error("Error creating family");
+        }
+
+        const data = {
+          name,
+          username,
+          email,
+          passwordHash: password,
+          birthday,
+          createdAt: new Date().toISOString(),
+          role,
+          familyId: resFamily.data.id,
+        };
+
+        console.log("Family id: ", resFamily.data.id);
+
+        const resUser = await api.post("/users", data);
+        if (resUser.status !== 201) {
+          throw new Error("Error creating user");
+        }
+
+        await handleLogin(data.email, data.passwordHash);
+        console.log("Created family and user");
+        router.replace("/");
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      const data = {
+        name,
+        username,
+        email,
+        passwordHash: password,
+        birthday,
+        createdAt: new Date().toISOString(),
+        role,
+        familyId: "",
+      };
+      try {
+        const res = await api.post("/users", data);
+        if (res.status !== 201) {
+          throw new Error("Error creating user");
+        }
+        await handleLogin(data.email, data.passwordHash);
+        console.log("Created user");
+        router.replace("/");
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   useEffect(() => {
     if (name !== "" && doneName) {
-      console.log("name: ", name);
-      console.log(name.split(" ")[0]);
       setFamilyName(
         t("register.familyName.value", { name: name.split(" ")[0] })
       );

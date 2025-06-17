@@ -52,6 +52,7 @@ export default function TopBar(props: Props) {
             fontWeight: "bold",
             color: titleColor,
             height: 32,
+            marginLeft: isBackButtonEnable ? -16 : 0,
           }}
         />
         {iconButton != "" && (

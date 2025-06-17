@@ -1,10 +1,11 @@
 import { BottomNavigation, Icon, Text, useTheme } from "react-native-paper";
 import { usePathname, useRouter } from "expo-router";
 import { useThemeContext } from "@/context/ThemeContext";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
+import { useTabStore } from "@/store/tabStore";
 
 export default function CustomTabBar() {
   const { isDark } = useThemeContext();
@@ -13,6 +14,7 @@ export default function CustomTabBar() {
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const { index, setIndex } = useTabStore();
 
   const routes = [
     {
@@ -45,22 +47,17 @@ export default function CustomTabBar() {
     const matchedIndex = routes.findIndex((route) =>
       pathname.startsWith(route.path)
     );
-
-    return matchedIndex !== -1 ? matchedIndex : 3;
+    console.log("matchedIndex", matchedIndex);
+    console.log("index", index);
+    return matchedIndex !== -1 ? matchedIndex : index;
   };
-
-  const [index, setIndex] = useState(getTabIndexFromPath());
 
   useEffect(() => {
     const newIndex = getTabIndexFromPath();
-
-    if (newIndex !== index && newIndex) {
+    if (newIndex !== index) {
       setIndex(newIndex);
-      router.replace(routes[newIndex].path);
     }
   }, [pathname]);
-
-  theme.colors.secondaryContainer = "transparent";
 
   const renderIcon = ({ route, focused }: any) => (
     <View
@@ -100,7 +97,6 @@ export default function CustomTabBar() {
       navigationState={{ index, routes }}
       onTabPress={({ route }: any) => {
         const newIndex = routes.findIndex((r) => r.key === route.key);
-
         if (newIndex !== -1 && newIndex !== index) {
           setIndex(newIndex);
           setTimeout(() => router.push(routes[newIndex].path), 100);
@@ -112,7 +108,6 @@ export default function CustomTabBar() {
         backgroundColor: theme.colors.background,
         borderTopWidth: 1,
         borderTopColor: theme.colors.surface,
-        zIndex: 0,
         height: 75 + insets.bottom,
         paddingBottom: insets.bottom,
       }}

@@ -62,14 +62,10 @@ export default function FamilyName({
           style={[
             styles.button,
             {
-              backgroundColor:
-                familyName.length === 0
-                  ? theme.colors.surfaceDisabled
-                  : theme.colors.primary,
+              backgroundColor: theme.colors.primary,
             },
           ]}
           labelStyle={styles.buttonText}
-          disabled={familyName.length === 0}
         >
           {t("components:common.next")}
         </Button>

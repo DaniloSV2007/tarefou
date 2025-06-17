@@ -3,10 +3,10 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import TopBar from "@/components/TopBar";
-import { Button } from "react-native-paper";
+import { Button, Card, Icon } from "react-native-paper";
 
 interface Task {
-  id: number;
+  id: string;
   name: string;
   status: boolean;
   description: string;
@@ -30,54 +30,66 @@ export default function TaskDetails() {
   const [taskData, setTaskData] = useState<{
     taskName: string;
     taskDescription: string;
+    taskStatus: string;
   } | null>(null);
 
   const members: Member[] = [
     {
       name: "Guilherme Voiski",
       username: "@guilherme2017",
-      tasks: [
-        {
-          id: 1,
-          name: "Task 1",
-          status: true,
-          description: "Task 1 description",
-        },
-        {
-          id: 2,
-          name: "Task 2",
-          status: false,
-          description: "Task 2 description",
-        },
-      ],
+      tasks: [],
     },
     {
       name: "Danilo Voiski",
       username: "@DaniloSV07",
       tasks: [
         {
-          id: 1,
+          id: "1",
           name: "Find a bug",
           status: true,
           description: "Find a bug in the code",
         },
         {
-          id: 2,
+          id: "2",
           name: "Fix a bug",
           status: false,
           description: "Fix a bug in the code",
         },
         {
-          id: 3,
+          id: "3",
           name: "Task 3",
           status: true,
           description: "Task 3 description",
         },
         {
-          id: 4,
+          id: "4",
           name: "Task 4",
           status: false,
           description: "Task 4 description",
+        },
+        {
+          id: "5",
+          name: "Task 5",
+          status: false,
+          description: "Task 5 description",
+        },
+        {
+          id: "6",
+          name: "Task 6",
+          status: false,
+          description: "Task 6 description",
+        },
+        {
+          id: "7",
+          name: "Task 7",
+          status: false,
+          description: "Task 7 description",
+        },
+        {
+          id: "8",
+          name: "Task 8",
+          status: false,
+          description: "Task 8 description",
         },
       ],
     },
@@ -93,11 +105,7 @@ export default function TaskDetails() {
       }
 
       const userFullName = params.userFullName.trim();
-      const taskId = parseInt(params.taskId, 10);
-
-      if (isNaN(taskId)) {
-        throw new Error("Invalid task ID");
-      }
+      const taskId = params.taskId;
 
       const user = members.find(
         (member) => member.name.toLowerCase() === userFullName.toLowerCase()
@@ -115,6 +123,7 @@ export default function TaskDetails() {
       setTaskData({
         taskName: task.name || "Untitled Task",
         taskDescription: task.description || "No description available",
+        taskStatus: task.status ? "Completed" : "In Progress",
       });
     } catch (error) {
       console.error("Error loading task data:", error);
@@ -163,11 +172,7 @@ export default function TaskDetails() {
   if (error || !taskData) {
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-        <TopBar
-          title="Error"
-          isBackButtonEnable={true}
-          backButtonHref={() => router.push("/(logged)/tabs/home")}
-        />
+        <TopBar title="Error" isBackButtonEnable={true} />
         <View
           style={{
             flex: 1,
@@ -194,15 +199,23 @@ export default function TaskDetails() {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <TopBar
-        title={taskData.taskName}
-        isBackButtonEnable={true}
-        backButtonHref={() => router.push("/(logged)/tabs/home")}
-      />
+      <TopBar title={taskData.taskName} isBackButtonEnable={true} />
       <View style={{ flex: 1, padding: 16 }}>
-        <Text style={{ color: theme.colors.onBackground }}>
-          {taskData.taskDescription}
-        </Text>
+        <Card>
+          <Card.Content>
+            <View>
+              <Text style={{ color: theme.colors.onBackground }}>
+                Task: {taskData?.taskName ?? ""}
+              </Text>
+              <Text style={{ color: theme.colors.onBackground }}>
+                Description: {taskData?.taskDescription ?? ""}
+              </Text>
+              <Text style={{ color: theme.colors.onBackground }}>
+                Status: {taskData?.taskStatus ?? ""}
+              </Text>
+            </View>
+          </Card.Content>
+        </Card>
       </View>
     </View>
   );

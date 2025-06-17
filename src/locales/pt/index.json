@@ -26,7 +26,7 @@
   },
   "login": {
     "title": "Fazer login",
-    "inputEmail": "Email",
+    "inputEmail": "Email ou Usuário",
     "inputPassword": "Senha",
     "loginButton": "Entrar",
     "forgotPassword": "Esqueceu sua senha?",
@@ -50,7 +50,11 @@
       "usernameLength": "O username deve ter pelo menos 3 caracteres",
       "fillAllFields": "Por favor, preencha todos os campos",
       "birthday": "Você deve ter pelo menos 3 anos",
-      "invalidEmail": "Email inválido"
+      "invalidEmail": "Email inválido",
+      "usernameExists": "Este username já está em uso",
+      "emailExists": "Este email já está em uso",
+      "checkingUsername": "Erro ao verificar username. Tente novamente.",
+      "checkingEmail": "Erro ao verificar email. Tente novamente."
     },
     "emailAndPassword": {
       "title": "Insira seu email e senha",
@@ -58,15 +62,20 @@
       "inputPassword": "Senha",
       "alreadyHaveAccount": "Já tem uma conta?",
       "login": "Entrar",
-      "continue": "Continuar"
-    },
-    "nameAndUsername": {
-      "title": "Insira seu nome e username",
+      "continue": "Continuar",
       "inputName": "Nome Completo",
       "inputUsername": "Username",
-      "continue": "Continuar",
       "back": "Voltar",
       "next": "Avançar"
+    },
+    "nameAndUsername": {
+      "title": "Insira seu nome e usuário",
+      "inputName": "Nome Completo",
+      "inputUsername": "Usuário",
+      "continue": "Continuar",
+      "back": "Voltar",
+      "next": "Avançar",
+      "usernameAvailable": "Usuário disponível"
     },
     "birthday": {
       "title": "Insira sua data de nascimento",

@@ -12,7 +12,9 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { Text, ActivityIndicator } from "react-native";
 import { SQLiteProvider } from "expo-sqlite";
-import { initializeDB } from "@/database/initializeDB";
+import { setupDB } from "@/database/setupDB";
+import { deleteDatabase } from "@/database/deleteDatabase";
+import { resetDatabase } from "@/database/resetDatabase";
 
 function RootInnerLayout() {
   const { theme, isDark } = useThemeContext();
@@ -29,7 +31,7 @@ function RootInnerLayout() {
   }, [isDark]);
 
   return (
-    <SQLiteProvider databaseName="family-tasks.db" onInit={initializeDB}>
+    <SQLiteProvider databaseName="tarefou.db" onInit={setupDB}>
       <SafeAreaProvider>
         <PaperProvider theme={theme}>
           <LanguageProvider>

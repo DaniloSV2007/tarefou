@@ -44,8 +44,7 @@
       }
     ],
     "expo-localization",
-    "expo-sqlite",
-    "@prisma/react-native"
+    "expo-sqlite"
   ],
   "androidNavigationBar": {
     "backgroundColor": "#00000000"
