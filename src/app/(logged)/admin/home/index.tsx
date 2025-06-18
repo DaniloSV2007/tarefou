@@ -148,7 +148,7 @@ export default function Home() {
 
   const handleAddTask = () => {
     try {
-      router.push("/tasks/new");
+      router.push("/admin/home/new");
     } catch (error) {
       console.error("Error navigating to new task:", error);
     }

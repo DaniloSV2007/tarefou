@@ -147,7 +147,7 @@ export default function ProfileMenu({
             rippleColor={theme.custom.ripple}
             onPress={() => {
               setIsMenuOpen(false);
-              router.push("/profile/appinfo");
+              router.push("/admin/profile/appinfo");
             }}
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -171,7 +171,7 @@ export default function ProfileMenu({
             style={styles.button}
             onPress={() => {
               setIsMenuOpen(false);
-              router.push("/profile/settings");
+              router.push("/admin/profile/settings");
             }}
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>

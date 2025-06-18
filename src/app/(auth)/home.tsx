@@ -28,7 +28,7 @@ export default function Home() {
         title=""
         iconButton={"cog"}
         iconColor={theme.colors.onBackground}
-        onPressButton={() => router.push("/profile/settings")}
+        onPressButton={() => router.push("/settings")}
         bottomBorder={false}
       />
       <View style={styles.content}>

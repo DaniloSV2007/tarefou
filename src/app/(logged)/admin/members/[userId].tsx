@@ -50,7 +50,6 @@ export default function UserProfile() {
           name: memberData.name.split(" ")[0],
         })}
         isBackButtonEnable={true}
-        backButtonHref={() => router.push("/tabs/members")}
       />
 
       <View style={styles.content}>

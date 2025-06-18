@@ -62,7 +62,7 @@ export default function AllTasks() {
     if (!task || !task.id) return;
 
     router.push({
-      pathname: "/tasks/[userFullName]/[taskId]",
+      pathname: "/admin/home/[userFullName]/[taskId]",
       params: {
         userFullName: users[0].name,
         taskId: task.id.toString(),

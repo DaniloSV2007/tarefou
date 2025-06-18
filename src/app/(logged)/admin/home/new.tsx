@@ -12,14 +12,8 @@ export default function NewTask() {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <TopBar
-        title={t("home.newTask.title")}
-        isBackButtonEnable={true}
-        backButtonHref={() => router.push("/(logged)/tabs/home")}
-      />
-      <View style={{ flex: 1, padding: 16 }}>
-        {/* TODO: Add new task form */}
-      </View>
+      <TopBar title={t("home.newTask.title")} isBackButtonEnable={true} />
+      <View style={{ flex: 1, padding: 16 }}></View>
     </View>
   );
 }

@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setToken(newToken);
       setIsLoggedIn(true);
       setError(null);
-      router.replace("/(logged)/tabs/home");
+      router.replace("/admin/home");
     } catch (error) {
       console.error("Error during login:", error);
       setError("Failed to login");
@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setToken(null);
       setIsLoggedIn(false);
       setError(null);
-      router.replace("/(auth)/tabs/home");
+      router.replace("/home");
     } catch (error) {
       console.error("Error during logout:", error);
       setError("Failed to logout");

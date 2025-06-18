@@ -55,7 +55,7 @@ export default function MemberInfo({
       }}
     >
       <TouchableRipple
-        onPress={() => router.push(`/member/${userId}`)}
+        onPress={() => router.push(`/admin/members/${userId}`)}
         borderless={false}
         rippleColor={theme.custom.ripple}
       >

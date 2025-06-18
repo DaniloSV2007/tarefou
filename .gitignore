@@ -56,3 +56,6 @@ metro-cache/
 # User Assets
 src/assets/Danilo/
 src/assets/Guilherme/
+
+#Components Copy
+/src/components/CustomTabBar/indexcopy.tsx

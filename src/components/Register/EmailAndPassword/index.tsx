@@ -149,7 +149,8 @@ export default function EmailAndPassword({
               textDecorationLine: "underline",
             },
           ]}
-          href="/(aux)/Login"
+          onPress={() => router.back()}
+          href={""}
         >
           {" "}
           {t("register.emailAndPassword.login")}

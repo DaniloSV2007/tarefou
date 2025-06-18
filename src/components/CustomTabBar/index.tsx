@@ -1,60 +1,40 @@
 import { BottomNavigation, Icon, Text, useTheme } from "react-native-paper";
 import { usePathname, useRouter } from "expo-router";
-import { useThemeContext } from "@/context/ThemeContext";
-import { useEffect } from "react";
-import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTranslation } from "react-i18next";
-import { useTabStore } from "@/store/tabStore";
+import { useState, useEffect, useRef } from "react";
+import { View } from "react-native";
+
+const routes = [
+  { key: "home", title: "Home", icon: "home", path: "/admin/home" },
+  { key: "report", title: "Report", icon: "notebook", path: "/admin/report" },
+  {
+    key: "members",
+    title: "Members",
+    icon: "account-group",
+    path: "/admin/members",
+  },
+  {
+    key: "profile",
+    title: "Profile",
+    icon: "account-circle",
+    path: "/admin/profile",
+  },
+];
 
 export default function CustomTabBar() {
-  const { isDark } = useThemeContext();
   const theme = useTheme();
-  const router = useRouter();
   const pathname = usePathname();
+  const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { t } = useTranslation();
-  const { index, setIndex } = useTabStore();
-
-  const routes = [
-    {
-      key: "home",
-      title: t("navigation.home"),
-      icon: "home",
-      path: "/tabs/home",
-    },
-    {
-      key: "report",
-      title: t("navigation.report"),
-      icon: "notebook",
-      path: "/tabs/report",
-    },
-    {
-      key: "members",
-      title: t("navigation.members"),
-      icon: "account-supervisor-circle",
-      path: "/tabs/members",
-    },
-    {
-      key: "profile",
-      title: t("navigation.profile"),
-      icon: "account-circle",
-      path: "/tabs/profile",
-    },
-  ];
-
-  const getTabIndexFromPath = () => {
-    const matchedIndex = routes.findIndex((route) =>
-      pathname.startsWith(route.path)
-    );
-    console.log("matchedIndex", matchedIndex);
-    console.log("index", index);
-    return matchedIndex !== -1 ? matchedIndex : index;
-  };
+  const [index, setIndex] = useState(0);
+  const currentRoute = useRef(0);
 
   useEffect(() => {
-    const newIndex = getTabIndexFromPath();
-    if (newIndex !== index) {
+    const newIndex = routes.findIndex((route) =>
+      pathname.startsWith(route.path)
+    );
+    if (newIndex !== -1) {
+      currentRoute.current = newIndex;
       setIndex(newIndex);
     }
   }, [pathname]);
@@ -64,16 +44,13 @@ export default function CustomTabBar() {
       style={{
         alignItems: "center",
         justifyContent: "center",
-        height: 45,
-        width: 45,
-        marginTop: focused ? -7 : -5,
-        marginLeft: -1,
+        marginTop: focused ? -8 : -4,
       }}
     >
       <Icon
         source={route.icon}
-        size={focused ? 40 : 35}
-        color={focused ? theme.colors.primary : theme.colors.onBackground}
+        size={focused ? 34 : 28}
+        color={focused ? theme.colors.primary : theme.colors.onSurface}
       />
     </View>
   );
@@ -81,11 +58,11 @@ export default function CustomTabBar() {
   const renderLabel = ({ route, focused }: any) => (
     <Text
       style={{
-        fontSize: focused ? 14 : 12,
-        height: focused ? 20 : 18,
+        fontSize: focused ? 13 : 12,
+        fontWeight: focused ? "bold" : "normal",
+        color: focused ? theme.colors.primary : theme.colors.onSurface,
         textAlign: "center",
-        fontWeight: focused ? "bold" : "600",
-        color: focused ? theme.colors.primary : theme.colors.onBackground,
+        marginTop: focused ? -8 : 0,
       }}
     >
       {route.title}
@@ -99,20 +76,20 @@ export default function CustomTabBar() {
         const newIndex = routes.findIndex((r) => r.key === route.key);
         if (newIndex !== -1 && newIndex !== index) {
           setIndex(newIndex);
-          setTimeout(() => router.push(routes[newIndex].path), 100);
+          router.push(routes[newIndex].path);
         }
       }}
       shifting={true}
       labeled={true}
-      style={{
-        backgroundColor: theme.colors.background,
-        borderTopWidth: 1,
-        borderTopColor: theme.colors.surface,
-        height: 75 + insets.bottom,
-        paddingBottom: insets.bottom,
-      }}
       renderIcon={renderIcon}
       renderLabel={renderLabel}
+      style={{
+        backgroundColor: theme.colors.background,
+        height: 65 + insets.bottom,
+        paddingBottom: insets.bottom,
+        borderTopColor: theme.colors.surface,
+        borderTopWidth: 0.5,
+      }}
     />
   );
 }

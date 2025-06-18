@@ -9,9 +9,9 @@ export default function Index() {
   useEffect(() => {
     if (!isLoading) {
       if (isLoggedIn) {
-        router.replace("/(logged)/tabs/home");
+        router.replace("/(logged)/admin/home");
       } else {
-        router.replace("/(auth)/tabs/home");
+        router.replace("/(auth)/home");
       }
     }
   }, [isLoggedIn, isLoading]);

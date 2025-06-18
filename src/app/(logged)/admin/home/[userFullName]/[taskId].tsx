@@ -158,7 +158,7 @@ export default function TaskDetails() {
         <TopBar
           title="Loading..."
           isBackButtonEnable={true}
-          backButtonHref={() => router.push("/(logged)/tabs/home")}
+          backButtonHref={() => router.push("/(logged)/admin/home")}
         />
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}

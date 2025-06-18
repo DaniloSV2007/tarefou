@@ -42,7 +42,8 @@ export default function TopBar(props: Props) {
         style={{
           backgroundColor: barColor,
           borderBottomColor: theme.colors.surface,
-          borderBottomWidth: bottomBorder ? 1 : 0,
+          borderBottomWidth: bottomBorder ? 0.5 : 0,
+          height: 60,
         }}
       >
         <Appbar.Content
@@ -50,6 +51,7 @@ export default function TopBar(props: Props) {
           titleStyle={{
             fontSize: 30,
             fontWeight: "bold",
+            alignItems: "center",
             color: titleColor,
             height: 32,
             marginLeft: isBackButtonEnable ? -16 : 0,

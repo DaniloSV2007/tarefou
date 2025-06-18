@@ -93,11 +93,12 @@ export default function Login() {
         title={t("login.title")}
         iconButton="cog"
         iconColor={theme.colors.onBackground}
-        onPressButton={() => router.push("/profile/settings")}
-        isBackButtonEnable={true}
+        onPressButton={() => router.push("/settings")}
         bottomBorder={false}
       />
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+      >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <KeyboardAvoidingView
             style={{ flex: 1 }}

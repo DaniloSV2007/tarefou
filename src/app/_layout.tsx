@@ -1,11 +1,11 @@
 import "@/i18n";
 import { AuthProvider } from "@/context/AuthContext";
-import { Slot } from "expo-router";
+import { Slot, Stack } from "expo-router";
 import { PaperProvider } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider, useThemeContext } from "@/context/ThemeContext";
 import { LanguageProvider } from "@/context/LanguageContext";
-import { StatusBar } from "react-native";
+import { StatusBar, View } from "react-native";
 import * as SystemUI from "expo-system-ui";
 import * as Font from "expo-font";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -15,9 +15,11 @@ import { SQLiteProvider } from "expo-sqlite";
 import { setupDB } from "@/database/setupDB";
 import { deleteDatabase } from "@/database/deleteDatabase";
 import { resetDatabase } from "@/database/resetDatabase";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 function RootInnerLayout() {
   const { theme, isDark } = useThemeContext();
+  const appTheme = useAppTheme();
 
   useEffect(() => {
     const updateSystemUI = async () => {
@@ -40,7 +42,13 @@ function RootInnerLayout() {
                 barStyle={isDark ? "light-content" : "dark-content"}
                 backgroundColor={isDark ? "#000" : "#fff"}
               />
-              <Slot />
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  presentation: "transparentModal",
+                  contentStyle: { backgroundColor: appTheme.colors.background },
+                }}
+              />
             </AuthProvider>
           </LanguageProvider>
         </PaperProvider>
