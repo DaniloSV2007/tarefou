@@ -1,7 +1,7 @@
 {
   "name": "Tarefou!",
   "slug": "checklistapp",
-  "version": "1.0.16",
+  "version": "1.0.18",
   "scheme": "tarefou",
   "icon": "./assets/adaptive-icon.png",
   "orientation": "portrait",
@@ -20,7 +20,8 @@
       "backgroundColor": "#ffffff"
     },
     "edgeToEdgeEnabled": true,
-    "package": "com.danilosv07.tarefou"
+    "package": "com.danilosv07.tarefou",
+    "usesCleartextTraffic": true
   },
   "extra": {
     "eas": {
