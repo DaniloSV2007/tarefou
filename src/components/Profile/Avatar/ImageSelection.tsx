@@ -1,4 +1,3 @@
-import { useAuth } from "@/context/AuthContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -17,39 +16,38 @@ import {
   TouchableRipple,
 } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ConfirmLogout from "./ConfirmLogout";
 import { useTranslation } from "react-i18next";
 
 interface ProfileMenuProps {
-  isMenuOpen: boolean;
-  setIsMenuOpen: (value: boolean) => void;
+  isSelectionOpen: boolean;
+  setIsSelectionOpen: (value: boolean) => void;
   menuAnimation: boolean;
   setMenuAnimation: (value: boolean) => void;
-  isAdmin?: boolean;
+  image: String | null;
+  changeAvatar: (value: Number) => void;
 }
 
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 
-export default function ProfileMenu({
-  isMenuOpen,
-  setIsMenuOpen,
+export default function ImageSelection({
+  isSelectionOpen,
+  setIsSelectionOpen,
   menuAnimation,
   setMenuAnimation,
-  isAdmin = false,
+  image,
+  changeAvatar,
 }: ProfileMenuProps) {
   const router = useRouter();
   const theme = useAppTheme();
-  const { isLoggedIn, logout } = useAuth();
   const insets = useSafeAreaInsets();
-  const [isConfirmation, setIsConfirmation] = useState(false);
   const { t } = useTranslation();
 
   const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    setMenuAnimation(isMenuOpen);
-  }, [isMenuOpen]);
+    setMenuAnimation(isSelectionOpen);
+  }, [isSelectionOpen]);
 
   useEffect(() => {
     let animationSet: Animated.CompositeAnimation | null = null;
@@ -95,7 +93,7 @@ export default function ProfileMenu({
     setMenuAnimation(false);
 
     setTimeout(() => {
-      setIsMenuOpen(false);
+      setIsSelectionOpen(false);
     }, 400);
   };
 
@@ -151,17 +149,13 @@ export default function ProfileMenu({
             style={styles.button}
             rippleColor={theme.custom.ripple}
             onPress={() => {
-              setIsMenuOpen(false);
-              if (isAdmin) {
-                router.push("/admin/profile/appinfo");
-              } else {
-                router.push("/user/profile/appinfo");
-              }
+              changeAvatar(1);
+              setIsSelectionOpen(false);
             }}
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Icon
-                source={"information-outline"}
+                source={"camera"}
                 size={25}
                 color={theme.colors.onBackground}
               />
@@ -171,7 +165,7 @@ export default function ProfileMenu({
                   { color: theme.colors.onBackground },
                 ]}
               >
-                {t("components:profileMenu.appInfo")}
+                Tirar uma foto
               </Text>
             </View>
           </TouchableRipple>
@@ -181,18 +175,13 @@ export default function ProfileMenu({
           <TouchableRipple
             style={styles.button}
             onPress={() => {
-              setIsMenuOpen(false);
-
-              if (isAdmin) {
-                router.push("/admin/profile/settings");
-              } else {
-                router.push("/user/profile/settings");
-              }
+              changeAvatar(2);
+              setIsSelectionOpen(false);
             }}
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Icon
-                source={"cog"}
+                source={"image"}
                 size={25}
                 color={theme.colors.onBackground}
               />
@@ -202,7 +191,7 @@ export default function ProfileMenu({
                   { color: theme.colors.onBackground },
                 ]}
               >
-                {t("components:profileMenu.settings")}
+                Pegar da galeria
               </Text>
             </View>
           </TouchableRipple>
@@ -211,16 +200,17 @@ export default function ProfileMenu({
             style={{ backgroundColor: theme.colors.surface, height: 0.5 }}
           />
 
-          {isLoggedIn && (
+          {image !== null && (
             <TouchableRipple
               style={styles.button}
               onPress={() => {
-                setIsConfirmation(true);
+                changeAvatar(3);
+                setIsSelectionOpen(false);
               }}
             >
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Icon
-                  source={"logout"}
+                  source={"image-off"}
                   size={25}
                   color={theme.colors.onBackground}
                 />
@@ -230,7 +220,7 @@ export default function ProfileMenu({
                     { color: theme.colors.onBackground },
                   ]}
                 >
-                  {t("components:profileMenu.logout")}
+                  Remover atual
                 </Text>
               </View>
             </TouchableRipple>
@@ -241,14 +231,6 @@ export default function ProfileMenu({
           />
         </Animated.View>
       </View>
-      {isConfirmation && (
-        <ConfirmLogout
-          isConfirmation={isConfirmation}
-          setIsConfirmation={setIsConfirmation}
-          setIsMenuOpen={setIsMenuOpen}
-          logout={logout}
-        />
-      )}
     </Portal>
   );
 }

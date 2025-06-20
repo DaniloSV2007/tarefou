@@ -3,31 +3,23 @@ import { usePathname, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useState, useEffect, useRef } from "react";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 
-const routes = [
-  { key: "home", title: "Home", icon: "home", path: "/admin/home" },
-  { key: "report", title: "Report", icon: "notebook", path: "/admin/report" },
-  {
-    key: "members",
-    title: "Members",
-    icon: "account-group",
-    path: "/admin/members",
-  },
-  {
-    key: "profile",
-    title: "Profile",
-    icon: "account-circle",
-    path: "/admin/profile",
-  },
-];
+interface TabBarProps {
+  routesProps: any[];
+  hideTabBar: boolean;
+}
 
-export default function CustomTabBar() {
+export default function CustomTabBar({ routesProps, hideTabBar }: TabBarProps) {
   const theme = useTheme();
   const pathname = usePathname();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [index, setIndex] = useState(0);
   const currentRoute = useRef(0);
+  const { t } = useTranslation();
+
+  const routes = routesProps;
 
   useEffect(() => {
     const newIndex = routes.findIndex((route) =>
@@ -37,6 +29,7 @@ export default function CustomTabBar() {
       currentRoute.current = newIndex;
       setIndex(newIndex);
     }
+    console.log(index);
   }, [pathname]);
 
   const renderIcon = ({ route, focused }: any) => (
@@ -65,7 +58,7 @@ export default function CustomTabBar() {
         marginTop: focused ? -8 : 0,
       }}
     >
-      {route.title}
+      {t(`routes.${route.key}`)}
     </Text>
   );
 
@@ -76,7 +69,7 @@ export default function CustomTabBar() {
         const newIndex = routes.findIndex((r) => r.key === route.key);
         if (newIndex !== -1 && newIndex !== index) {
           setIndex(newIndex);
-          router.push(routes[newIndex].path);
+          router.replace(routes[newIndex].path);
         }
       }}
       shifting={true}
@@ -89,6 +82,7 @@ export default function CustomTabBar() {
         paddingBottom: insets.bottom,
         borderTopColor: theme.colors.surface,
         borderTopWidth: 0.5,
+        display: hideTabBar ? "none" : "flex",
       }}
     />
   );

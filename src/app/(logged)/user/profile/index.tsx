@@ -68,17 +68,12 @@ export default function Profile() {
       )}
       <ProfileLogged />
 
-      <Button onPress={() => router.replace("/user/home")}>
-        Go to User routes
-      </Button>
-
       {isMenuOpen && (
         <ProfileMenu
           isMenuOpen={isMenuOpen}
           setIsMenuOpen={setIsMenuOpen}
           menuAnimation={menuAnimation}
           setMenuAnimation={setMenuAnimation}
-          isAdmin={true}
         />
       )}
     </>

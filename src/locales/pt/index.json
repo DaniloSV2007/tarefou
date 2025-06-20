@@ -24,6 +24,14 @@
       "status": "Status"
     }
   },
+  "routes": {
+    "home": "Início",
+    "report": "Relatório",
+    "members": "Membros",
+    "profile": "Perfil",
+    "tasks": "Tarefas",
+    "rewards": "Recompensas"
+  },
   "login": {
     "title": "Fazer login",
     "inputEmail": "Email ou Usuário",

@@ -24,6 +24,14 @@
       "status": "Status"
     }
   },
+  "routes": {
+    "home": "Home",
+    "report": "Report",
+    "members": "Members",
+    "profile": "Profile",
+    "tasks": "Tasks",
+    "rewards": "Rewards"
+  },
   "login": {
     "title": "Login",
     "inputEmail": "Email or Username",

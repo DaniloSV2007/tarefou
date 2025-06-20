@@ -1,7 +1,8 @@
 import { Tabs, usePathname } from "expo-router";
 import CustomTabBar from "@/components/CustomTabBar";
+import { routes } from "@/routes/adminRoutes";
 
-export default function LoggedTabsLayout() {
+export default function AdminLayout() {
   const pathname = usePathname();
   const hideTabBar =
     pathname.startsWith("/admin/teste/") ||
@@ -11,7 +12,9 @@ export default function LoggedTabsLayout() {
 
   return (
     <Tabs
-      tabBar={(props) => !hideTabBar && <CustomTabBar />}
+      tabBar={(props) => (
+        <CustomTabBar routesProps={routes} hideTabBar={hideTabBar} />
+      )}
       screenOptions={{
         headerShown: false,
       }}
