@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { FAB } from "react-native-paper";
 import { useAppTheme } from "@/hooks/useAppTheme";

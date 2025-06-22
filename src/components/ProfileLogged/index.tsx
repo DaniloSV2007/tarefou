@@ -43,7 +43,10 @@ export default function ProfileLogged() {
   return (
     <>
       <View
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        style={[
+          styles.container,
+          { backgroundColor: theme.colors.background, flex: 1 },
+        ]}
       >
         <AvatarProfile />
       </View>

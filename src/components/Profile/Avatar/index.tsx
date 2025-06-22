@@ -61,23 +61,28 @@ export default function AvatarProfile() {
   const changeAvatar = async (mode: Number) => {
     if (mode === 1) {
       try {
-        const result = await ImagePicker.launchCameraAsync();
+        const result = await ImagePicker.launchCameraAsync({
+          cameraType: ImagePicker.CameraType.front,
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 1,
+        });
 
         if (!result.canceled) {
           setImage(result.assets[0].uri);
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     } else if (mode === 2) {
       try {
         const result = await ImagePicker.launchImageLibraryAsync({
           allowsEditing: true,
           quality: 1,
+          aspect: [1, 1],
         });
         if (!result.canceled) {
           setImage(result.assets[0].uri);
-          console.log(image);
         }
       } catch (error) {
         console.error(error);

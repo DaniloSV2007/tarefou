@@ -32,7 +32,7 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
 
     try {
       router.push({
-        pathname: "/admin/home/[userFullName]/[taskId]",
+        pathname: "/tasks/[userFullName]/[taskId]",
         params: {
           userFullName: name,
           taskId: task.id.toString(),
@@ -187,7 +187,7 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
             ))}
         </View>
         <Link
-          href={`/admin/home/${json}`}
+          href={`/tasks/${json}`}
           onPressIn={() => setLinkColor(theme.colors.onSurfaceDisabled)}
           onPressOut={() => setLinkColor(theme.colors.onSurface)}
           style={[

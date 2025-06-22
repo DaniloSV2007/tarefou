@@ -1,4 +1,3 @@
-import { useAuth } from "@/context/AuthContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Keyboard,
@@ -28,6 +27,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDatabase } from "@/database/useDatabase";
 import { isValidEmail } from "@/utils/isValidEmail";
 import api from "@/services/api";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Login() {
   const { login } = useAuth();
@@ -64,7 +64,7 @@ export default function Login() {
     try {
       const res = await api.post("/login", data);
       if (res.status === 200) {
-        login(res.data.token);
+        login(res.data.token, res.data.role);
       } else {
         setError("Email ou senha inválidos");
         console.error("Login failed: ", res.data.error);

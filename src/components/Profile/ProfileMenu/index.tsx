@@ -153,9 +153,9 @@ export default function ProfileMenu({
             onPress={() => {
               setIsMenuOpen(false);
               if (isAdmin) {
-                router.push("/admin/profile/appinfo");
+                router.push("/appinfo");
               } else {
-                router.push("/user/profile/appinfo");
+                router.push("/appinfo");
               }
             }}
           >
@@ -184,9 +184,9 @@ export default function ProfileMenu({
               setIsMenuOpen(false);
 
               if (isAdmin) {
-                router.push("/admin/profile/settings");
+                router.push("/settings");
               } else {
-                router.push("/user/profile/settings");
+                router.push("/settings");
               }
             }}
           >

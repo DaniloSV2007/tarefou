@@ -9,7 +9,7 @@ export default function Index() {
   useEffect(() => {
     if (!isLoading) {
       if (isLoggedIn) {
-        router.replace("/(logged)/admin/home");
+        router.replace("/(logged)");
       } else {
         router.replace("/(auth)/home");
       }

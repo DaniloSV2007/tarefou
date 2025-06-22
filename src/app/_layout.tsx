@@ -42,13 +42,19 @@ function RootInnerLayout() {
                 barStyle={isDark ? "light-content" : "dark-content"}
                 backgroundColor={isDark ? "#000" : "#fff"}
               />
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  presentation: "transparentModal",
-                  contentStyle: { backgroundColor: appTheme.colors.background },
-                }}
-              />
+              <View
+                style={{ backgroundColor: appTheme.colors.background, flex: 1 }}
+              >
+                <Stack
+                  screenOptions={{
+                    headerShown: false,
+                    animation: "none",
+                    contentStyle: {
+                      backgroundColor: appTheme.colors.background,
+                    },
+                  }}
+                />
+              </View>
             </AuthProvider>
           </LanguageProvider>
         </PaperProvider>

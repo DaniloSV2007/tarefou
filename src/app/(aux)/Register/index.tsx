@@ -60,13 +60,12 @@ export default function Register() {
       email: email,
       password: password,
     };
-    console.log("Login data: ", data);
+
     const res = await api.post("/login", data);
     if (res.status === 200) {
-      login(res.data.token);
-      console.log("Login successful");
+      login(res.data.token, res.data.role);
     } else {
-      console.log(res.data);
+      console.log("error");
     }
   };
 
@@ -94,18 +93,16 @@ export default function Register() {
           familyId: resFamily.data.id,
         };
 
-        console.log("Family id: ", resFamily.data.id);
-
         const resUser = await api.post("/users", data);
         if (resUser.status !== 201) {
           throw new Error("Error creating user");
         }
 
         await handleLogin(data.email, data.passwordHash);
-        console.log("Created family and user");
+
         router.replace("/");
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     } else {
       const data = {
@@ -116,7 +113,7 @@ export default function Register() {
         birthday,
         createdAt: new Date().toISOString(),
         role,
-        familyId: "",
+        familyId: null,
       };
       try {
         const res = await api.post("/users", data);
@@ -124,10 +121,8 @@ export default function Register() {
           throw new Error("Error creating user");
         }
         await handleLogin(data.email, data.passwordHash);
-        console.log("Created user");
-        router.replace("/");
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     }
   };

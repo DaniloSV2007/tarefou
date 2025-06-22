@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 interface AuthContextType {
   isLoggedIn: boolean;
   token: string | null;
-  login: (token: string) => Promise<void>;
+  login: (token: string, role: string) => Promise<void>;
   logout: () => Promise<void>;
   isLoading: boolean;
   error: string | null;
@@ -43,14 +43,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     loadAuthState();
   }, []);
 
-  const login = async (newToken: string) => {
+  const login = async (newToken: string, role: string) => {
     try {
       setIsLoading(true);
       await AsyncStorage.setItem("userToken", newToken);
+      await AsyncStorage.setItem("userRole", role);
       setToken(newToken);
       setIsLoggedIn(true);
       setError(null);
-      router.replace("/admin/home");
+      router.replace(`/${role === "MEMBER" ? "user" : "admin"}/home`);
     } catch (error) {
       console.error("Error during login:", error);
       setError("Failed to login");

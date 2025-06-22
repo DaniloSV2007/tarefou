@@ -18,28 +18,28 @@ export default function Members() {
       style={[
         {
           backgroundColor: theme.colors.background,
+          flex: 1,
         },
         styles.container,
       ]}
     >
       <TopBar title={t("screens:members.title")} />
-      <FAB
-        icon={"plus"}
-        style={[{ backgroundColor: theme.colors.primary }, styles.fab]}
-        rippleColor={theme.custom.ripple}
-        onPress={() => {}}
-        color="white"
-      />
 
       <View
         style={{
           flex: 1,
+          backgroundColor: theme.colors.background,
           alignItems: "center",
           paddingTop: "1%",
         }}
       >
-        <MemberInfo title="Guilherme Voiski" username="@guilherme2017" />
-        <MemberInfo title="Danilo Voiski" username="@DaniloSV07" />
+        <FAB
+          icon={"plus"}
+          style={[{ backgroundColor: theme.colors.primary }, styles.fab]}
+          rippleColor={theme.custom.ripple}
+          onPress={() => {}}
+          color="white"
+        />
       </View>
     </View>
   );

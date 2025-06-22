@@ -7,10 +7,9 @@ import { useTranslation } from "react-i18next";
 
 interface TabBarProps {
   routesProps: any[];
-  hideTabBar: boolean;
 }
 
-export default function CustomTabBar({ routesProps, hideTabBar }: TabBarProps) {
+export default function CustomTabBar({ routesProps }: TabBarProps) {
   const theme = useTheme();
   const pathname = usePathname();
   const router = useRouter();
@@ -29,7 +28,6 @@ export default function CustomTabBar({ routesProps, hideTabBar }: TabBarProps) {
       currentRoute.current = newIndex;
       setIndex(newIndex);
     }
-    console.log(index);
   }, [pathname]);
 
   const renderIcon = ({ route, focused }: any) => (
@@ -82,7 +80,6 @@ export default function CustomTabBar({ routesProps, hideTabBar }: TabBarProps) {
         paddingBottom: insets.bottom,
         borderTopColor: theme.colors.surface,
         borderTopWidth: 0.5,
-        display: hideTabBar ? "none" : "flex",
       }}
     />
   );
