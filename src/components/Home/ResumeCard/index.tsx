@@ -25,7 +25,7 @@ export default function ResumeCard({ stats }: { stats: MemberStats }) {
         borderRadius: 16,
         paddingVertical: 12,
         paddingHorizontal: 4,
-        marginTop: 16,
+        marginTop: 12,
       }}
     >
       <Card.Title

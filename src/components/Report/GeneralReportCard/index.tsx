@@ -31,12 +31,13 @@ export default function GeneralReportCard() {
   return (
     <Card
       style={{
-        margin: 10,
+        marginTop: 12,
         backgroundColor: theme.custom.cardColor,
         width: "90%",
         overflow: "hidden",
         borderRadius: 16,
-        padding: 10,
+        paddingVertical: 12,
+        paddingHorizontal: 4,
       }}
     >
       <Card.Title

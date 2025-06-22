@@ -16,10 +16,15 @@ import { setupDB } from "@/database/setupDB";
 import { deleteDatabase } from "@/database/deleteDatabase";
 import { resetDatabase } from "@/database/resetDatabase";
 import { useAppTheme } from "@/hooks/useAppTheme";
+import * as Updates from "expo-updates";
+import Update from "@/components/Update";
 
 function RootInnerLayout() {
   const { theme, isDark } = useThemeContext();
   const appTheme = useAppTheme();
+
+  const { isUpdateAvailable, isDownloading, isRestarting, isUpdatePending } =
+    Updates.useUpdates();
 
   useEffect(() => {
     const updateSystemUI = async () => {
@@ -31,6 +36,10 @@ function RootInnerLayout() {
     };
     updateSystemUI();
   }, [isDark]);
+
+  useEffect(() => {
+    Updates.checkForUpdateAsync();
+  }, []);
 
   return (
     <SQLiteProvider databaseName="tarefou.db" onInit={setupDB}>
@@ -53,6 +62,12 @@ function RootInnerLayout() {
                       backgroundColor: appTheme.colors.background,
                     },
                   }}
+                />
+                <Update
+                  isDownloading={isDownloading}
+                  isRestarting={isRestarting}
+                  isUpdateAvailable={isUpdateAvailable}
+                  isUpdatePending={isUpdatePending}
                 />
               </View>
             </AuthProvider>

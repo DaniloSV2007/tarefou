@@ -1,12 +1,13 @@
 import { Link, useRouter } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { FAB } from "react-native-paper";
+import { Card, FAB, Icon } from "react-native-paper";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import React, { useState } from "react";
 import TopBar from "@/components/TopBar";
 import ResumeCard from "@/components/Home/ResumeCard";
 import TasksCard from "@/components/Home/TasksCard";
 import { useTranslation } from "react-i18next";
+import ContentLoader, { Circle, List, Rect } from "react-content-loader/native";
 
 interface Task {
   id: string;
@@ -154,6 +155,22 @@ export default function Home() {
     }
   };
 
+  const MyLoader = () => (
+    <ContentLoader
+      viewBox="0 0 380 70"
+      animate={true}
+      speed={2}
+      backgroundColor={theme.custom.cardTaskBackground}
+      foregroundColor="gray"
+      width={476}
+      height={152}
+      style={{ borderWidth: 1, borderColor: "#FFF" }}
+    >
+      <Rect x="55" y="0" rx="4" ry="4" width="200" height="16" />
+      <Rect x="55" y="32" rx="8" ry="8" width="270" height="64" />
+    </ContentLoader>
+  );
+
   return (
     <>
       <FAB
@@ -181,6 +198,22 @@ export default function Home() {
                 }
               />
             ))}
+
+          <Card
+            style={[
+              styles.card,
+              {
+                backgroundColor: theme.custom.cardColor,
+                marginBottom: 16,
+                paddingBottom: 12,
+                paddingTop: 0,
+              },
+            ]}
+          >
+            <Card.Content style={{ alignItems: "center", marginTop: -24 }}>
+              <MyLoader />
+            </Card.Content>
+          </Card>
         </View>
       </ScrollView>
     </>
@@ -198,7 +231,6 @@ const styles = StyleSheet.create({
   content: {
     gap: 16,
     alignItems: "center",
-    paddingBottom: 80, // Add padding to account for FAB
   },
   fab: {
     position: "absolute",
@@ -206,5 +238,31 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 1000,
+  },
+  card: {
+    width: "90%",
+    paddingVertical: 12,
+    paddingBottom: 0,
+    borderRadius: 16,
+  },
+  tasksContainer: {
+    gap: 8,
+  },
+  taskContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+  },
+  progressText: {
+    fontSize: 16,
+    flex: 1,
+  },
+  descriptionText: {
+    fontSize: 14,
+    opacity: 0.7,
+    flex: 1,
+    marginRight: 22,
   },
 });

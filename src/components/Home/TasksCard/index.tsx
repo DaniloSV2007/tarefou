@@ -68,7 +68,6 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
           styles.card,
           {
             backgroundColor: theme.custom.cardColor,
-            marginBottom: 16,
             paddingBottom: 12,
           },
         ]}
@@ -81,19 +80,32 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
             color: theme.colors.onBackground,
           }}
         />
-        <Card.Content style={{ alignItems: "center" }}>
+        <Card.Content
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            height: 100,
+          }}
+        >
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
               position: "absolute",
-              top: 0,
+              top: "38%",
               left: 64,
+              flex: 1,
             }}
           >
             <Icon source="magnify" size={24} />
           </View>
-          <Text style={{ color: theme.colors.onSurface }}>
+          <Text
+            style={{
+              color: theme.colors.onSurface,
+              fontSize: 16,
+              marginLeft: 24,
+            }}
+          >
             {t("components:taskCard.noTasks")}
           </Text>
         </Card.Content>

@@ -43,12 +43,12 @@ export default function ReportCard({
   return (
     <Card
       style={{
-        margin: 10,
         backgroundColor: theme.custom.cardColor,
         width: "90%",
         overflow: "hidden",
+        paddingVertical: 12,
+        paddingBottom: 0,
         borderRadius: 16,
-        padding: 10,
       }}
     >
       <Card.Title
@@ -59,6 +59,8 @@ export default function ReportCard({
           fontSize: 14,
           color: theme.colors.onSurfaceVariant,
           marginLeft: 10,
+          marginTop: -8,
+          marginBottom: -8,
         }}
         left={() =>
           avatar && avatar != "" ? (
