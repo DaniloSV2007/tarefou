@@ -127,12 +127,28 @@
   "appInfo": {
     "title": "App Info",
     "version": "App Version",
-    "madeBy": "Made By"
+    "madeBy": "Made By",
+    "updateButton": "Check for updates",
+    "noUpdateSnackbar": "You're already on the latest version."
   },
   "navigation": {
     "home": "Home",
     "report": "Report",
     "members": "Members",
     "profile": "Profile"
+  },
+  "update": {
+    "downloading": "Downloading Update",
+    "restarting": "Restarting App",
+    "needDownload": {
+      "title": "Update Available",
+      "content": "A new update is available and needs to be downloaded.",
+      "download": "Download"
+    },
+    "needRestart": {
+      "title": "Restart Pending",
+      "content": "The update has been succesfully downloaded. The app needs to be restarted.",
+      "restart": "Restart"
+    }
   }
 }

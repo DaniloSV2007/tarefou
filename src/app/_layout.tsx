@@ -26,6 +26,9 @@ function RootInnerLayout() {
   const { isUpdateAvailable, isDownloading, isRestarting, isUpdatePending } =
     Updates.useUpdates();
 
+  const [updateAvailable, setIsupdateAvailable] =
+    useState<boolean>(isUpdateAvailable);
+
   useEffect(() => {
     const updateSystemUI = async () => {
       try {
@@ -38,7 +41,17 @@ function RootInnerLayout() {
   }, [isDark]);
 
   useEffect(() => {
-    Updates.checkForUpdateAsync();
+    const checkUpdates = async () => {
+      try {
+        const update = Updates.checkForUpdateAsync();
+        if ((await update).isAvailable) {
+          setIsupdateAvailable(true);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    checkUpdates();
   }, []);
 
   return (
@@ -63,12 +76,7 @@ function RootInnerLayout() {
                     },
                   }}
                 />
-                <Update
-                  isDownloading={isDownloading}
-                  isRestarting={isRestarting}
-                  isUpdateAvailable={isUpdateAvailable}
-                  isUpdatePending={isUpdatePending}
-                />
+                <Update isUpdateAvailable={updateAvailable} />
               </View>
             </AuthProvider>
           </LanguageProvider>

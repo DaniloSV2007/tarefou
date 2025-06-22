@@ -129,12 +129,28 @@
   "appInfo": {
     "title": "Informações do App",
     "version": "Versão do App",
-    "madeBy": "Feito Por"
+    "madeBy": "Feito Por",
+    "updateButton": "Verficar por atualizações",
+    "noUpdateSnackbar": "Você já está na versão mais recente."
   },
   "navigation": {
     "home": "Início",
     "report": "Relatório",
     "members": "Membros",
     "profile": "Perfil"
+  },
+  "update": {
+    "downloading": "Baixado Atualização",
+    "restarting": "Reiniciando App",
+    "needDownload": {
+      "title": "Atualização Disponível",
+      "content": "Uma nova atualização está disponível e precisar ser baixada.",
+      "download": "Baixar"
+    },
+    "needRestart": {
+      "title": "Reinício Nescessário",
+      "content": "A atualização foi baixada com sucesso. O app precisa ser reiniciado.",
+      "restart": "Reiniciar"
+    }
   }
 }

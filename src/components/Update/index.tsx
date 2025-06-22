@@ -7,86 +7,93 @@ import {
   Text,
 } from "react-native-paper";
 import * as Updates from "expo-updates";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
+
+type UpdateStatus =
+  | "idle"
+  | "available"
+  | "downloading"
+  | "downloaded"
+  | "restarting";
 
 interface UpdateProps {
   isUpdateAvailable: boolean;
-  isDownloading: boolean;
-  isRestarting: boolean;
-  isUpdatePending: boolean;
 }
 
-export default function Update({
-  isDownloading,
-  isRestarting,
-  isUpdateAvailable,
-  isUpdatePending,
-}: UpdateProps) {
-  const [updateAvailable, setUpdateAvailable] = useState(isUpdateAvailable);
-  const [restartNeeded, setRestartNeeded] = useState(false);
+export default function Update({ isUpdateAvailable }: UpdateProps) {
+  const [status, setStatus] = useState<UpdateStatus>("idle");
+  const { t } = useTranslation();
+
+  const startUpdate = async () => {
+    try {
+      setStatus("downloading");
+      await Updates.fetchUpdateAsync();
+      setStatus("downloaded");
+    } catch (err) {
+      console.error(err);
+      setStatus("idle"); // ou exibir erro ao usuário
+    }
+  };
+
+  const restartApp = async () => {
+    try {
+      setStatus("restarting");
+      await Updates.reloadAsync();
+    } catch (err) {
+      console.error(err);
+      setStatus("idle");
+    }
+  };
+
+  useEffect(() => {
+    if (isUpdateAvailable) {
+      setStatus("available");
+    }
+  }, [isUpdateAvailable]);
 
   return (
     <Portal>
-      <Dialog dismissable={false} visible={updateAvailable}>
-        <Dialog.Title>Update Available</Dialog.Title>
+      {/* Dialog - Atualização disponível */}
+      <Dialog visible={status === "available"} dismissable={false}>
+        <Dialog.Title>{t("update.needDownload.title")}</Dialog.Title>
         <Dialog.Content>
-          <Text>A new update is available and needs to be downloaded. </Text>
+          <Text>{t("update.needDownload.content")}</Text>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button
-            onPress={() => {
-              Updates.fetchUpdateAsync(), setUpdateAvailable(false);
-              setRestartNeeded(true);
-            }}
-          >
-            Download
+          <Button onPress={startUpdate}>
+            {t("update.needDownload.download")}
           </Button>
         </Dialog.Actions>
       </Dialog>
-      <Dialog visible={isDownloading}>
-        <Dialog.Title>Downloading</Dialog.Title>
-        <Dialog.Content
-          style={{
-            justifyContent: "center",
-            minHeight: "10%",
-          }}
-        >
-          <View>
-            <ProgressBar indeterminate={true} />
-          </View>
+
+      {/* Dialog - Baixando atualização */}
+      <Dialog visible={status === "downloading"}>
+        <Dialog.Title>{t("update.downloading")}</Dialog.Title>
+        <Dialog.Content style={{ minHeight: "10%" }}>
+          <ProgressBar indeterminate />
         </Dialog.Content>
       </Dialog>
-      <Dialog dismissable={false} visible={restartNeeded}>
-        <Dialog.Title>Restart Pending</Dialog.Title>
+
+      {/* Dialog - Atualização baixada, precisa reiniciar */}
+      <Dialog visible={status === "downloaded"} dismissable={false}>
+        <Dialog.Title>{t("update.needRestart.title")}</Dialog.Title>
         <Dialog.Content>
-          <Text>
-            The update has been succesfully downloaded. The app needs to be
-            restarted.
-          </Text>
+          <Text>{t("update.needRestart.content")}</Text>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button
-            onPress={() => {
-              Updates.reloadAsync();
-              setRestartNeeded(false);
-            }}
-          >
-            Restart
+          <Button onPress={restartApp}>
+            {t("update.needRestart.restart")}
           </Button>
         </Dialog.Actions>
       </Dialog>
-      <Dialog visible={isRestarting}>
-        <Dialog.Title>Restarting</Dialog.Title>
-        <Dialog.Content
-          style={{
-            justifyContent: "center",
-            minHeight: "10%",
-          }}
-        >
-          <View>
-            <ProgressBar indeterminate={true} />
-          </View>
+
+      {/* Dialog - Reiniciando */}
+      <Dialog visible={status === "restarting"}>
+        <Dialog.Title>{t("update.restarting")}</Dialog.Title>
+        <Dialog.Content style={{ minHeight: "10%" }}>
+          <ProgressBar indeterminate />
         </Dialog.Content>
       </Dialog>
     </Portal>
