@@ -64,7 +64,7 @@ export default function Login() {
     try {
       const res = await api.post("/login", data);
       if (res.status === 200) {
-        login(res.data.token, res.data.role);
+        login(res.data.token, res.data.role, res.data.username);
       } else {
         setError("Email ou senha inválidos");
         console.error("Login failed: ", res.data.error);

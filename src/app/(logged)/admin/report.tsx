@@ -21,7 +21,6 @@ export default function Report() {
       foregroundColor="gray"
       width={476}
       height={364}
-      style={{ borderWidth: 1, borderColor: "#FFF" }}
     >
       <Circle cx="74" cy="19" r="19" />
       <Rect x="108" y="6" rx="4" ry="4" width="200" height="16" />

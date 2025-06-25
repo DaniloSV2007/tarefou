@@ -9,7 +9,7 @@ export default function MembersLayout() {
       <Stack
         screenOptions={{
           headerShown: false,
-          presentation: "containedTransparentModal",
+          animation: "slide_from_right",
         }}
       >
         <Stack.Screen name="index" />

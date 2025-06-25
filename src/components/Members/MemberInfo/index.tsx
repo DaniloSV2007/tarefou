@@ -13,15 +13,15 @@ import {
 import { useTranslation } from "react-i18next";
 
 interface Props {
-  title: string;
+  name: string;
   username: string;
-  memberSince?: { day: number; month: number; year: number };
+  memberSince: string | Date;
 }
 
 export default function MemberInfo({
-  title,
+  name,
   username,
-  memberSince = { day: 18, month: 2, year: 2025 },
+  memberSince,
   ...rest
 }: Props) {
   const theme = useAppTheme();
@@ -30,14 +30,11 @@ export default function MemberInfo({
   const userId = "12345";
   const { languagePreference } = useLanguageContext();
 
-  const formatDate = (date: { day: number; month: number; year: number }) => {
-    // Garante que os números tenham sempre 2 dígitos
-    const day = date.day.toString().padStart(2, "0");
-    const month = date.month.toString().padStart(2, "0");
-    const year = date.year;
-
-    // Se for inglês (languagePreference === 1), retorna mm/dd/yyyy
-    // Se for português (languagePreference === 0), retorna dd/mm/yyyy
+  const formatDate = (created: string | Date) => {
+    const date = new Date(created);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
     return languagePreference === 1
       ? `${month}/${day}/${year}`
       : `${day}/${month}/${year}`;
@@ -46,24 +43,28 @@ export default function MemberInfo({
   return (
     <Card
       style={{
-        margin: 10,
-        backgroundColor: theme.custom.cardColor,
         width: "90%",
-        overflow: "hidden",
+        paddingVertical: 12,
+        paddingBottom: 0,
         borderRadius: 16,
-        padding: 10,
+        backgroundColor: theme.custom.cardColor,
       }}
     >
       <TouchableRipple
-        onPress={() => router.push(`/admin/members/${userId}`)}
+        onPress={() => router.push(`/member/${userId}`)}
         borderless={false}
         rippleColor={theme.custom.ripple}
       >
         <View>
           <Card.Title
-            title={title}
-            titleStyle={{ fontSize: 28, marginLeft: 10 }}
-            subtitle={username}
+            title={name}
+            titleStyle={{
+              fontSize: 28,
+              marginLeft: 10,
+              marginBottom: -6,
+              marginTop: 6,
+            }}
+            subtitle={"@" + username}
             subtitleStyle={{
               fontSize: 14,
               color: theme.colors.onSurfaceVariant,
@@ -86,7 +87,10 @@ export default function MemberInfo({
             </View>
 
             <TouchableOpacity onPress={() => {}} activeOpacity={0.7}>
-              <Button mode="elevated">
+              <Button
+                mode="outlined"
+                buttonColor={theme.custom.cardTaskBackground}
+              >
                 <Icon source={"pencil"} size={16} />
                 <Text style={{ fontSize: 16 }}>
                   {t("components:memberCard.actions.edit")}

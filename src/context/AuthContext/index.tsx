@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 interface AuthContextType {
   isLoggedIn: boolean;
   token: string | null;
-  login: (token: string, role: string) => Promise<void>;
+  login: (token: string, role: string, username: string) => Promise<void>;
   logout: () => Promise<void>;
   isLoading: boolean;
   error: string | null;
@@ -43,11 +43,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     loadAuthState();
   }, []);
 
-  const login = async (newToken: string, role: string) => {
+  const login = async (newToken: string, role: string, username: string) => {
     try {
       setIsLoading(true);
       await AsyncStorage.setItem("userToken", newToken);
       await AsyncStorage.setItem("userRole", role);
+      await AsyncStorage.setItem("username", username);
       setToken(newToken);
       setIsLoggedIn(true);
       setError(null);
@@ -66,6 +67,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setIsLoading(true);
       await AsyncStorage.removeItem("userToken");
+      await AsyncStorage.removeItem("username");
       setToken(null);
       setIsLoggedIn(false);
       setError(null);

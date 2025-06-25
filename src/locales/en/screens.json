@@ -62,10 +62,32 @@
   },
   "members": {
     "title": "Family Members",
-    "addMember": "Add Member",
     "memberCard": {
       "title": "Member",
       "username": "Username"
+    },
+    "newMember": {
+      "tabBar": "Add Member",
+      "title": "Add by:",
+      "subtitle": "Doesn't have an account?",
+      "username": "Username",
+      "invite": "Invite to tarefou!",
+      "whatsapp": "Invite via Whatsapp",
+      "findUsername": {
+        "title": "Insert the username:",
+        "placeholder": "username",
+        "errors": {
+          "inputEmpty": "Username can't be empty!",
+          "userNotExist": "This user doesn't exist. Please insert a valid one.",
+          "ops": "Ops! Something went wrong!"
+        }
+      },
+      "userInfo": {
+        "age": "Age:",
+        "memberSince": "Member since:",
+        "add": "Add to family",
+        "alreadyExists": "Member already exists in your family!"
+      }
     }
   },
   "member": {

@@ -63,7 +63,7 @@ export default function Register() {
 
     const res = await api.post("/login", data);
     if (res.status === 200) {
-      login(res.data.token, res.data.role);
+      login(res.data.token, res.data.role, res.data.username);
     } else {
       console.log("error");
     }

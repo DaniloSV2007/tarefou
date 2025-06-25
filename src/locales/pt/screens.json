@@ -1,9 +1,4 @@
 {
-  "profileNotLogged": {
-    "loginButton": "Entrar",
-    "title": "Perfil",
-    "description": "Para acessar todos os recursos do app, você precisa fazer login primeiro."
-  },
   "profileLogged": {
     "title": "Perfil",
     "personalInfo": {
@@ -67,10 +62,32 @@
   },
   "members": {
     "title": "Membros da Família",
-    "addMember": "Adicionar Membro",
     "memberCard": {
       "title": "Membro",
       "username": "Nome de usuário"
+    },
+    "newMember": {
+      "tabBar": "Adicionar Membro",
+      "title": "Adicionar por:",
+      "subtitle": "Não tem uma conta?",
+      "username": "Nome de Usuário",
+      "invite": "Convide para o tarefou!",
+      "whatsapp": "Convide Whatsapp",
+      "findUsername": {
+        "title": "Insira o Nome de Usuário:",
+        "placeholder": "Nome de Usuário",
+        "errors": {
+          "inputEmpty": "O Nome de Usuário não pode ser vazio!",
+          "userNotExist": "Este usuário não existe. Por favor, insira um usuário válido.",
+          "ops": "Ops! Algo deu errado!"
+        }
+      },
+      "userInfo": {
+        "age": "Idade:",
+        "memberSince": "Membro desde:",
+        "add": "Adicionar à família",
+        "alreadyExists": "O Membro já está na sua família!"
+      }
     }
   },
   "member": {
