@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import TopBar from "@/components/TopBar";
 import { useAppTheme } from "@/hooks/useAppTheme";
@@ -19,6 +19,7 @@ import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "@/services/api";
 import { useTranslation } from "react-i18next";
+import imagePlaceholder from "@/assets/Profile/user.png";
 
 type User = {
   name: string;
@@ -27,6 +28,7 @@ type User = {
   email: string;
   passwordHash: string;
   role: string;
+  avatar?: string;
   createdAt?: Date;
   familyId?: string;
 };
@@ -41,6 +43,9 @@ export default function User() {
   const { t } = useTranslation();
 
   const [error, setError] = useState("");
+
+  const [image, setImage] = useState<string | null>(null);
+  const placeholder = imagePlaceholder;
 
   const getUserFromParams = () => {
     try {
@@ -118,6 +123,49 @@ export default function User() {
     }
   };
 
+  useEffect(() => {
+    getAvatarImage();
+  }, []);
+
+  useEffect(() => {
+    if (image !== null) {
+      const imageUri = image;
+      console.log(image);
+      AsyncStorage.setItem("image", imageUri);
+    } else {
+      AsyncStorage.setItem("image", "null");
+    }
+  }, [image]);
+
+  const getAvatarImageDatabase = async () => {
+    const username = await AsyncStorage.getItem("username");
+    if (!username) return console.error("Username not found. Are you logged?");
+
+    try {
+      const res = await api.get("/users/" + username);
+
+      if (res.status === 200 && res.data) {
+        const { avatar } = res.data;
+        setImage(avatar);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getAvatarImage = async () => {
+    const imageUri = await AsyncStorage.getItem("image");
+    if (!imageUri) {
+      AsyncStorage.setItem("image", "null");
+      getAvatarImageDatabase();
+    }
+    if (imageUri === "null") {
+      getAvatarImageDatabase();
+    } else {
+      setImage(imageUri);
+    }
+  };
+
   return (
     <>
       <TopBar
@@ -138,13 +186,27 @@ export default function User() {
         >
           <Card.Content style={[styles.content, ,]}>
             <View style={styles.avatar}>
-              <Avatar.Icon
-                icon={"account"}
-                size={150}
-                style={{
-                  backgroundColor: theme.custom.cardTaskBackground,
-                }}
-              />
+              {image ? (
+                <Avatar.Image
+                  source={image ? { uri: image } : { uri: placeholder }}
+                  size={150}
+                  style={{
+                    backgroundColor: theme.custom.cardColor,
+                    borderColor: theme.custom.cardTaskBackground,
+                    borderWidth: 1,
+                  }}
+                />
+              ) : (
+                <Avatar.Icon
+                  icon={"account"}
+                  size={150}
+                  style={{
+                    backgroundColor: theme.custom.cardColor,
+                    borderColor: theme.custom.cardTaskBackground,
+                    borderWidth: 1,
+                  }}
+                />
+              )}
             </View>
 
             <Text style={[{ color: theme.colors.onBackground }, styles.name]}>

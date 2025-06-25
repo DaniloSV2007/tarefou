@@ -2,7 +2,7 @@ import { useAppTheme } from "@/hooks/useAppTheme";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View, StyleSheet, Alert, Pressable } from "react-native";
-import { Text, FAB, Avatar, Portal } from "react-native-paper";
+import { Text, FAB, Avatar, Portal, IconButton } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import imagePlaceholder from "@/assets/Profile/user.png";
 import ImageSelection from "./ImageSelection";
@@ -11,7 +11,11 @@ import { useThemeContext } from "@/context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "@/services/api";
 
-export default function AvatarProfile({ setImageProp, setIsVisible }: any) {
+export default function AvatarProfile({
+  setImageProp,
+  setIsVisible,
+  setQrVisible,
+}: any) {
   const theme = useAppTheme();
   const { t } = useTranslation();
   const { isDark } = useThemeContext();
@@ -191,7 +195,13 @@ export default function AvatarProfile({ setImageProp, setIsVisible }: any) {
           fontSize: 24,
         }}
       >
-        Danilo Souza Voiski
+        Danilo Souza Voiski{" "}
+        <IconButton
+          icon={"qrcode"}
+          iconColor={theme.colors.onBackground}
+          containerColor={theme.custom.cardColor}
+          onPress={() => setQrVisible(true)}
+        />
       </Text>
       {isSelectionOpen && (
         <Portal>

@@ -37,10 +37,8 @@ export default function NewMember() {
             style={[styles.button, { backgroundColor: theme.colors.primary }]}
             onPress={() => router.push("/member/username")}
           >
-            <Icon source={"account-search"} size={32} />
-            <Text
-              style={[styles.buttonText, { color: theme.colors.onBackground }]}
-            >
+            <Icon source={"account-search"} size={32} color="white" />
+            <Text style={[styles.buttonText, { color: "white" }]}>
               {t("screens:members.newMember.username")}
             </Text>
           </Pressable>
@@ -49,22 +47,16 @@ export default function NewMember() {
             style={[styles.button, { backgroundColor: theme.colors.primary }]}
             onPress={() => router.push("/member/qrcode")}
           >
-            <Icon source={"qrcode"} size={32} />
-            <Text
-              style={[styles.buttonText, { color: theme.colors.onBackground }]}
-            >
-              QR Code
-            </Text>
+            <Icon source={"qrcode"} size={32} color="white" />
+            <Text style={[styles.buttonText, { color: "white" }]}>QR Code</Text>
           </Pressable>
           <Pressable
             android_ripple={{ color: theme.custom.ripple }}
             style={[styles.button, { backgroundColor: theme.colors.primary }]}
             onPress={() => router.push("/member/")}
           >
-            <Icon source={"whatsapp"} size={32} />
-            <Text
-              style={[styles.buttonText, { color: theme.colors.onBackground }]}
-            >
+            <Icon source={"whatsapp"} size={32} color="white" />
+            <Text style={[styles.buttonText, { color: "white" }]}>
               {t("screens:members.newMember.whatsapp")}
             </Text>
           </Pressable>
@@ -78,10 +70,8 @@ export default function NewMember() {
           <Pressable
             style={[styles.button, { backgroundColor: theme.colors.primary }]}
           >
-            <Icon source={"email-newsletter"} size={32} />
-            <Text
-              style={[styles.buttonText, { color: theme.colors.onBackground }]}
-            >
+            <Icon source={"email-newsletter"} size={32} color="white" />
+            <Text style={[styles.buttonText, { color: "white" }]}>
               {t("screens:members.newMember.invite")}
             </Text>
           </Pressable>

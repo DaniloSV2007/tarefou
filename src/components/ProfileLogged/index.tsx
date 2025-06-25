@@ -30,6 +30,8 @@ import AvatarProfile from "../Profile/Avatar";
 import ImageView from "react-native-image-viewing";
 import QRCode from "react-native-qrcode-svg";
 import TopBar from "../TopBar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Brightness from "expo-brightness";
 
 export default function ProfileLogged() {
   const [todayProgress, setTodayProgress] = useState(0);
@@ -38,6 +40,8 @@ export default function ProfileLogged() {
 
   const [image, setImage] = useState([]);
   const [visible, setIsVisible] = useState(false);
+
+  const [qrVisible, setQrVisible] = useState(false);
 
   const theme = useAppTheme();
   const router = useRouter();
@@ -48,8 +52,44 @@ export default function ProfileLogged() {
   }, []);
 
   const QrCode = () => {
-    return <QRCode size={300} value="http://awesome.link.qr" />;
+    const username = AsyncStorage.getItem("username");
+    return <QRCode size={300} value={`tarefou://tarefou/${username}`} />;
   };
+
+  function ForcarBrilhoMaximo() {
+    useEffect(() => {
+      if (!qrVisible) {
+        (async () => {
+          // Solicita permissão (necessário no iOS)
+          const { granted } = await Brightness.requestPermissionsAsync();
+          if (granted) {
+            // Define o brilho da tela para o máximo (1.0)
+            await Brightness.setBrightnessAsync(1);
+          }
+        })();
+      }
+    }, [qrVisible]);
+
+    return null;
+  }
+
+  useEffect(() => {
+    if (qrVisible) {
+      let originalBrightness = 1;
+
+      (async () => {
+        const { granted } = await Brightness.requestPermissionsAsync();
+        if (!granted) return;
+
+        originalBrightness = await Brightness.getBrightnessAsync();
+        await Brightness.setBrightnessAsync(1);
+      })();
+
+      return () => {
+        Brightness.setBrightnessAsync(originalBrightness); // Restaura ao sair
+      };
+    }
+  }, [qrVisible]);
 
   return (
     <>
@@ -59,16 +99,33 @@ export default function ProfileLogged() {
           { backgroundColor: theme.colors.background, flex: 1 },
         ]}
       >
-        <AvatarProfile setImageProp={setImage} setIsVisible={setIsVisible} />
+        <AvatarProfile
+          setImageProp={setImage}
+          setIsVisible={setIsVisible}
+          setQrVisible={setQrVisible}
+        />
 
-        <Portal>
-          <TopBar
-            title={""}
-            iconButton={"close"}
-            iconColor={theme.colors.onBackground}
-          />{" "}
-          <QrCode />
-        </Portal>
+        {qrVisible && (
+          <Portal>
+            <TopBar
+              title={"QR Code"}
+              iconButton={"close"}
+              iconColor={theme.colors.onBackground}
+              buttonSize={32}
+              onPressButton={() => setQrVisible(false)}
+            />
+            <View
+              style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: theme.colors.background,
+              }}
+            >
+              <QrCode />
+            </View>
+          </Portal>
+        )}
 
         <ImageView
           images={image}
