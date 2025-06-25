@@ -1,7 +1,7 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet, Alert, Pressable } from "react-native";
 import { Text, FAB, Avatar, Portal } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import imagePlaceholder from "@/assets/Profile/user.png";
@@ -9,8 +9,9 @@ import ImageSelection from "./ImageSelection";
 import * as SystemUI from "expo-system-ui";
 import { useThemeContext } from "@/context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import api from "@/services/api";
 
-export default function AvatarProfile() {
+export default function AvatarProfile({ setImageProp, setIsVisible }: any) {
   const theme = useAppTheme();
   const { t } = useTranslation();
   const { isDark } = useThemeContext();
@@ -40,21 +41,53 @@ export default function AvatarProfile() {
   useEffect(() => {
     if (image !== null) {
       const imageUri = image;
+      console.log(image);
       AsyncStorage.setItem("image", imageUri);
     } else {
       AsyncStorage.setItem("image", "null");
     }
+    setImageProp([{ uri: image }]);
   }, [image]);
+
+  const getAvatarImageDatabase = async () => {
+    const username = await AsyncStorage.getItem("username");
+    if (!username) return console.error("Username not found. Are you logged?");
+
+    try {
+      const res = await api.get("/users/" + username);
+
+      if (res.status === 200 && res.data) {
+        const { avatar } = res.data;
+        setImage(avatar);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const getAvatarImage = async () => {
     const imageUri = await AsyncStorage.getItem("image");
     if (!imageUri) {
       AsyncStorage.setItem("image", "null");
+      getAvatarImageDatabase();
     }
     if (imageUri === "null") {
-      setImage(null);
+      getAvatarImageDatabase();
     } else {
       setImage(imageUri);
+    }
+  };
+
+  const saveAvatarDatabase = async (imageUri: string) => {
+    const username = await AsyncStorage.getItem("username");
+    if (!imageUri && !username) {
+      return;
+    }
+    const data = { username, avatar: imageUri };
+    try {
+      const res = await api.put("/users/", data);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -70,6 +103,7 @@ export default function AvatarProfile() {
 
         if (!result.canceled) {
           setImage(result.assets[0].uri);
+          saveAvatarDatabase(result.assets[0].uri);
         }
       } catch (error) {
         console.error(error);
@@ -83,6 +117,7 @@ export default function AvatarProfile() {
         });
         if (!result.canceled) {
           setImage(result.assets[0].uri);
+          saveAvatarDatabase(result.assets[0].uri);
         }
       } catch (error) {
         console.error(error);
@@ -98,15 +133,17 @@ export default function AvatarProfile() {
     <View style={styles.nameBox}>
       <View>
         {image ? (
-          <Avatar.Image
-            source={image ? { uri: image } : { uri: placeholder }}
-            size={150}
-            style={{
-              backgroundColor: theme.custom.cardColor,
-              borderColor: theme.custom.cardTaskBackground,
-              borderWidth: 1,
-            }}
-          />
+          <Pressable onPress={() => setIsVisible(true)}>
+            <Avatar.Image
+              source={image ? { uri: image } : { uri: placeholder }}
+              size={150}
+              style={{
+                backgroundColor: theme.custom.cardColor,
+                borderColor: theme.custom.cardTaskBackground,
+                borderWidth: 1,
+              }}
+            />
+          </Pressable>
         ) : (
           <Avatar.Icon
             icon={"account"}

@@ -21,16 +21,23 @@ import {
   Divider,
   FAB,
   Icon,
+  Portal,
   ProgressBar,
   Text,
 } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import AvatarProfile from "../Profile/Avatar";
+import ImageView from "react-native-image-viewing";
+import QRCode from "react-native-qrcode-svg";
+import TopBar from "../TopBar";
 
 export default function ProfileLogged() {
   const [todayProgress, setTodayProgress] = useState(0);
   const [weekProgress, setWeekProgress] = useState(0);
   const { t } = useTranslation();
+
+  const [image, setImage] = useState([]);
+  const [visible, setIsVisible] = useState(false);
 
   const theme = useAppTheme();
   const router = useRouter();
@@ -40,6 +47,10 @@ export default function ProfileLogged() {
     setWeekProgress(67);
   }, []);
 
+  const QrCode = () => {
+    return <QRCode size={300} value="http://awesome.link.qr" />;
+  };
+
   return (
     <>
       <View
@@ -48,7 +59,23 @@ export default function ProfileLogged() {
           { backgroundColor: theme.colors.background, flex: 1 },
         ]}
       >
-        <AvatarProfile />
+        <AvatarProfile setImageProp={setImage} setIsVisible={setIsVisible} />
+
+        <Portal>
+          <TopBar
+            title={""}
+            iconButton={"close"}
+            iconColor={theme.colors.onBackground}
+          />{" "}
+          <QrCode />
+        </Portal>
+
+        <ImageView
+          images={image}
+          imageIndex={0}
+          visible={visible}
+          onRequestClose={() => setIsVisible(false)}
+        />
       </View>
     </>
   );

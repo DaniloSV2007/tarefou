@@ -8,6 +8,7 @@ import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
 import api from "@/services/api";
 import { ActivityIndicator } from "react-native-paper";
+import React from "react";
 
 export default function QRCode() {
   const [permission, requestPermission] = useCameraPermissions();
