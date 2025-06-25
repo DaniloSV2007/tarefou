@@ -35,19 +35,18 @@ export default function Members() {
 
   const getUsers = async () => {
     setLoadingUsers(true);
-    const familyId = await getFamilyId();
+    // const familyId = await getFamilyId();
 
     try {
-      const res = await api.get("/users/user/" + familyId);
-      if (res.status === 200) {
-        setUsers(res.data);
-        await AsyncStorage.setItem("numOfMembers", `${res.data.length}`);
-        setUsersLength(res.data.length);
-      }
+      // const res = await api.get("/users/user/" + familyId);
+      // if (res.status === 200) {
+      //   setUsers(res.data);
+      //   await AsyncStorage.setItem("numOfMembers", `${res.data.length}`);
+      //   setUsersLength(res.data.length);
+      //   setLoadingUsers(false);
+      // }
     } catch (error) {
       console.error(error);
-    } finally {
-      setLoadingUsers(false);
     }
   };
 

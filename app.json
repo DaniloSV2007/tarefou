@@ -1,7 +1,7 @@
 {
   "name": "Tarefou!",
   "slug": "checklistapp",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "scheme": "tarefou",
   "icon": "./assets/adaptive-icon.png",
   "orientation": "portrait",

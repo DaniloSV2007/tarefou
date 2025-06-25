@@ -33,6 +33,7 @@ export default function NewMember() {
         </Text>
         <View style={styles.selection}>
           <Pressable
+            android_ripple={{ color: theme.custom.ripple }}
             style={[styles.button, { backgroundColor: theme.colors.primary }]}
             onPress={() => router.push("/member/username")}
           >
@@ -44,7 +45,9 @@ export default function NewMember() {
             </Text>
           </Pressable>
           <Pressable
+            android_ripple={{ color: theme.custom.ripple }}
             style={[styles.button, { backgroundColor: theme.colors.primary }]}
+            onPress={() => router.push("/member/qrcode")}
           >
             <Icon source={"qrcode"} size={32} />
             <Text
@@ -54,7 +57,9 @@ export default function NewMember() {
             </Text>
           </Pressable>
           <Pressable
+            android_ripple={{ color: theme.custom.ripple }}
             style={[styles.button, { backgroundColor: theme.colors.primary }]}
+            onPress={() => router.push("/member/")}
           >
             <Icon source={"whatsapp"} size={32} />
             <Text
