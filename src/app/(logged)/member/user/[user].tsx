@@ -128,17 +128,10 @@ export default function User() {
   };
 
   useEffect(() => {
-    getAvatarImage();
+    getAvatarImageDatabase();
   }, []);
 
   useEffect(() => {
-    if (image !== null) {
-      const imageUri = image;
-      console.log(image);
-      AsyncStorage.setItem("image", imageUri);
-    } else {
-      AsyncStorage.setItem("image", "null");
-    }
     setImageArray([{ uri: image }]);
   }, [image]);
 
@@ -155,19 +148,6 @@ export default function User() {
       }
     } catch (error) {
       console.error(error);
-    }
-  };
-
-  const getAvatarImage = async () => {
-    const imageUri = await AsyncStorage.getItem("image");
-    if (!imageUri) {
-      AsyncStorage.setItem("image", "null");
-      getAvatarImageDatabase();
-    }
-    if (imageUri === "null") {
-      getAvatarImageDatabase();
-    } else {
-      setImage(imageUri);
     }
   };
 

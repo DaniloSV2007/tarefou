@@ -1,6 +1,6 @@
 import "@/i18n";
 import { AuthProvider } from "@/context/AuthContext";
-import { Slot, SplashScreen, Stack } from "expo-router";
+import { Slot, SplashScreen, Stack, useRouter } from "expo-router";
 import { PaperProvider } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider, useThemeContext } from "@/context/ThemeContext";
@@ -19,6 +19,8 @@ import { useAppTheme } from "@/hooks/useAppTheme";
 import * as Updates from "expo-updates";
 import Update from "@/components/Update";
 import * as StatusBar from "expo-status-bar";
+import * as Linking from "expo-linking";
+import api from "@/services/api";
 
 function RootInnerLayout() {
   const { theme, isDark } = useThemeContext();

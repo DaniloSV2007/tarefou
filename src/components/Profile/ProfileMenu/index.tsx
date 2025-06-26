@@ -216,7 +216,6 @@ export default function ProfileMenu({
               style={styles.button}
               onPress={() => {
                 setIsConfirmation(true);
-                handleClose();
               }}
             >
               <View style={{ flexDirection: "row", alignItems: "center" }}>

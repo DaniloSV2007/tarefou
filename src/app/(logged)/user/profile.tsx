@@ -61,8 +61,8 @@ export default function Profile() {
 
       <ProfileLogged />
 
-      <Button onPress={() => router.replace("/user/home")}>
-        Go to User routes
+      <Button onPress={() => router.push("/userLink/DaniloSV07")}>
+        Go to Admin routes
       </Button>
 
       {isMenuOpen && (

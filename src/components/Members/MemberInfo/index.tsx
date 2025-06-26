@@ -1,7 +1,7 @@
 import { useLanguageContext } from "@/context/LanguageContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import {
   Text,
   Card,
@@ -16,12 +16,14 @@ interface Props {
   name: string;
   username: string;
   memberSince: string | Date;
+  avatar: string;
 }
 
 export default function MemberInfo({
   name,
   username,
   memberSince,
+  avatar,
   ...rest
 }: Props) {
   const theme = useAppTheme();
@@ -70,7 +72,7 @@ export default function MemberInfo({
               color: theme.colors.onSurfaceVariant,
               marginLeft: 10,
             }}
-            left={(props) => <Avatar.Icon icon="account" size={48} />}
+            left={() => <Avatar.Image source={{ uri: avatar }} size={48} />}
           />
           <Card.Content>
             <Text variant="bodyMedium">

@@ -45,7 +45,6 @@ export default function AvatarProfile({
   useEffect(() => {
     if (image !== null) {
       const imageUri = image;
-      console.log(image);
       AsyncStorage.setItem("image", imageUri);
     } else {
       AsyncStorage.setItem("image", "null");

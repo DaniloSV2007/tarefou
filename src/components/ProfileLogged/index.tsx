@@ -50,18 +50,6 @@ export default function ProfileLogged() {
   const { isDark } = useThemeContext();
   const router = useRouter();
 
-  // useEffect(() => {
-  //   if (visible) {
-  //     StatusBar.setBackgroundColor("black");
-  //     StatusBar.setBarStyle("dark-content");
-  //     SystemUI.setBackgroundColorAsync("black");
-  //   } else {
-  //     StatusBar.setBackgroundColor(isDark ? "black" : "white");
-  //     StatusBar.setBarStyle(isDark ? "light-content" : "dark-content");
-  //     SystemUI.setBackgroundColorAsync(isDark ? "black" : "white");
-  //   }
-  // }, [visible]);
-
   const QrCode = () => {
     const [username, setUsername] = useState<string | null>(null);
 

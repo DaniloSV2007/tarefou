@@ -20,6 +20,7 @@ interface User {
   email: string;
   passwordHash: string;
   role: string;
+  avatar: string;
   createdAt?: Date;
   familyId?: string;
 }
@@ -35,16 +36,16 @@ export default function Members() {
 
   const getUsers = async () => {
     setLoadingUsers(true);
-    // const familyId = await getFamilyId();
+    const familyId = await getFamilyId();
 
     try {
-      // const res = await api.get("/users/user/" + familyId);
-      // if (res.status === 200) {
-      //   setUsers(res.data);
-      //   await AsyncStorage.setItem("numOfMembers", `${res.data.length}`);
-      //   setUsersLength(res.data.length);
-      //   setLoadingUsers(false);
-      // }
+      const res = await api.get("/users/user/" + familyId);
+      if (res.status === 200) {
+        setUsers(res.data);
+        await AsyncStorage.setItem("numOfMembers", `${res.data.length}`);
+        setUsersLength(res.data.length);
+        setLoadingUsers(false);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -152,6 +153,7 @@ export default function Members() {
             name={user.name}
             username={user.username}
             memberSince={user.createdAt ?? ""}
+            avatar={user.avatar}
           />
         ))}
 

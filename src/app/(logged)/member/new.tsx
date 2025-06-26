@@ -1,17 +1,38 @@
 import { Pressable, StyleSheet, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import TopBar from "@/components/TopBar";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { Button, Icon, Text } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Linking from "expo-linking";
 
 export default function NewMember() {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { t } = useTranslation();
+  const [username, setUsername] = useState<string | null>(null);
+
+  const shareWhatsapp = async () => {
+    if (!username) return;
+
+    const deepLink = `tarefou://tarefou/${username}`;
+
+    const message = `Acesse meu perfil no Tarefou!\n${deepLink}`;
+
+    const whatsappLink = `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+    Linking.openURL(whatsappLink);
+  };
+  useEffect(() => {
+    const getUsername = async () => {
+      await AsyncStorage.getItem("username").then(setUsername);
+    };
+    getUsername();
+  }, []);
 
   return (
     <>
@@ -53,7 +74,7 @@ export default function NewMember() {
           <Pressable
             android_ripple={{ color: theme.custom.ripple }}
             style={[styles.button, { backgroundColor: theme.colors.primary }]}
-            onPress={() => {}}
+            onPress={() => shareWhatsapp()}
           >
             <Icon source={"whatsapp"} size={32} color="white" />
             <Text style={[styles.buttonText, { color: "white" }]}>
