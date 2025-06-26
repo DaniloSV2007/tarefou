@@ -1,11 +1,11 @@
 import "@/i18n";
 import { AuthProvider } from "@/context/AuthContext";
-import { Slot, Stack } from "expo-router";
+import { Slot, SplashScreen, Stack } from "expo-router";
 import { PaperProvider } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider, useThemeContext } from "@/context/ThemeContext";
 import { LanguageProvider } from "@/context/LanguageContext";
-import { StatusBar, View } from "react-native";
+import { View } from "react-native";
 import * as SystemUI from "expo-system-ui";
 import * as Font from "expo-font";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -18,6 +18,7 @@ import { resetDatabase } from "@/database/resetDatabase";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import * as Updates from "expo-updates";
 import Update from "@/components/Update";
+import * as StatusBar from "expo-status-bar";
 
 function RootInnerLayout() {
   const { theme, isDark } = useThemeContext();
@@ -33,12 +34,22 @@ function RootInnerLayout() {
     const updateSystemUI = async () => {
       try {
         await SystemUI.setBackgroundColorAsync(isDark ? "#000" : "#fff");
+        StatusBar.setStatusBarStyle(isDark ? "light" : "dark");
+        StatusBar.setStatusBarBackgroundColor(isDark ? "#000" : "#fff");
       } catch (error) {
         console.error("Error updating system UI:", error);
       }
     };
     updateSystemUI();
   }, [isDark]);
+
+  useEffect(() => {
+    const prepare = async () => {
+      await SplashScreen.hideAsync();
+    };
+
+    prepare();
+  }, []);
 
   useEffect(() => {
     const checkUpdates = async () => {
@@ -60,10 +71,6 @@ function RootInnerLayout() {
         <PaperProvider theme={theme}>
           <LanguageProvider>
             <AuthProvider>
-              <StatusBar
-                barStyle={isDark ? "light-content" : "dark-content"}
-                backgroundColor={isDark ? "#000" : "#fff"}
-              />
               <View
                 style={{ backgroundColor: appTheme.colors.background, flex: 1 }}
               >
@@ -107,7 +114,6 @@ export default function RootLayout() {
   if (fontError) {
     return (
       <SafeAreaProvider>
-        <StatusBar barStyle="dark-content" backgroundColor="#fff" />
         <PaperProvider>
           <Text style={{ color: "red", padding: 20 }}>
             {fontError}. Some icons might not display correctly.
@@ -120,7 +126,6 @@ export default function RootLayout() {
   if (!isFontsLoaded) {
     return (
       <SafeAreaProvider>
-        <StatusBar barStyle="dark-content" backgroundColor="#fff" />
         <PaperProvider>
           <ActivityIndicator size="large" style={{ flex: 1 }} />
         </PaperProvider>

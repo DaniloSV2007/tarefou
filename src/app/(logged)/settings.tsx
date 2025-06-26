@@ -14,10 +14,6 @@ export default function Settings() {
   const { isDark } = useThemeContext();
   const { t } = useTranslation();
 
-  useEffect(() => {
-    SystemUI.setBackgroundColorAsync(isDark ? "#000" : "#fff");
-  }, [isDark]);
-
   return (
     <>
       <View

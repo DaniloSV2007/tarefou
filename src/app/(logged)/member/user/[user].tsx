@@ -237,7 +237,14 @@ export default function User() {
               {t("screens:members.newMember.userInfo.memberSince")} {createdAt}
             </Text>
           </Card.Content>
-          <Card.Actions>
+          <Card.Actions style={{ justifyContent: "space-between" }}>
+            <Button
+              mode="outlined"
+              textColor={theme.colors.onBackground}
+              onPress={() => router.replace("/admin/members")}
+            >
+              {t("components:common.cancel")}
+            </Button>
             <Button mode="contained" onPress={handleAdd}>
               {t("screens:members.newMember.userInfo.add")}
             </Button>

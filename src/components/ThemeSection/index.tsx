@@ -1,17 +1,14 @@
 import { useThemeContext } from "@/context/ThemeContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useState } from "react";
 import { TouchableOpacity, StyleSheet, View } from "react-native";
 import { Card, Divider, Icon, RadioButton, Text } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 
 export default function ThemeSection() {
-  const [expanded, setExpanded] = useState(false);
   const { toggleTheme, themePreference } = useThemeContext();
   const theme = useAppTheme();
   const { t } = useTranslation();
 
-  const handlePress = () => setExpanded(!expanded);
   return (
     <Card style={[{ backgroundColor: theme.custom.cardColor }, styles.card]}>
       <Card.Title

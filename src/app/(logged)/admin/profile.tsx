@@ -2,7 +2,7 @@ import ProfileMenu from "@/components/Profile/ProfileMenu";
 import ProfileLogged from "@/components/ProfileLogged";
 import TopBar from "@/components/TopBar";
 import { useEffect, useState } from "react";
-import { StatusBar, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { ActivityIndicator, Button } from "react-native-paper";
 import { useAuth } from "@/context/AuthContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
@@ -11,6 +11,7 @@ import { useThemeContext } from "@/context/ThemeContext";
 import * as SystemUI from "expo-system-ui";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
+import * as StatusBar from "expo-status-bar";
 
 export default function Profile() {
   const { isLoggedIn, isLoading } = useAuth();
@@ -46,6 +47,18 @@ export default function Profile() {
     );
   }
 
+  useEffect(() => {
+    if (menuAnimation && !isDark) {
+      StatusBar.setStatusBarStyle("light");
+      StatusBar.setStatusBarTranslucent(false);
+      StatusBar.setStatusBarBackgroundColor("#808181");
+    } else {
+      StatusBar.setStatusBarStyle(isDark ? "light" : "dark");
+      StatusBar.setStatusBarTranslucent(true);
+      StatusBar.setStatusBarBackgroundColor(theme.colors.background);
+    }
+  }, [menuAnimation]);
+
   if (isLoading) return <LoadingPageIndicator />;
 
   return (
@@ -58,14 +71,7 @@ export default function Profile() {
         onPressButton={() => setIsMenuOpen(true)}
         barColor={theme.colors.background}
       />
-      {menuAnimation && !isDark ? (
-        <StatusBar barStyle={"light-content"} backgroundColor={"#808181"} />
-      ) : (
-        <StatusBar
-          barStyle={isDark ? "light-content" : "dark-content"}
-          backgroundColor={theme.colors.background}
-        />
-      )}
+      {}
       <ProfileLogged />
 
       <Button onPress={() => router.replace("/user/home")}>

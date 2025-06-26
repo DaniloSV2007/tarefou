@@ -151,7 +151,7 @@ export default function ProfileMenu({
             style={styles.button}
             rippleColor={theme.custom.ripple}
             onPress={() => {
-              setIsMenuOpen(false);
+              handleClose();
               if (isAdmin) {
                 router.push("/appinfo");
               } else {
@@ -181,7 +181,7 @@ export default function ProfileMenu({
           <TouchableRipple
             style={styles.button}
             onPress={() => {
-              setIsMenuOpen(false);
+              handleClose();
 
               if (isAdmin) {
                 router.push("/settings");
@@ -216,6 +216,7 @@ export default function ProfileMenu({
               style={styles.button}
               onPress={() => {
                 setIsConfirmation(true);
+                handleClose();
               }}
             >
               <View style={{ flexDirection: "row", alignItems: "center" }}>

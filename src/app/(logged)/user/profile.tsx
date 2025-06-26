@@ -58,14 +58,7 @@ export default function Profile() {
         onPressButton={() => setIsMenuOpen(true)}
         barColor={theme.colors.background}
       />
-      {menuAnimation && !isDark ? (
-        <StatusBar barStyle={"light-content"} backgroundColor={"#808181"} />
-      ) : (
-        <StatusBar
-          barStyle={isDark ? "light-content" : "dark-content"}
-          backgroundColor={theme.colors.background}
-        />
-      )}
+
       <ProfileLogged />
 
       <Button onPress={() => router.replace("/user/home")}>

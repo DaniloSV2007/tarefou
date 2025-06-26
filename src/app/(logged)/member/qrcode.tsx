@@ -19,19 +19,21 @@ export default function QRCode() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleQRCode = (qrcode: any) => {
-    setIsLoading(true);
     if (scanned || !qrcode.data) return;
 
     setScanned(true);
+    setIsLoading(true);
     const url = qrcode.data;
 
     try {
       const path = Linking.parse(url).path;
 
       if (path) {
+        console.log(path);
         getUserInfo(path);
       } else {
         console.warn("QR inválido");
+
         setIsLoading(false);
       }
     } catch (err) {

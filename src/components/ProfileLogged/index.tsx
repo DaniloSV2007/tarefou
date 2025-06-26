@@ -8,6 +8,7 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Touchable,
   TouchableOpacity,
@@ -32,10 +33,12 @@ import QRCode from "react-native-qrcode-svg";
 import TopBar from "../TopBar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Brightness from "expo-brightness";
+import logoLight from "@/assets/Profile/splash-icon-light.png";
+import logoDark from "@/assets/Profile/splash-icon-dark.png";
+import { useThemeContext } from "@/context/ThemeContext";
+import * as SystemUI from "expo-system-ui";
 
 export default function ProfileLogged() {
-  const [todayProgress, setTodayProgress] = useState(0);
-  const [weekProgress, setWeekProgress] = useState(0);
   const { t } = useTranslation();
 
   const [image, setImage] = useState([]);
@@ -44,19 +47,44 @@ export default function ProfileLogged() {
   const [qrVisible, setQrVisible] = useState(false);
 
   const theme = useAppTheme();
+  const { isDark } = useThemeContext();
   const router = useRouter();
 
-  useEffect(() => {
-    setTodayProgress(80);
-    setWeekProgress(67);
-  }, []);
+  // useEffect(() => {
+  //   if (visible) {
+  //     StatusBar.setBackgroundColor("black");
+  //     StatusBar.setBarStyle("dark-content");
+  //     SystemUI.setBackgroundColorAsync("black");
+  //   } else {
+  //     StatusBar.setBackgroundColor(isDark ? "black" : "white");
+  //     StatusBar.setBarStyle(isDark ? "light-content" : "dark-content");
+  //     SystemUI.setBackgroundColorAsync(isDark ? "black" : "white");
+  //   }
+  // }, [visible]);
 
   const QrCode = () => {
-    const username = AsyncStorage.getItem("username");
-    return <QRCode size={300} value={`tarefou://tarefou/${username}`} />;
+    const [username, setUsername] = useState<string | null>(null);
+
+    useEffect(() => {
+      AsyncStorage.getItem("username").then(setUsername);
+    }, []);
+
+    if (!username) return null; // ou um loading spinner, etc.
+
+    return (
+      <QRCode
+        size={200}
+        logo={isDark ? logoDark : logoLight}
+        logoSize={30}
+        logoBackgroundColor="transparent"
+        backgroundColor={theme.colors.background}
+        color={theme.colors.onBackground}
+        value={`tarefou://tarefou/${username}`}
+      />
+    );
   };
 
-  function ForcarBrilhoMaximo() {
+  function maxBrightness() {
     useEffect(() => {
       if (!qrVisible) {
         (async () => {
@@ -120,7 +148,23 @@ export default function ProfileLogged() {
                 backgroundColor: theme.colors.background,
               }}
             >
-              <QrCode />
+              <View
+                style={{
+                  padding: 40,
+                  borderRadius: 24,
+                  backgroundColor: theme.custom.cardColor,
+                }}
+              >
+                <View
+                  style={{
+                    padding: 20,
+                    borderRadius: 12,
+                    backgroundColor: theme.colors.background,
+                  }}
+                >
+                  <QrCode />
+                </View>
+              </View>
             </View>
           </Portal>
         )}

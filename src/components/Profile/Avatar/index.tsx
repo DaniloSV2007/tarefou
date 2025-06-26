@@ -82,7 +82,7 @@ export default function AvatarProfile({
     }
   };
 
-  const saveAvatarDatabase = async (imageUri: string) => {
+  const saveAvatarDatabase = async (imageUri: string | null) => {
     const username = await AsyncStorage.getItem("username");
     if (!imageUri && !username) {
       return;
@@ -90,6 +90,9 @@ export default function AvatarProfile({
     const data = { username, avatar: imageUri };
     try {
       const res = await api.put("/users/", data);
+      if (res.status === 200) {
+        setImage(imageUri);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -106,7 +109,6 @@ export default function AvatarProfile({
         });
 
         if (!result.canceled) {
-          setImage(result.assets[0].uri);
           saveAvatarDatabase(result.assets[0].uri);
         }
       } catch (error) {
@@ -127,7 +129,11 @@ export default function AvatarProfile({
         console.error(error);
       }
     } else if (mode === 3) {
-      setImage(null);
+      try {
+        await saveAvatarDatabase(null);
+      } catch (error) {
+        console.error(error);
+      }
     } else {
       Alert.alert("Erro ao trocar imagem");
     }
@@ -197,7 +203,7 @@ export default function AvatarProfile({
         <IconButton
           icon={"qrcode"}
           iconColor={theme.colors.onBackground}
-          containerColor={theme.custom.cardColor}
+          containerColor={theme.custom.cardTaskBackground}
           style={{ borderRadius: 12 }}
           onPress={() => setQrVisible(true)}
         />
