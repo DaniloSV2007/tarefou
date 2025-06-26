@@ -53,7 +53,7 @@ export default function NewMember() {
           <Pressable
             android_ripple={{ color: theme.custom.ripple }}
             style={[styles.button, { backgroundColor: theme.colors.primary }]}
-            onPress={() => router.push("/member/")}
+            onPress={() => {}}
           >
             <Icon source={"whatsapp"} size={32} color="white" />
             <Text style={[styles.buttonText, { color: "white" }]}>
@@ -68,7 +68,9 @@ export default function NewMember() {
           </Text>
 
           <Pressable
+            android_ripple={{ color: theme.custom.ripple }}
             style={[styles.button, { backgroundColor: theme.colors.primary }]}
+            onPress={() => {}}
           >
             <Icon source={"email-newsletter"} size={32} color="white" />
             <Text style={[styles.buttonText, { color: "white" }]}>

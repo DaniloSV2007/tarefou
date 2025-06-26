@@ -25,8 +25,6 @@ export default function QRCode() {
     setScanned(true);
     const url = qrcode.data;
 
-    console.log("QR escaneado:", url);
-
     try {
       const path = Linking.parse(url).path;
 
@@ -89,6 +87,7 @@ export default function QRCode() {
             <CameraView
               style={styles.camera}
               onBarcodeScanned={handleQRCode}
+              zoom={0.3}
               barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
             />
           )}

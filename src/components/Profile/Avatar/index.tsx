@@ -176,18 +176,33 @@ export default function AvatarProfile({
         </View>
       </View>
 
-      <Text
+      <View
         style={{
-          color: theme.colors.onBackground,
-          width: "94%",
-          fontSize: 24,
-          marginTop: -10,
-          margin: -20,
-          opacity: 0.8,
+          flexDirection: "row",
+          justifyContent: "space-around",
+          alignItems: "center",
+          width: "85%",
+          marginBottom: -18,
         }}
       >
-        {t("screens:profileLogged.personalInfo.roleAdmin")}
-      </Text>
+        <Text
+          style={{
+            color: theme.colors.onBackground,
+            fontSize: 24,
+            opacity: 0.8,
+          }}
+        >
+          {t("screens:profileLogged.personalInfo.roleAdmin")}
+        </Text>
+        <IconButton
+          icon={"qrcode"}
+          iconColor={theme.colors.onBackground}
+          containerColor={theme.custom.cardColor}
+          style={{ borderRadius: 12 }}
+          onPress={() => setQrVisible(true)}
+        />
+      </View>
+
       <Text
         style={{
           fontWeight: "bold",
@@ -195,13 +210,7 @@ export default function AvatarProfile({
           fontSize: 24,
         }}
       >
-        Danilo Souza Voiski{" "}
-        <IconButton
-          icon={"qrcode"}
-          iconColor={theme.colors.onBackground}
-          containerColor={theme.custom.cardColor}
-          onPress={() => setQrVisible(true)}
-        />
+        Danilo Souza Voiski
       </Text>
       {isSelectionOpen && (
         <Portal>

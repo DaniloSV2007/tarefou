@@ -60,10 +60,8 @@ export default function ProfileLogged() {
     useEffect(() => {
       if (!qrVisible) {
         (async () => {
-          // Solicita permissão (necessário no iOS)
           const { granted } = await Brightness.requestPermissionsAsync();
           if (granted) {
-            // Define o brilho da tela para o máximo (1.0)
             await Brightness.setBrightnessAsync(1);
           }
         })();

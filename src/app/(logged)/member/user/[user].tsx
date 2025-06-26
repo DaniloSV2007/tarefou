@@ -20,6 +20,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "@/services/api";
 import { useTranslation } from "react-i18next";
 import imagePlaceholder from "@/assets/Profile/user.png";
+import ImageView from "react-native-image-viewing";
 
 type User = {
   name: string;
@@ -46,6 +47,9 @@ export default function User() {
 
   const [image, setImage] = useState<string | null>(null);
   const placeholder = imagePlaceholder;
+
+  const [imageArray, setImageArray] = useState<any>([]);
+  const [visible, setIsVisible] = useState(false);
 
   const getUserFromParams = () => {
     try {
@@ -135,6 +139,7 @@ export default function User() {
     } else {
       AsyncStorage.setItem("image", "null");
     }
+    setImageArray([{ uri: image }]);
   }, [image]);
 
   const getAvatarImageDatabase = async () => {
@@ -187,15 +192,17 @@ export default function User() {
           <Card.Content style={[styles.content, ,]}>
             <View style={styles.avatar}>
               {image ? (
-                <Avatar.Image
-                  source={image ? { uri: image } : { uri: placeholder }}
-                  size={150}
-                  style={{
-                    backgroundColor: theme.custom.cardColor,
-                    borderColor: theme.custom.cardTaskBackground,
-                    borderWidth: 1,
-                  }}
-                />
+                <Pressable onPress={() => setIsVisible(true)}>
+                  <Avatar.Image
+                    source={image ? { uri: image } : { uri: placeholder }}
+                    size={150}
+                    style={{
+                      backgroundColor: theme.custom.cardColor,
+                      borderColor: theme.custom.cardTaskBackground,
+                      borderWidth: 1,
+                    }}
+                  />
+                </Pressable>
               ) : (
                 <Avatar.Icon
                   icon={"account"}
@@ -240,6 +247,12 @@ export default function User() {
         <Snackbar onDismiss={() => setError("")} visible={error !== ""}>
           {error}
         </Snackbar>
+        <ImageView
+          images={imageArray}
+          imageIndex={0}
+          visible={visible}
+          onRequestClose={() => setIsVisible(false)}
+        />
       </View>
     </>
   );

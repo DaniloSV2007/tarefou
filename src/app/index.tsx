@@ -1,10 +1,13 @@
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
+import { View } from "react-native";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 export default function Index() {
   const { isLoggedIn, isLoading } = useAuth();
   const router = useRouter();
+  const theme = useAppTheme();
 
   useEffect(() => {
     if (!isLoading) {
@@ -16,5 +19,7 @@ export default function Index() {
     }
   }, [isLoggedIn, isLoading]);
 
-  return null;
+  return (
+    <View style={{ flex: 1, backgroundColor: theme.colors.background }}></View>
+  );
 }
