@@ -19,12 +19,10 @@ export default function RedirectUser() {
     if (already) return;
     setAlready(true);
     if (!username) return;
-    console.log(username);
     try {
       const res = await api.get("/users/" + username);
 
       if (res.status === 200 && res.data) {
-        console.log(res.data);
         const user = encodeURIComponent(JSON.stringify(res.data));
         router.push("/member/user/" + user);
       } else {

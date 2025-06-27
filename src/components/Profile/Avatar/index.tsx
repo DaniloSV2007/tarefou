@@ -83,12 +83,29 @@ export default function AvatarProfile({
 
   const saveAvatarDatabase = async (imageUri: string | null) => {
     const username = await AsyncStorage.getItem("username");
+
     if (!imageUri && !username) {
       return;
     }
-    const data = { username, avatar: imageUri };
+
+    const formData = new FormData();
+    if (username) {
+      formData.append("username", username);
+    }
+    if (imageUri && imageUri !== null) {
+      formData.append("avatar", {
+        uri: imageUri,
+        name: "avatar.jpg",
+        type: "image/jpeg",
+      } as any);
+    }
     try {
-      const res = await api.put("/users/", data);
+      const res = await api.post("/users/uploadAvatar", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       if (res.status === 200) {
         setImage(imageUri);
       }
@@ -104,11 +121,15 @@ export default function AvatarProfile({
           cameraType: ImagePicker.CameraType.front,
           allowsEditing: true,
           aspect: [1, 1],
-          quality: 1,
+          quality: 0.7,
+          base64: true,
         });
 
         if (!result.canceled) {
-          saveAvatarDatabase(result.assets[0].uri);
+          const base64 = result.assets[0].base64;
+          const mimeType = result.assets[0].type || "image/jpeg";
+          const dataUri = `data:${mimeType};base64,${base64}`;
+          saveAvatarDatabase(dataUri);
         }
       } catch (error) {
         console.error(error);
@@ -117,12 +138,15 @@ export default function AvatarProfile({
       try {
         const result = await ImagePicker.launchImageLibraryAsync({
           allowsEditing: true,
-          quality: 1,
+          quality: 0.7,
           aspect: [1, 1],
+          base64: true,
         });
         if (!result.canceled) {
-          setImage(result.assets[0].uri);
-          saveAvatarDatabase(result.assets[0].uri);
+          const base64 = result.assets[0].base64;
+          const mimeType = result.assets[0].type || "image/jpeg";
+          const dataUri = `data:${mimeType};base64,${base64}`;
+          saveAvatarDatabase(dataUri);
         }
       } catch (error) {
         console.error(error);

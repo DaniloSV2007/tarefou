@@ -1,6 +1,6 @@
 import MemberInfo from "@/components/Members/MemberInfo";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import TopBar from "@/components/TopBar";
 import { useRouter } from "expo-router";
@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import ContentLoader, { Circle, Rect } from "react-content-loader/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "@/services/api";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import MemberInfoLoading from "@/components/Members/MemberInfoLoading";
 
 interface User {
@@ -48,6 +48,8 @@ export default function Members() {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -76,6 +78,18 @@ export default function Members() {
       setUsersLength(lenghtNum);
     }
   };
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    try {
+      getUsers();
+      membersLength();
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
 
   if (loadingUsers) {
     return (
@@ -138,14 +152,16 @@ export default function Members() {
     >
       <TopBar title={t("screens:members.title")} />
 
-      <View
+      <ScrollView
         style={{
           flex: 1,
           backgroundColor: theme.colors.background,
-          alignItems: "center",
-          gap: 16,
           paddingVertical: 16,
         }}
+        contentContainerStyle={{ alignItems: "center", gap: 16, flex: 1 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
         {users.map((user: User) => (
           <MemberInfo
@@ -164,7 +180,7 @@ export default function Members() {
           onPress={() => router.push("/member/new")}
           color="white"
         />
-      </View>
+      </ScrollView>
     </View>
   );
 }
