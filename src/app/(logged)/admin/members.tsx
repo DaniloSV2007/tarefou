@@ -249,7 +249,7 @@ export default function Members() {
           anchor={
             <Appbar.Action
               icon="dots-vertical"
-              color="white"
+              color={theme.colors.onBackground}
               onPress={() => setMenuVisible(true)}
             />
           }
