@@ -75,6 +75,7 @@ export default function Register() {
         name: familyName
           ? familyName.trim()
           : t("register.familyName.value", { name: name.split(" ")[0] }),
+        owner: username,
       };
       try {
         const resFamily = await api.post("/families", familyData);

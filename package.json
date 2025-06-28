@@ -13,8 +13,10 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.1.2",
     "@react-native-community/datetimepicker": "8.3.0",
+    "@react-native-picker/picker": "^2.11.1",
     "axios": "^1.10.0",
     "expo": "53.0.12",
+    "expo-brightness": "~13.1.4",
     "expo-camera": "~16.1.8",
     "expo-constants": "~17.1.6",
     "expo-device": "~7.1.4",
@@ -43,8 +45,7 @@
     "react-native-screens": "~4.11.1",
     "react-native-svg": "^15.11.2",
     "react-native-uuid": "^2.0.3",
-    "zustand": "^5.0.5",
-    "expo-brightness": "~13.1.4"
+    "zustand": "^5.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

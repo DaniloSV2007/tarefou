@@ -20,14 +20,21 @@ export default function AvatarProfile({
   const { t } = useTranslation();
   const { isDark } = useThemeContext();
 
+  //Profile Picture
   const [image, setImage] = useState<string | null>(null);
   const placeholder = imagePlaceholder;
 
+  //Menu State
   const [isSelectionOpen, setIsSelectionOpen] = useState(false);
   const [menuAnimation, setMenuAnimation] = useState(false);
 
+  //User Info
+  const [name, setName] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
+
   useEffect(() => {
     getAvatarImage();
+    getNameAndRole();
   }, []);
 
   useEffect(() => {
@@ -52,6 +59,37 @@ export default function AvatarProfile({
     setImageProp([{ uri: image }]);
   }, [image]);
 
+  //User Name And Role Functions
+  const getNameAndRole = async () => {
+    const name = await AsyncStorage.getItem("name");
+    const role = await AsyncStorage.getItem("role");
+
+    if (!name && !role) {
+      getNameAndRoleDb();
+    } else {
+      setRole(role);
+      setName(name);
+    }
+  };
+
+  const getNameAndRoleDb = async () => {
+    const username = await AsyncStorage.getItem("username");
+    try {
+      const res = await api.get("/users/" + username);
+
+      if (res.status === 200) {
+        const { name, role } = res.data;
+        setName(name);
+        setRole(role);
+        await AsyncStorage.setItem("name", name);
+        await AsyncStorage.setItem("role", role);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //User Avatar Functions
   const getAvatarImageDatabase = async () => {
     const username = await AsyncStorage.getItem("username");
     if (!username) return console.error("Username not found. Are you logged?");
@@ -121,7 +159,7 @@ export default function AvatarProfile({
           cameraType: ImagePicker.CameraType.front,
           allowsEditing: true,
           aspect: [1, 1],
-          quality: 0.7,
+          quality: 0.5,
           base64: true,
         });
 
@@ -138,7 +176,7 @@ export default function AvatarProfile({
       try {
         const result = await ImagePicker.launchImageLibraryAsync({
           allowsEditing: true,
-          quality: 0.7,
+          quality: 0.5,
           aspect: [1, 1],
           base64: true,
         });
@@ -221,7 +259,9 @@ export default function AvatarProfile({
             opacity: 0.8,
           }}
         >
-          {t("screens:profileLogged.personalInfo.roleAdmin")}
+          {role === "MEMBER"
+            ? t("screens:profileLogged.personalInfo.roleMember")
+            : t("screens:profileLogged.personalInfo.roleAdmin")}
         </Text>
         <IconButton
           icon={"qrcode"}
@@ -239,7 +279,7 @@ export default function AvatarProfile({
           fontSize: 24,
         }}
       >
-        Danilo Souza Voiski
+        {name}
       </Text>
       {isSelectionOpen && (
         <Portal>

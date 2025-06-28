@@ -1,5 +1,6 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
+import { Children } from "react";
 import { TouchableOpacity, View } from "react-native";
 import { Appbar, useTheme } from "react-native-paper";
 
@@ -15,6 +16,7 @@ interface Props {
   barColor?: void | string;
   backButtonHref?: () => void | void;
   bottomBorder?: boolean;
+  children?: any;
 }
 
 export default function TopBar(props: Props) {
@@ -29,6 +31,7 @@ export default function TopBar(props: Props) {
     isBackButtonEnable = false,
     backButtonHref = () => router.back(),
     bottomBorder = true,
+    children,
   } = props;
 
   const titleColor = props.titleColor ?? theme.colors.onBackground;
@@ -43,26 +46,27 @@ export default function TopBar(props: Props) {
           backgroundColor: barColor,
           borderBottomColor: theme.colors.surface,
           borderBottomWidth: bottomBorder ? 0.5 : 0,
-          height: 60,
+          height: 44,
         }}
       >
         <Appbar.Content
           title={title}
           titleStyle={{
-            fontSize: 30,
+            fontSize: 28,
             fontWeight: "bold",
             alignItems: "center",
             color: titleColor,
-            height: 32,
+            height: 30,
             marginLeft: isBackButtonEnable ? -16 : 0,
           }}
         />
+
         {iconButton != "" && (
           <TouchableOpacity activeOpacity={0.7}>
             <Appbar.Action
               icon={iconButton}
               color={iconColor}
-              size={30}
+              size={buttonSize ?? 20}
               onPress={onPressButton}
             />
           </TouchableOpacity>
@@ -74,6 +78,7 @@ export default function TopBar(props: Props) {
             color={backButtonColor}
           />
         )}
+        {children}
       </Appbar.Header>
     </View>
   );

@@ -9,7 +9,8 @@
       "birthday": "Data de nascimento",
       "edit": "Editar Perfil",
       "role": "Função",
-      "roleAdmin": "Administrador"
+      "roleAdmin": "Administrador",
+      "roleMember": "Membro"
     },
     "statistics": {
       "title": "Estatísticas",

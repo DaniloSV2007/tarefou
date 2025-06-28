@@ -9,7 +9,8 @@
       "birthday": "Birthday",
       "edit": "Edit Profile",
       "role": "Role",
-      "roleAdmin": "Admin"
+      "roleAdmin": "Admin",
+      "roleMember": "Member"
     },
     "statistics": {
       "title": "Statistics",

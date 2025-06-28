@@ -128,19 +128,18 @@ export default function User() {
   };
 
   useEffect(() => {
-    getAvatarImageDatabase();
-  }, []);
+    if (userInfo !== null) getAvatarImageDatabase();
+  }, [userInfo]);
 
   useEffect(() => {
     setImageArray([{ uri: image }]);
   }, [image]);
 
   const getAvatarImageDatabase = async () => {
-    const username = await AsyncStorage.getItem("username");
-    if (!username) return console.error("Username not found. Are you logged?");
-
     try {
-      const res = await api.get("/users/" + username);
+      if (!userInfo?.username) throw new Error("Username not provided");
+
+      const res = await api.get("/users/" + userInfo?.username);
 
       if (res.status === 200 && res.data) {
         const { avatar } = res.data;

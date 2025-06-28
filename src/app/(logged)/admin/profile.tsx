@@ -70,6 +70,7 @@ export default function Profile() {
         iconColor={theme.colors.onBackground}
         onPressButton={() => setIsMenuOpen(true)}
         barColor={theme.colors.background}
+        buttonSize={28}
       />
       {}
       <ProfileLogged />

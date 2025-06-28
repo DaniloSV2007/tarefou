@@ -1,7 +1,13 @@
 import { useLanguageContext } from "@/context/LanguageContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import {
   Text,
   Card,
@@ -11,26 +17,34 @@ import {
   Avatar,
 } from "react-native-paper";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import ImageView from "react-native-image-viewing";
+import React from "react";
+import { UserType } from "@/app/(logged)/admin/members";
 
 interface Props {
-  name: string;
-  username: string;
-  memberSince: string | Date;
-  avatar: string;
+  user: UserType;
+  setUserInfo: (user: UserType) => void;
+  setEditVisible: (state: boolean) => void;
 }
 
 export default function MemberInfo({
-  name,
-  username,
-  memberSince,
-  avatar,
+  user,
+  setUserInfo,
+  setEditVisible,
   ...rest
 }: Props) {
   const theme = useAppTheme();
   const router = useRouter();
   const { t } = useTranslation();
-  const userId = "12345";
   const { languagePreference } = useLanguageContext();
+
+  const userWithoutAvatar: UserType = { ...user, avatar: "" };
+
+  const userEncoded = encodeURIComponent(JSON.stringify(userWithoutAvatar));
+
+  const [imageArray, setImageArray] = useState<any>([{ uri: user.avatar }]);
+  const [visible, setIsVisible] = useState(false);
 
   const formatDate = (created: string | Date) => {
     const date = new Date(created);
@@ -53,42 +67,81 @@ export default function MemberInfo({
       }}
     >
       <TouchableRipple
-        onPress={() => router.push(`/member/${userId}`)}
+        onPress={() => router.push(`/member/${userEncoded}`)}
         borderless={false}
         rippleColor={theme.custom.ripple}
       >
         <View>
           <Card.Title
-            title={name}
+            title={user.name}
             titleStyle={{
               fontSize: 28,
               marginLeft: 10,
               marginBottom: -6,
               marginTop: 6,
             }}
-            subtitle={"@" + username}
+            subtitle={
+              <>
+                @{user.username}{" "}
+                {user.role === "MEMBER" ? (
+                  <Icon
+                    source={"account"}
+                    color={theme.colors.onSurfaceVariant}
+                    size={14}
+                  />
+                ) : (
+                  <Icon
+                    source={"account-cog"}
+                    color={theme.colors.onSurfaceVariant}
+                    size={14}
+                  />
+                )}
+              </>
+            }
             subtitleStyle={{
               fontSize: 14,
               color: theme.colors.onSurfaceVariant,
               marginLeft: 10,
             }}
-            left={() => <Avatar.Image source={{ uri: avatar }} size={48} />}
+            left={() => (
+              <Pressable
+                android_ripple={{ color: theme.custom.ripple }}
+                onPress={() => setIsVisible(true)}
+              >
+                <Avatar.Image
+                  source={{ uri: user.avatar ?? undefined }}
+                  size={48}
+                />
+              </Pressable>
+            )}
           />
           <Card.Content>
             <Text variant="bodyMedium">
               {t("components:memberCard.placeholder")}
             </Text>
+            <ImageView
+              images={imageArray}
+              imageIndex={0}
+              visible={visible}
+              onRequestClose={() => setIsVisible(false)}
+            />
           </Card.Content>
           <Card.Actions>
             <View style={{ flex: 1, flexDirection: "row" }}>
               <Text style={{ color: theme.colors.onSurfaceVariant }}>
                 {t("components:memberCard.memberSince", {
-                  date: formatDate(memberSince),
+                  date: formatDate(user.createdAt ?? ""),
                 })}
               </Text>
             </View>
 
-            <TouchableOpacity onPress={() => {}} activeOpacity={0.7}>
+            <TouchableOpacity
+              onPress={() => {
+                setUserInfo(user);
+                setEditVisible(true);
+              }}
+              activeOpacity={0.7}
+            >
               <Button
                 mode="outlined"
                 buttonColor={theme.custom.cardTaskBackground}
