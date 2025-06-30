@@ -78,6 +78,7 @@ export default function UserProfile() {
       if (res.status === 200 && res.data) {
         const { avatar } = res.data;
         setImage(avatar);
+        setImageArray([{ uri: avatar }]);
       }
     } catch (error) {
       console.error(error);
@@ -235,7 +236,7 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: "bold",
     marginTop: 16,
     marginHorizontal: "auto",

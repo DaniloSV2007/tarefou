@@ -27,6 +27,8 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
 
   const [confirmationVisible, setConfirmationVisible] = useState(false);
 
+  const [changed, setChanged] = useState(false);
+
   const handleChangeRole = async (selectedOption: string) => {
     setLoading(true);
     if (selectedOption === selected) {
@@ -114,6 +116,7 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
                   onPress={() => {
                     handleChangeRole(option);
                     setVisible(false);
+                    setChanged(true);
                   }}
                 />
               ))}
@@ -125,7 +128,7 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
             mode="outlined"
             textColor={theme.colors.onBackground}
             onPress={() => {
-              reflesh();
+              changed && reflesh();
               setEditVisible(false);
             }}
             style={{ borderRadius: 12, paddingHorizontal: 5 }}

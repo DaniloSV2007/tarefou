@@ -40,8 +40,6 @@ yarn-error.*
 android/
 ios/
 
-# Tailwind
-tailwind.config.js
 
 # Logs
 npm-debug.log*

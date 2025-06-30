@@ -71,9 +71,27 @@ export default function Members() {
 
   const [menuVisible, setMenuVisible] = useState(false);
 
+  const [familyInfo, setFamilyInfo] = useState<any>();
+  const [familyEncoded, setFamilyEncoded] = useState<any>();
+
   useEffect(() => {
     reflesh();
   }, []);
+
+  useEffect(() => {
+    if (familyInfo) {
+      const familyInfoNoAvatars = {
+        ...familyInfo,
+        users: familyInfo.users.map((user: UserType) => ({
+          ...user,
+          avatar: "", // ou null
+        })),
+      };
+
+      setFamilyEncoded(encodeURIComponent(JSON.stringify(familyInfoNoAvatars)));
+      console.log(familyInfoNoAvatars);
+    }
+  }, [familyInfo]);
 
   const findFamilyOwner = async (users: [], owner: string) => {
     if (!owner) return;
@@ -107,6 +125,7 @@ export default function Members() {
         const { users, owner, name } = res.data;
         findFamilyOwner(users, owner);
         setFamilyName(name);
+        setFamilyInfo(res.data);
         setLoadingUsers(false);
       }
     } catch (error) {
@@ -158,25 +177,6 @@ export default function Members() {
     membersLength();
   };
 
-  useEffect(() => {
-    registerForPushNotificationsAsync();
-  }, []);
-
-  async function handleSendNotification() {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "📬 Você tem uma nova tarefa!",
-        body: "Abra o app para ver os detalhes.",
-        sound: "default",
-      },
-      trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-        seconds: 2,
-        repeats: false,
-      },
-    });
-  }
-
   if (loadingUsers) {
     return (
       <View
@@ -188,7 +188,7 @@ export default function Members() {
           styles.container,
         ]}
       >
-        <TopBar title={t("screens:members.title")} />
+        <TopBar title={t("screens:members.title")} showNotification />
 
         <View
           style={{
@@ -236,31 +236,15 @@ export default function Members() {
         styles.container,
       ]}
     >
-      <TopBar title={familyName ? familyName : t("screens:members.title")}>
-        <View style={styles.iconWithBadge}>
-          <Appbar.Action icon="bell-outline" onPress={handleSendNotification} />
-
-          <Badge style={styles.badge} size={8}></Badge>
-        </View>
-
-        <Menu
-          visible={menuVisible}
-          onDismiss={() => setMenuVisible(false)}
-          anchor={
-            <Appbar.Action
-              icon="dots-vertical"
-              color={theme.colors.onBackground}
-              onPress={() => setMenuVisible(true)}
-            />
-          }
-        >
-          <Menu.Item
-            title="Configurações da Família"
-            onPress={() => {
-              setMenuVisible(false);
-            }}
-          />
-        </Menu>
+      <TopBar
+        title={familyName ? familyName : t("screens:members.title")}
+        showNotification
+      >
+        <Appbar.Action
+          icon="cog"
+          onPress={() => router.push(`/member/familySettings/${familyEncoded}`)}
+          style={{ margin: 0 }}
+        />
       </TopBar>
 
       <ScrollView
@@ -342,49 +326,11 @@ const styles = StyleSheet.create({
   },
   badge: {
     position: "absolute",
-    top: 16,
-    right: 16,
+    top: 10,
+    right: 10,
     backgroundColor: "#f44336",
     color: "white",
     fontSize: 10,
     zIndex: 1,
   },
 });
-
-async function registerForPushNotificationsAsync() {
-  if (Device.isDevice) {
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-
-    if (finalStatus !== "granted") {
-      Alert.alert(
-        "Permissão negada",
-        "Não foi possível ativar as notificações."
-      );
-      return;
-    }
-
-    // Para notificações push (remotas), você usaria:
-    // const token = (await Notifications.getExpoPushTokenAsync()).data;
-    // console.log("Token:", token);
-  } else {
-    Alert.alert(
-      "Atenção",
-      "Notificações funcionam apenas em dispositivos físicos."
-    );
-  }
-
-  if (Platform.OS === "android") {
-    await Notifications.setNotificationChannelAsync("default", {
-      name: "default",
-      importance: Notifications.AndroidImportance.MAX,
-      sound: "default",
-    });
-  }
-}

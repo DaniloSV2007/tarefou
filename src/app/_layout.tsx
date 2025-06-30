@@ -1,4 +1,5 @@
 import "@/i18n";
+import "@/styles/global.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { Slot, SplashScreen, Stack, useRouter } from "expo-router";
 import { PaperProvider } from "react-native-paper";

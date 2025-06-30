@@ -1,8 +1,8 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
 import { Children } from "react";
-import { TouchableOpacity, View } from "react-native";
-import { Appbar, useTheme } from "react-native-paper";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Appbar, Badge, useTheme } from "react-native-paper";
 
 interface Props {
   title: void | string;
@@ -17,6 +17,7 @@ interface Props {
   backButtonHref?: () => void | void;
   bottomBorder?: boolean;
   children?: any;
+  showNotification?: boolean;
 }
 
 export default function TopBar(props: Props) {
@@ -32,6 +33,7 @@ export default function TopBar(props: Props) {
     backButtonHref = () => router.back(),
     bottomBorder = true,
     children,
+    showNotification,
   } = props;
 
   const titleColor = props.titleColor ?? theme.colors.onBackground;
@@ -60,6 +62,16 @@ export default function TopBar(props: Props) {
             marginLeft: isBackButtonEnable ? -16 : 0,
           }}
         />
+        {showNotification && (
+          <View style={styles.iconWithBadge}>
+            <Appbar.Action
+              icon="bell-outline"
+              onPress={() => {}}
+              style={{ margin: 0 }}
+            />
+            <Badge style={styles.badge} size={8}></Badge>
+          </View>
+        )}
 
         {iconButton != "" && (
           <TouchableOpacity activeOpacity={0.7}>
@@ -74,7 +86,7 @@ export default function TopBar(props: Props) {
         {isBackButtonEnable && (
           <Appbar.BackAction
             onPress={backButtonHref}
-            size={35}
+            size={30}
             color={backButtonColor}
           />
         )}
@@ -83,3 +95,19 @@ export default function TopBar(props: Props) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  iconWithBadge: {
+    position: "relative",
+    marginRight: 8,
+  },
+  badge: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    backgroundColor: "#f44336",
+    color: "white",
+    fontSize: 10,
+    zIndex: 1,
+  },
+});

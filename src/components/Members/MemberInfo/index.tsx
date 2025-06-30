@@ -82,7 +82,6 @@ export default function MemberInfo({
             }}
             subtitle={
               <>
-                @{user.username}{" "}
                 {user.role === "MEMBER" ? (
                   <Icon
                     source={"account"}
@@ -95,7 +94,8 @@ export default function MemberInfo({
                     color={theme.colors.onSurfaceVariant}
                     size={14}
                   />
-                )}
+                )}{" "}
+                @{user.username}
               </>
             }
             subtitleStyle={{

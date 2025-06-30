@@ -35,12 +35,12 @@ export default function CustomTabBar({ routesProps }: TabBarProps) {
       style={{
         alignItems: "center",
         justifyContent: "center",
-        marginTop: focused ? -8 : -4,
+        marginTop: focused ? -12 : -12,
       }}
     >
       <Icon
         source={route.icon}
-        size={focused ? 34 : 28}
+        size={30}
         color={focused ? theme.colors.primary : theme.colors.onSurface}
       />
     </View>
@@ -49,11 +49,11 @@ export default function CustomTabBar({ routesProps }: TabBarProps) {
   const renderLabel = ({ route, focused }: any) => (
     <Text
       style={{
-        fontSize: focused ? 13 : 12,
+        fontSize: 12,
         fontWeight: focused ? "bold" : "normal",
         color: focused ? theme.colors.primary : theme.colors.onSurface,
         textAlign: "center",
-        marginTop: focused ? -8 : 0,
+        marginTop: -16,
       }}
     >
       {t(`routes.${route.key}`)}
@@ -76,7 +76,7 @@ export default function CustomTabBar({ routesProps }: TabBarProps) {
       renderLabel={renderLabel}
       style={{
         backgroundColor: theme.colors.background,
-        height: 65 + insets.bottom,
+        height: 50 + insets.bottom,
         paddingBottom: insets.bottom,
         borderTopColor: theme.colors.surface,
         borderTopWidth: 0.5,
