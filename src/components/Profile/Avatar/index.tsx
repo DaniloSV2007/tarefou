@@ -10,6 +10,7 @@ import * as SystemUI from "expo-system-ui";
 import { useThemeContext } from "@/context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "@/services/api";
+import { useAuth } from "@/context/AuthContext";
 
 export default function AvatarProfile({
   setImageProp,
@@ -19,6 +20,7 @@ export default function AvatarProfile({
   const theme = useAppTheme();
   const { t } = useTranslation();
   const { isDark } = useThemeContext();
+  const { token } = useAuth();
 
   //Profile Picture
   const [image, setImage] = useState<string | null>(null);
@@ -75,7 +77,11 @@ export default function AvatarProfile({
   const getNameAndRoleDb = async () => {
     const username = await AsyncStorage.getItem("username");
     try {
-      const res = await api.get("/users/" + username);
+      const res = await api.get("/users/" + username, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
 
       if (res.status === 200) {
         const { name, role } = res.data;
@@ -95,7 +101,11 @@ export default function AvatarProfile({
     if (!username) return console.error("Username not found. Are you logged?");
 
     try {
-      const res = await api.get("/users/" + username);
+      const res = await api.get("/users/" + username, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
 
       if (res.status === 200 && res.data) {
         const { avatar } = res.data;
@@ -141,6 +151,7 @@ export default function AvatarProfile({
       const res = await api.post("/users/uploadAvatar", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `${token}`,
         },
       });
 

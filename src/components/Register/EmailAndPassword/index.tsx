@@ -11,6 +11,7 @@ import { isValidEmail } from "@/utils/isValidEmail";
 import { useTranslation } from "react-i18next";
 import { useDatabase } from "@/database/useDatabase";
 import api from "@/services/api";
+import { useAuth } from "@/context/AuthContext";
 
 interface EmailAndPasswordProps {
   setPage: (page: number) => void;
@@ -38,6 +39,7 @@ export default function EmailAndPassword({
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const database = useDatabase();
+  const { token } = useAuth();
 
   const handleContinue = async () => {
     if (!email || !password) {
@@ -53,7 +55,12 @@ export default function EmailAndPassword({
     };
 
     try {
-      const res = await api.post("/users/email", data);
+      const res = await api.post("/users/email", {
+        headers: {
+          Authorization: `${token}`,
+        },
+        data,
+      });
       const existingEmail = res.data.code === 200;
 
       if (existingEmail) {

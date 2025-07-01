@@ -9,6 +9,7 @@ import { useRouter } from "expo-router";
 import api from "@/services/api";
 import { ActivityIndicator } from "react-native-paper";
 import React from "react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function QRCode() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -17,6 +18,7 @@ export default function QRCode() {
   const router = useRouter();
   const isFocused = useIsFocused();
   const [isLoading, setIsLoading] = useState(false);
+  const { token } = useAuth();
 
   const handleQRCode = (qrcode: any) => {
     if (scanned || !qrcode.data) return;
@@ -50,7 +52,11 @@ export default function QRCode() {
       return null;
     }
     try {
-      const res = await api.get("/users/" + username);
+      const res = await api.get("/users/" + username, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
 
       if (res.status === 200) {
         const user = encodeURIComponent(JSON.stringify(res.data));

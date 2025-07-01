@@ -18,6 +18,8 @@ import { useEffect, useState } from "react";
 import { useLanguageContext } from "@/context/LanguageContext";
 import React from "react";
 import api from "@/services/api";
+import { tokens } from "react-native-paper/lib/typescript/styles/themes/v3/tokens";
+import { useAuth } from "@/context/AuthContext";
 
 type User = {
   name: string;
@@ -34,6 +36,7 @@ export default function UserProfile() {
   const router = useRouter();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { token } = useAuth();
 
   const params = useLocalSearchParams();
   const { languagePreference } = useLanguageContext();
@@ -73,7 +76,11 @@ export default function UserProfile() {
     try {
       if (!memberData.username) throw new Error("Username not provided");
 
-      const res = await api.get("/users/" + memberData.username);
+      const res = await api.get("/users/" + memberData.username, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
 
       if (res.status === 200 && res.data) {
         const { avatar } = res.data;

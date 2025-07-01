@@ -6,6 +6,7 @@ import { UserType } from "@/app/(logged)/admin/members";
 import api from "@/services/api";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@/context/AuthContext";
 
 type Props = {
   user: UserType | undefined;
@@ -16,11 +17,14 @@ type Props = {
 export default function EditMember({ user, setEditVisible, reflesh }: Props) {
   const theme = useAppTheme();
   const { t } = useTranslation();
+  const { token } = useAuth();
 
   const [visible, setVisible] = useState(false);
   const [selectedRole, setSelectedRole] = useState(user?.role);
   const [selected, setSelected] = useState(
-    user?.role === "MEMBER" ? "Member" : "Admin"
+    user?.role === "MEMBER"
+      ? `${t("screens:members.edit.roleMember")}`
+      : `${t("screens:members.edit.roleAdmin")}`
   );
 
   const [loading, setLoading] = useState(false);
@@ -39,7 +43,12 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
       role: selectedOption === "Member" ? "MEMBER" : "FAMILY_ADMIN",
     };
     try {
-      const res = await api.put("/users/" + user?.username, data);
+      const res = await api.put("/users/" + user?.username, {
+        headers: {
+          Authorization: `${token}`,
+        },
+        data,
+      });
 
       if (res.status === 200) {
         setSelected(selectedOption);
@@ -61,7 +70,12 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
       familyId: null,
     };
     try {
-      const res = await api.put("/users/" + user?.username, data);
+      const res = await api.put("/users/" + user?.username, {
+        headers: {
+          Authorization: `${token}`,
+        },
+        data,
+      });
 
       if (res.data.code === 200) {
         reflesh();
@@ -90,7 +104,7 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
             variant="headlineSmall"
             style={{ color: theme.colors.onSurfaceVariant }}
           >
-            User Role
+            {t("screens:members.edit.title")}
           </Text>
           <View style={{ alignItems: "center" }}>
             <Menu
@@ -108,7 +122,10 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
                 </Button>
               }
             >
-              {["Admin", "Member"].map((option) => (
+              {[
+                `${t("screens:members.edit.roleAdmin")}`,
+                `${t("screens:members.edit.roleMember")}`,
+              ].map((option) => (
                 <Menu.Item
                   key={option}
                   title={option}
@@ -134,7 +151,7 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
             style={{ borderRadius: 12, paddingHorizontal: 5 }}
             disabled={loading}
           >
-            Back
+            {t("components:common.back")}
           </Button>
           <Button
             mode="contained"
@@ -145,7 +162,7 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
             disabled={loading}
             rippleColor={theme.custom.ripple}
           >
-            Remove from Family
+            {t("screens:members.edit.removeFamily")}
           </Button>
         </Dialog.Actions>
       </Dialog>
@@ -157,15 +174,16 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
           onDismiss={() => setConfirmationVisible(false)}
         >
           <Dialog.Title style={{ fontSize: 28 }}>
-            Remove Confirmation
+            {t("screens:members.edit.removeConfirmTitle")}
           </Dialog.Title>
           <Dialog.Content style={{ gap: 32 }}>
             <Text
               variant="titleMedium"
               style={{ color: theme.colors.onSurfaceVariant }}
             >
-              Are you sure to remove {user?.name.split(" ")[0]} from your
-              family?
+              {t("screens:members.edit.removeConfirmText", {
+                name: user?.name.split(" ")[0],
+              })}
             </Text>
           </Dialog.Content>
           <Dialog.Actions style={{ justifyContent: "space-between" }}>
@@ -176,7 +194,7 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
               style={{ borderRadius: 12, paddingHorizontal: 5 }}
               disabled={loading}
             >
-              Cancel
+              {t("components:common.cancel")}
             </Button>
             <Button
               mode="contained"
@@ -187,7 +205,10 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
               disabled={loading}
               rippleColor={theme.custom.ripple}
             >
-              Remove {user?.name.split(" ")[0]}
+              {t("screens:members.edit.removeButton", {
+                name: user?.name.split(" ")[0],
+              })}{" "}
+              {}
             </Button>
           </Dialog.Actions>
         </Dialog>

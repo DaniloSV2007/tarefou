@@ -6,6 +6,7 @@ import { Button, Text } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import { useDatabase } from "@/database/useDatabase";
 import api from "@/services/api";
+import { useAuth } from "@/context/AuthContext";
 interface NameAndUsernameProps {
   setPage: (page: number) => void;
   name: string;
@@ -30,6 +31,7 @@ export default function NameAndUsername({
   const { t } = useTranslation();
   const database = useDatabase();
   const [success, setSuccess] = useState("");
+  const { token } = useAuth();
 
   useEffect(() => {
     if (name.length > 0 && name.length < 3) {
@@ -55,7 +57,11 @@ export default function NameAndUsername({
     }
 
     try {
-      const res = await api.get(`/users/${text}/exists`);
+      const res = await api.get(`/users/${text}/exists`, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
       const existingUsername = res.data.username;
 
       if (existingUsername) {

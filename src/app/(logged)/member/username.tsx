@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import api from "@/services/api";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@/context/AuthContext";
 
 export default function FindByUsername() {
   const theme = useAppTheme();
@@ -22,6 +23,7 @@ export default function FindByUsername() {
   const [error, setError] = useState("");
   const router = useRouter();
   const { t } = useTranslation();
+  const { token } = useAuth();
 
   const handlesubmit = async () => {
     setError("");
@@ -31,7 +33,11 @@ export default function FindByUsername() {
     }
     try {
       const usernameNoSpace = username.trim();
-      const res = await api.get("/users/" + usernameNoSpace);
+      const res = await api.get("/users/" + usernameNoSpace, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
       if (res.status === 200 && res.data !== null) {
         const user = encodeURIComponent(JSON.stringify(res.data));
         router.push({

@@ -67,6 +67,15 @@
       "title": "Membro",
       "username": "Nome de usuário"
     },
+    "edit": {
+      "title": "Função do usuário",
+      "roleMember": "Membro",
+      "roleAdmin": "Administrador",
+      "removeFamily": "Remover da Família",
+      "removeConfirmTitle": "Remover usuário",
+      "removeConfirmText": "Isso vai remover {{name}} de sua família.",
+      "removeButton": "Remover {{name}}"
+    },
     "newMember": {
       "tabBar": "Adicionar Membro",
       "title": "Adicionar por:",

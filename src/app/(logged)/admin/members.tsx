@@ -32,6 +32,7 @@ import { Text } from "react-native-paper";
 import MenuItem from "react-native-paper/lib/typescript/components/Menu/MenuItem";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
+import { useAuth } from "@/context/AuthContext";
 
 export interface UserType {
   name: string;
@@ -59,6 +60,7 @@ export default function Members() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { t } = useTranslation();
+  const { token } = useAuth();
 
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
@@ -120,7 +122,11 @@ export default function Members() {
       return;
     }
     try {
-      const res = await api.get("/families/" + familyId);
+      const res = await api.get("/families/" + familyId, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
       if (res.status === 200) {
         const { users, owner, name } = res.data;
         findFamilyOwner(users, owner);
@@ -143,7 +149,11 @@ export default function Members() {
 
     const username = await AsyncStorage.getItem("username");
     try {
-      const res = await api.get("/users/" + username);
+      const res = await api.get("/users/" + username, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
 
       if (res.status === 200) {
         return res.data.familyId;

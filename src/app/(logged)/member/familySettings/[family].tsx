@@ -8,6 +8,8 @@ import { UserType } from "../../admin/members";
 import { Avatar, Card, Icon, Text } from "react-native-paper";
 import placeholder from "@/assets/Profile/user.png";
 import api from "@/services/api";
+import { useAuth } from "@/context/AuthContext";
+import FamilyName from "@/components/Register/FamilyName";
 
 type Family = {
   id: string;
@@ -21,6 +23,7 @@ export default function FamilySettings() {
   const { t } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams();
+  const { token } = useAuth();
 
   const [familyInfo, setFamilyInfo] = useState<Family | undefined>();
   const [users, setUsers] = useState<UserType[] | undefined>();
@@ -53,7 +56,11 @@ export default function FamilySettings() {
       if (!username) {
         throw new Error("Username not found");
       }
-      const res = await api.get("/users/" + username);
+      const res = await api.get("/users/" + username, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
 
       if (res.data) {
         const { avatar } = res.data;
@@ -103,7 +110,16 @@ export default function FamilySettings() {
             <Card.Content className="gap-2">
               <Pressable
                 android_ripple={{ color: theme.custom.ripple }}
-                onPress={() => {}}
+                onPress={() =>
+                  router.push({
+                    pathname:
+                      "/member/familySettings/name/[familyName,familyId]",
+                    params: {
+                      familyName: familyInfo?.name,
+                      familyId: familyInfo?.id,
+                    },
+                  })
+                }
               >
                 <Text
                   className="text-3xl"

@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/AuthContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import api from "@/services/api";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
@@ -8,6 +9,7 @@ export default function RedirectUser() {
   const params = useLocalSearchParams();
   const router = useRouter();
   const theme = useAppTheme();
+  const { token } = useAuth();
 
   const [already, setAlready] = useState(false);
 
@@ -20,7 +22,11 @@ export default function RedirectUser() {
     setAlready(true);
     if (!username) return;
     try {
-      const res = await api.get("/users/" + username);
+      const res = await api.get("/users/" + username, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
 
       if (res.status === 200 && res.data) {
         const user = encodeURIComponent(JSON.stringify(res.data));

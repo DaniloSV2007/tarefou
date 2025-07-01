@@ -21,6 +21,7 @@ import api from "@/services/api";
 import { useTranslation } from "react-i18next";
 import imagePlaceholder from "@/assets/Profile/user.png";
 import ImageView from "react-native-image-viewing";
+import { useAuth } from "@/context/AuthContext";
 
 type User = {
   name: string;
@@ -42,6 +43,7 @@ export default function User() {
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const { languagePreference } = useLanguageContext();
   const { t } = useTranslation();
+  const { token } = useAuth();
 
   const [error, setError] = useState("");
 
@@ -96,7 +98,11 @@ export default function User() {
       return;
     }
     try {
-      const res = await api.get("/users/" + username);
+      const res = await api.get("/users/" + username, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
 
       if (res.status === 200) {
         return res.data.familyId;
@@ -116,7 +122,12 @@ export default function User() {
     const data = { familyId };
 
     try {
-      const res = await api.put("/users/" + userInfo?.username, data);
+      const res = await api.put("/users/" + userInfo?.username, {
+        headers: {
+          Authorization: `${token}`,
+        },
+        data,
+      });
       if (res.status === 200 && res.data.code === 200) {
         router.replace("/admin/members");
       } else if (res.data.code === 400) {
@@ -139,7 +150,11 @@ export default function User() {
     try {
       if (!userInfo?.username) throw new Error("Username not provided");
 
-      const res = await api.get("/users/" + userInfo?.username);
+      const res = await api.get("/users/" + userInfo?.username, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
 
       if (res.status === 200 && res.data) {
         const { avatar } = res.data;

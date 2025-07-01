@@ -94,7 +94,7 @@
       "confirmationMessage": "Tem certeza que deseja confirmar?"
     },
     "roleSelection": {
-      "title": "Selecione seu papel",
+      "title": "Selecione sua função",
       "card": {
         "member": "Membro",
         "familyAdmin": "Administrador da Família"
