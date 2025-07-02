@@ -10,6 +10,8 @@ import * as Updates from "expo-updates";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from "expo-constants";
 
 type UpdateStatus =
   | "idle"
@@ -29,11 +31,12 @@ export default function Update({ isUpdateAvailable }: UpdateProps) {
   const startUpdate = async () => {
     try {
       setStatus("downloading");
+      await changedUpdateOtaNumber();
       await Updates.fetchUpdateAsync();
       setStatus("downloaded");
     } catch (err) {
-      console.error(err);
-      setStatus("idle"); // ou exibir erro ao usuário
+      console.error("Failed to fetch update:", err);
+      setStatus("idle");
     }
   };
 
@@ -42,7 +45,7 @@ export default function Update({ isUpdateAvailable }: UpdateProps) {
       setStatus("restarting");
       await Updates.reloadAsync();
     } catch (err) {
-      console.error(err);
+      console.error("Failed to reload app:", err);
       setStatus("idle");
     }
   };
@@ -53,9 +56,33 @@ export default function Update({ isUpdateAvailable }: UpdateProps) {
     }
   }, [isUpdateAvailable]);
 
+  const checkIsNewBuild = async (): Promise<boolean> => {
+    const currentVersion = Constants.expoConfig?.version ?? "1.0.0";
+    const savedVersion = await AsyncStorage.getItem("appVersion");
+
+    if (!savedVersion || savedVersion !== currentVersion) {
+      await AsyncStorage.setItem("appVersion", currentVersion);
+      return true;
+    }
+
+    return false;
+  };
+
+  const changedUpdateOtaNumber = async () => {
+    const isNewBuild = await checkIsNewBuild();
+    if (isNewBuild) {
+      await AsyncStorage.setItem("updateOtaNumber", "0");
+      return;
+    }
+
+    const previous = await AsyncStorage.getItem("updateOtaNumber");
+    const next = previous ? parseInt(previous) + 1 : 1;
+    await AsyncStorage.setItem("updateOtaNumber", `${next}`);
+    console.log("Update OTA count:", next);
+  };
+
   return (
     <Portal>
-      {/* Dialog - Atualização disponível */}
       <Dialog visible={status === "available"} dismissable={false}>
         <Dialog.Title>{t("update.needDownload.title")}</Dialog.Title>
         <Dialog.Content>
@@ -68,7 +95,6 @@ export default function Update({ isUpdateAvailable }: UpdateProps) {
         </Dialog.Actions>
       </Dialog>
 
-      {/* Dialog - Baixando atualização */}
       <Dialog visible={status === "downloading"}>
         <Dialog.Title>{t("update.downloading")}</Dialog.Title>
         <Dialog.Content style={{ minHeight: "10%" }}>
@@ -76,7 +102,6 @@ export default function Update({ isUpdateAvailable }: UpdateProps) {
         </Dialog.Content>
       </Dialog>
 
-      {/* Dialog - Atualização baixada, precisa reiniciar */}
       <Dialog visible={status === "downloaded"} dismissable={false}>
         <Dialog.Title>{t("update.needRestart.title")}</Dialog.Title>
         <Dialog.Content>
@@ -89,7 +114,6 @@ export default function Update({ isUpdateAvailable }: UpdateProps) {
         </Dialog.Actions>
       </Dialog>
 
-      {/* Dialog - Reiniciando */}
       <Dialog visible={status === "restarting"}>
         <Dialog.Title>{t("update.restarting")}</Dialog.Title>
         <Dialog.Content style={{ minHeight: "10%" }}>

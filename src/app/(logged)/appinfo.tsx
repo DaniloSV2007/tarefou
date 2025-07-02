@@ -12,9 +12,10 @@ import {
 import Constants from "expo-constants";
 import TopBar from "@/components/TopBar";
 import { useTranslation } from "react-i18next";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, version } from "react";
 import * as Updates from "expo-updates";
 import Update from "@/components/Update";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function AppInfo() {
   const router = useRouter();
@@ -27,6 +28,7 @@ export default function AppInfo() {
   const [isChecking, setIsChecking] = useState(false);
   const [updatedVisible, setUpdatedVisible] = useState(false);
   const [updateAvailable, setUpdateAvailable] = useState(isUpdateAvailable);
+  const [otaUpdateVersion, setOtaUpdateVersion] = useState("0");
 
   const checkUpdates = async () => {
     setIsChecking(true);
@@ -57,6 +59,17 @@ export default function AppInfo() {
     };
   }, [updatedVisible]);
 
+  useEffect(() => {
+    const getOtaUpdateNumber = async () => {
+      const version = await AsyncStorage.getItem("updateOtaNumber");
+      if (version) {
+        setOtaUpdateVersion(version);
+      }
+    };
+
+    getOtaUpdateNumber();
+  }, []);
+
   return (
     <>
       <TopBar
@@ -80,7 +93,7 @@ export default function AppInfo() {
             variant="headlineSmall"
             style={[styles.text, { color: theme.colors.onBackground }]}
           >
-            {Constants.expoConfig?.version}
+            {Constants.expoConfig?.version + "-" + otaUpdateVersion}
           </Text>
           <View style={{ position: "absolute", right: 0, top: "50%" }}>
             <Button
