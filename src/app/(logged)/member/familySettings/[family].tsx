@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useTranslation } from "react-i18next";
@@ -9,9 +9,8 @@ import { Avatar, Card, Icon, Text } from "react-native-paper";
 import placeholder from "@/assets/Profile/user.png";
 import api from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
-import FamilyName from "@/components/Register/FamilyName";
 
-type Family = {
+export type Family = {
   id: string;
   name: string;
   owner: string;
@@ -26,54 +25,42 @@ export default function FamilySettings() {
   const { token } = useAuth();
 
   const [familyInfo, setFamilyInfo] = useState<Family | undefined>();
-  const [users, setUsers] = useState<UserType[] | undefined>();
-
   const [clicked, setClicked] = useState(false);
 
   const familyParams = Array.isArray(params.family)
     ? params.family[0]
     : params.family;
-  const familyDecoded = JSON.parse(decodeURIComponent(familyParams));
 
+  // Carrega e atualiza os avatares ao inicializar
   useEffect(() => {
-    setFamilyInfo(familyDecoded);
+    const init = async () => {
+      const decoded: Family = JSON.parse(decodeURIComponent(familyParams));
+
+      // Busca todos os avatares de uma vez
+      const updatedUsers = await Promise.all(
+        decoded.users.map(async (user) => {
+          const avatar = await getAvatarFromServer(user.username);
+          return { ...user, avatar };
+        })
+      );
+
+      setFamilyInfo({ ...decoded, users: updatedUsers });
+    };
+
+    init();
   }, []);
 
-  useEffect(() => {
-    const fetchAvatars = async () => {
-      if (familyInfo) {
-        for (const user of familyInfo.users) {
-          await getAvatarDatabase(user.username);
-        }
-        setFamilyInfo({ ...familyInfo });
-      }
-    };
-    fetchAvatars();
-  }, [familyInfo]);
-
-  const getAvatarDatabase = async (username: string) => {
+  const getAvatarFromServer = async (username: string) => {
     try {
-      if (!username) {
-        throw new Error("Username not found");
-      }
       const res = await api.get("/users/" + username, {
         headers: {
           Authorization: `${token}`,
         },
       });
-
-      if (res.data) {
-        const { avatar } = res.data;
-        const userIndex = familyInfo?.users.findIndex(
-          (user: UserType) => user.username === username
-        );
-        if (userIndex !== undefined && userIndex !== -1 && familyInfo) {
-          const user = familyInfo.users[userIndex];
-          familyInfo.users[userIndex] = { ...user, avatar };
-        }
-      }
+      return res.data?.avatar || "";
     } catch (error) {
       console.error(error);
+      return "";
     }
   };
 
@@ -86,12 +73,7 @@ export default function FamilySettings() {
       const userEncoded = encodeURIComponent(JSON.stringify(userNoAvatar));
       router.push(`/member/${userEncoded}`);
     } finally {
-      const timer = setTimeout(() => {
-        setClicked(false);
-      }, 1000);
-      return () => {
-        clearTimeout(timer);
-      };
+      setTimeout(() => setClicked(false), 1000);
     }
   };
 
@@ -137,9 +119,17 @@ export default function FamilySettings() {
                   <Icon source={"chevron-right"} size={28} />
                 </View>
               </Pressable>
+
               <Pressable
                 android_ripple={{ color: theme.custom.ripple }}
-                onPress={() => {}}
+                onPress={() =>
+                  router.push({
+                    pathname: "/member/familySettings/owner/[family]",
+                    params: {
+                      family: familyParams,
+                    },
+                  })
+                }
               >
                 <Text
                   className="text-3xl"
@@ -165,18 +155,22 @@ export default function FamilySettings() {
                 Members:
               </Text>
               <View className="items-center gap-4">
-                {familyInfo?.users.map((user: UserType) => (
+                {familyInfo?.users.map((user) => (
                   <Pressable
                     key={user.username}
-                    className="w-11/12 p-5 rounded-2xl"
-                    style={{ backgroundColor: theme.custom.cardTaskBackground }}
+                    className="w-full p-5 rounded-2xl"
+                    style={{
+                      backgroundColor: theme.custom.cardTaskBackground,
+                    }}
                     android_ripple={{ color: theme.custom.ripple }}
                     onPress={() => goToUserInfo(user)}
                   >
                     <View className="flex-row gap-3">
                       <Avatar.Image
                         size={48}
-                        source={{ uri: user.avatar ?? placeholder }}
+                        source={
+                          user.avatar ? { uri: user.avatar } : placeholder
+                        }
                       />
                       <View>
                         <Text

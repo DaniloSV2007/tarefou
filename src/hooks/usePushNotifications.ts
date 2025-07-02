@@ -65,7 +65,7 @@ export const usePushNotifications = (): PushNotificationState => {
 
       return token;
     } else {
-      console.log("ERROR: Please use a physical device");
+      console.warn("ERROR: Please use a physical device");
     }
   }
 

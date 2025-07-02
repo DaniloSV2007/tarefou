@@ -52,7 +52,7 @@ export default function FindByUsername() {
         );
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setError(t("screens:members.newMember.findUsername.errors.ops"));
     }
   };

@@ -7,6 +7,7 @@ import {
   RefreshControl,
   Platform,
   Alert,
+  Linking,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import TopBar from "@/components/TopBar";
@@ -62,6 +63,8 @@ export default function Members() {
   const { t } = useTranslation();
   const { token } = useAuth();
 
+  const [username, setUsername] = useState("");
+
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [usersLength, setUsersLength] = useState(0);
@@ -78,6 +81,11 @@ export default function Members() {
 
   useEffect(() => {
     reflesh();
+    const getUsername = async () => {
+      const username = await AsyncStorage.getItem("username");
+      setUsername(username ?? "");
+    };
+    getUsername();
   }, []);
 
   useEffect(() => {
@@ -90,8 +98,13 @@ export default function Members() {
         })),
       };
 
+      console.log(
+        familyInfo.owner,
+        username,
+        familyInfo.owner.trim() == username.trim()
+      );
+
       setFamilyEncoded(encodeURIComponent(JSON.stringify(familyInfoNoAvatars)));
-      console.log(familyInfoNoAvatars);
     }
   }, [familyInfo]);
 
@@ -187,6 +200,25 @@ export default function Members() {
     membersLength();
   };
 
+  const [state, setState] = useState({ open: false });
+
+  const onStateChange = ({ open }: any) => setState({ open });
+
+  const { open } = state;
+
+  const shareWhatsapp = async () => {
+    const username = await AsyncStorage.getItem("username");
+    if (!username) return;
+
+    const deepLink = `tarefou://tarefou/${username}`;
+
+    const message = `Acesse meu perfil no Tarefou!\n${deepLink}`;
+
+    const whatsappLink = `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+    Linking.openURL(whatsappLink);
+  };
+
   if (loadingUsers) {
     return (
       <View
@@ -224,12 +256,37 @@ export default function Members() {
             <MemberInfoLoading key={i} />
           ))}
 
-          <FAB
-            icon={"plus"}
-            style={[{ backgroundColor: theme.colors.primary }, styles.fab]}
+          <FAB.Group
+            open={open}
+            visible
+            icon={open ? "close" : "plus"}
             rippleColor={theme.custom.ripple}
-            onPress={() => router.push("/member/new")}
             color="white"
+            backdropColor="#2e2e2ebf"
+            fabStyle={[{ backgroundColor: theme.colors.primary }]}
+            actions={[
+              {
+                icon: "email-newsletter",
+                label: "Invite",
+                onPress: () => console.log("Pressed Invite"),
+              },
+              {
+                icon: "account-search",
+                label: "Username",
+                onPress: () => router.push("/member/username"),
+              },
+              {
+                icon: "qrcode",
+                label: "QRCode",
+                onPress: () => router.push("/member/qrcode"),
+              },
+              {
+                icon: "whatsapp",
+                label: "Whatsapp",
+                onPress: () => shareWhatsapp(),
+              },
+            ]}
+            onStateChange={onStateChange}
           />
         </View>
       </View>
@@ -250,11 +307,15 @@ export default function Members() {
         title={familyName ? familyName : t("screens:members.title")}
         showNotification
       >
-        <Appbar.Action
-          icon="cog"
-          onPress={() => router.push(`/member/familySettings/${familyEncoded}`)}
-          style={{ margin: 0 }}
-        />
+        {familyInfo && familyInfo.owner === username && (
+          <Appbar.Action
+            icon="cog"
+            onPress={() =>
+              router.push(`/member/familySettings/${familyEncoded}`)
+            }
+            style={{ margin: 0 }}
+          />
+        )}
       </TopBar>
 
       <ScrollView
@@ -303,12 +364,37 @@ export default function Members() {
           </Portal>
         )}
       </ScrollView>
-      <FAB
-        icon={"plus"}
-        style={[{ backgroundColor: theme.colors.primary }, styles.fab]}
+      <FAB.Group
+        open={open}
+        visible
+        icon={open ? "close" : "plus"}
         rippleColor={theme.custom.ripple}
-        onPress={() => router.push("/member/new")}
         color="white"
+        backdropColor="#2e2e2ebf"
+        fabStyle={[{ backgroundColor: theme.colors.primary }]}
+        actions={[
+          {
+            icon: "email-newsletter",
+            label: "Invite",
+            onPress: () => console.log("Pressed Invite"),
+          },
+          {
+            icon: "account-search",
+            label: "Username",
+            onPress: () => router.push("/member/username"),
+          },
+          {
+            icon: "qrcode",
+            label: "QRCode",
+            onPress: () => router.push("/member/qrcode"),
+          },
+          {
+            icon: "whatsapp",
+            label: "Whatsapp",
+            onPress: () => shareWhatsapp(),
+          },
+        ]}
+        onStateChange={onStateChange}
       />
     </View>
   );

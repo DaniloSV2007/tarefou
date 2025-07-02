@@ -61,11 +61,13 @@ export default function Register() {
       password: password,
     };
 
-    const res = await api.post("/login", data);
-    if (res.status === 200) {
-      login(res.data.token, res.data.role, res.data.username);
-    } else {
-      console.log("error");
+    try {
+      const res = await api.post("/login", data);
+      if (res.status === 200) {
+        login(res.data.token, res.data.role, res.data.username);
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 

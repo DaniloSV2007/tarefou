@@ -1,7 +1,7 @@
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
+import { View, Text, Button, StyleSheet, Image } from "react-native";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import TopBar from "@/components/TopBar";
 import * as Linking from "expo-linking";
@@ -10,6 +10,8 @@ import api from "@/services/api";
 import { ActivityIndicator } from "react-native-paper";
 import React from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import scan from "@/assets/scan.png";
 
 export default function QRCode() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -19,6 +21,7 @@ export default function QRCode() {
   const isFocused = useIsFocused();
   const [isLoading, setIsLoading] = useState(false);
   const { token } = useAuth();
+  const insets = useSafeAreaInsets();
 
   const handleQRCode = (qrcode: any) => {
     if (scanned || !qrcode.data) return;
@@ -31,7 +34,6 @@ export default function QRCode() {
       const path = Linking.parse(url).path;
 
       if (path) {
-        console.log(path);
         getUserInfo(path);
       } else {
         console.warn("QR inválido");
@@ -76,7 +78,12 @@ export default function QRCode() {
     return (
       <>
         <TopBar title="Scan QRCode" isBackButtonEnable />
-        <View style={styles.container}>
+        <View
+          style={[
+            styles.container,
+            { backgroundColor: theme.colors.background },
+          ]}
+        >
           <Text>We need permission to access the camera</Text>
           <Button title="Grant" onPress={requestPermission} />
         </View>
@@ -90,28 +97,29 @@ export default function QRCode() {
       <View
         style={[styles.container, { backgroundColor: theme.colors.background }]}
       >
-        <View style={{ height: 300, width: 300 }}>
+        <View style={{ flex: 1, paddingBottom: insets.bottom }}>
           {isFocused && (
             <CameraView
               style={styles.camera}
               onBarcodeScanned={handleQRCode}
-              zoom={0.3}
               barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
-            />
-          )}
-          {isLoading && (
-            <View
-              style={{
-                flex: 1,
-                bottom: "45.5%",
-                right: "45.5%",
-                position: "absolute",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
             >
-              <ActivityIndicator size={32} />
-            </View>
+              <Image source={scan} className="w-80 h-80" />
+              {isLoading && (
+                <View
+                  style={{
+                    flex: 1,
+                    bottom: "46%",
+                    right: "43%",
+                    position: "absolute",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <ActivityIndicator size={64} color="white" />
+                </View>
+              )}
+            </CameraView>
           )}
         </View>
       </View>
@@ -120,6 +128,12 @@ export default function QRCode() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center" },
-  camera: { flex: 1, borderWidth: 1, borderColor: "gray" },
+  container: {
+    flex: 1,
+  },
+  camera: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
