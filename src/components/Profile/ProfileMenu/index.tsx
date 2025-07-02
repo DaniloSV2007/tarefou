@@ -1,7 +1,14 @@
 import { useAuth } from "@/context/AuthContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  forwardRef,
+  useMemo,
+  useCallback,
+} from "react";
 import {
   Animated,
   Dimensions,
@@ -19,130 +26,57 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ConfirmLogout from "./ConfirmLogout";
 import { useTranslation } from "react-i18next";
+import {
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
+
+export type Ref = BottomSheetModal;
 
 interface ProfileMenuProps {
-  isMenuOpen: boolean;
-  setIsMenuOpen: (value: boolean) => void;
-  menuAnimation: boolean;
-  setMenuAnimation: (value: boolean) => void;
   isAdmin?: boolean;
+  close: () => void | void;
 }
 
-const SCREEN_HEIGHT = Dimensions.get("window").height;
+export const ProfileMenu = forwardRef<Ref, ProfileMenuProps>(
+  function ProfileMenu({ isAdmin = false, close }, ref) {
+    const router = useRouter();
+    const theme = useAppTheme();
+    const { isLoggedIn, logout } = useAuth();
+    const insets = useSafeAreaInsets();
+    const [isConfirmation, setIsConfirmation] = useState(false);
+    const { t } = useTranslation();
 
-export default function ProfileMenu({
-  isMenuOpen,
-  setIsMenuOpen,
-  menuAnimation,
-  setMenuAnimation,
-  isAdmin = false,
-}: ProfileMenuProps) {
-  const router = useRouter();
-  const theme = useAppTheme();
-  const { isLoggedIn, logout } = useAuth();
-  const insets = useSafeAreaInsets();
-  const [isConfirmation, setIsConfirmation] = useState(false);
-  const { t } = useTranslation();
+    const snapPoints = useMemo(() => ["23%"], []);
 
-  const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
-  const backdropOpacity = useRef(new Animated.Value(0)).current;
+    const renderBackdrop = useCallback(
+      (props: any) => (
+        <BottomSheetBackdrop
+          appearsOnIndex={1}
+          disappearsOnIndex={-1}
+          {...props}
+        />
+      ),
+      []
+    );
 
-  useEffect(() => {
-    setMenuAnimation(isMenuOpen);
-  }, [isMenuOpen]);
-
-  useEffect(() => {
-    let animationSet: Animated.CompositeAnimation | null = null;
-
-    if (menuAnimation) {
-      animationSet = Animated.parallel([
-        Animated.timing(translateY, {
-          toValue: 0,
-          duration: 400,
-          useNativeDriver: true,
-        }),
-        Animated.timing(backdropOpacity, {
-          toValue: 0.5,
-          duration: 400,
-          useNativeDriver: false,
-        }),
-      ]);
-      animationSet.start();
-    } else {
-      animationSet = Animated.parallel([
-        Animated.timing(translateY, {
-          toValue: SCREEN_HEIGHT - 100,
-          duration: 400,
-          useNativeDriver: true,
-        }),
-        Animated.timing(backdropOpacity, {
-          toValue: 0,
-          duration: 400,
-          useNativeDriver: false,
-        }),
-      ]);
-      animationSet.start();
-    }
-
-    return () => {
-      if (animationSet) {
-        animationSet.stop();
-      }
-    };
-  }, [menuAnimation]);
-
-  const handleClose = () => {
-    setMenuAnimation(false);
-
-    setTimeout(() => {
-      setIsMenuOpen(false);
-    }, 400);
-  };
-
-  return (
-    <Portal>
-      <View style={styles.menuBoxContainer}>
-        <Animated.View
-          style={{
-            height: "102%",
-            backgroundColor: "#000",
-            opacity: backdropOpacity,
-          }}
-        >
-          <TouchableOpacity
-            activeOpacity={1}
-            style={{ width: "100%", height: "100%" }}
-            onPress={handleClose}
-          />
-        </Animated.View>
-        <Animated.View
-          style={[
-            styles.buttonSection,
-            {
-              backgroundColor: theme.custom.cardColor,
-              paddingBottom: insets.bottom,
-              transform: [{ translateY }],
-            },
-          ]}
-        >
-          <View
-            style={{
-              width: "100%",
-              paddingVertical: 12,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <View
-              style={{
-                backgroundColor: theme.colors.onBackground,
-                paddingHorizontal: 20,
-                paddingVertical: 3,
-                borderRadius: 40,
-              }}
-            ></View>
-          </View>
-
+    return (
+      <BottomSheetModal
+        ref={ref}
+        index={1}
+        snapPoints={snapPoints}
+        backdropComponent={renderBackdrop}
+        backgroundStyle={{
+          backgroundColor: theme.custom.cardColor,
+          paddingBottom: insets.bottom,
+          borderTopStartRadius: 32,
+          borderTopEndRadius: 32,
+        }}
+        handleIndicatorStyle={{ height: 8 }}
+        handleStyle={{ padding: 12 }}
+      >
+        <BottomSheetView>
           <Divider
             style={{ backgroundColor: theme.colors.surface, height: 0.5 }}
           />
@@ -151,7 +85,7 @@ export default function ProfileMenu({
             style={styles.button}
             rippleColor={theme.custom.ripple}
             onPress={() => {
-              handleClose();
+              close();
               if (isAdmin) {
                 router.push("/appinfo");
               } else {
@@ -171,7 +105,7 @@ export default function ProfileMenu({
                   { color: theme.colors.onBackground },
                 ]}
               >
-                {t("components:profileMenu.appInfo")}
+                {t("profileMenu.appInfo", { ns: "components" })}
               </Text>
             </View>
           </TouchableRipple>
@@ -181,8 +115,7 @@ export default function ProfileMenu({
           <TouchableRipple
             style={styles.button}
             onPress={() => {
-              handleClose();
-
+              close();
               if (isAdmin) {
                 router.push("/settings");
               } else {
@@ -202,7 +135,7 @@ export default function ProfileMenu({
                   { color: theme.colors.onBackground },
                 ]}
               >
-                {t("components:profileMenu.settings")}
+                {t("profileMenu.settings", { ns: "components" })}
               </Text>
             </View>
           </TouchableRipple>
@@ -230,7 +163,7 @@ export default function ProfileMenu({
                     { color: theme.colors.onBackground },
                   ]}
                 >
-                  {t("components:profileMenu.logout")}
+                  {t("profileMenu.logout", { ns: "components" })}
                 </Text>
               </View>
             </TouchableRipple>
@@ -239,28 +172,23 @@ export default function ProfileMenu({
           <Divider
             style={{ backgroundColor: theme.colors.surface, height: 0.5 }}
           />
-        </Animated.View>
-      </View>
-      {isConfirmation && (
-        <ConfirmLogout
-          isConfirmation={isConfirmation}
-          setIsConfirmation={setIsConfirmation}
-          setIsMenuOpen={setIsMenuOpen}
-          logout={logout}
-        />
-      )}
-    </Portal>
-  );
-}
+          {isConfirmation && (
+            <ConfirmLogout
+              isConfirmation={isConfirmation}
+              setIsConfirmation={setIsConfirmation}
+              logout={logout}
+              close={close}
+            />
+          )}
+        </BottomSheetView>
+      </BottomSheetModal>
+    );
+  }
+);
+
+export default ProfileMenu;
 
 const styles = StyleSheet.create({
-  menuBoxContainer: {
-    flex: 1,
-    position: "absolute",
-    backgroundColor: "transparent",
-    height: "100%",
-    width: "100%",
-  },
   buttonSection: {
     width: "100%",
     borderTopLeftRadius: 24,

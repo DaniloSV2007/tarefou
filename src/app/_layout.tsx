@@ -22,6 +22,10 @@ import Update from "@/components/Update";
 import * as StatusBar from "expo-status-bar";
 import * as Linking from "expo-linking";
 import api from "@/services/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from "expo-constants";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 function RootInnerLayout() {
   const { theme, isDark } = useThemeContext();
@@ -66,7 +70,20 @@ function RootInnerLayout() {
       }
     };
     checkUpdates();
+    checkIsNewBuild();
   }, []);
+
+  const checkIsNewBuild = async (): Promise<boolean> => {
+    const currentVersion = Constants.expoConfig?.version ?? "1.0.0";
+    const savedVersion = await AsyncStorage.getItem("appVersion");
+
+    if (!savedVersion || savedVersion !== currentVersion) {
+      await AsyncStorage.setItem("appVersion", currentVersion);
+      return true;
+    }
+
+    return false;
+  };
 
   return (
     <SQLiteProvider databaseName="tarefou.db" onInit={setupDB}>
@@ -74,20 +91,27 @@ function RootInnerLayout() {
         <PaperProvider theme={theme}>
           <LanguageProvider>
             <AuthProvider>
-              <View
-                style={{ backgroundColor: appTheme.colors.background, flex: 1 }}
-              >
-                <Stack
-                  screenOptions={{
-                    headerShown: false,
-                    animation: "none",
-                    contentStyle: {
+              <GestureHandlerRootView>
+                <BottomSheetModalProvider>
+                  <View
+                    style={{
                       backgroundColor: appTheme.colors.background,
-                    },
-                  }}
-                />
-                <Update isUpdateAvailable={updateAvailable} />
-              </View>
+                      flex: 1,
+                    }}
+                  >
+                    <Stack
+                      screenOptions={{
+                        headerShown: false,
+                        animation: "none",
+                        contentStyle: {
+                          backgroundColor: appTheme.colors.background,
+                        },
+                      }}
+                    />
+                    <Update isUpdateAvailable={updateAvailable} />
+                  </View>
+                </BottomSheetModalProvider>
+              </GestureHandlerRootView>
             </AuthProvider>
           </LanguageProvider>
         </PaperProvider>

@@ -5,13 +5,13 @@ import { Button, Dialog, Portal, Text } from "react-native-paper";
 export default function ConfirmLogout({
   isConfirmation,
   setIsConfirmation,
-  setIsMenuOpen,
   logout,
+  close,
 }: {
   isConfirmation: boolean;
   setIsConfirmation: (isConfirmation: boolean) => void;
-  setIsMenuOpen: (isMenuOpen: boolean) => void;
   logout: () => void;
+  close: () => void | void;
 }) {
   const theme = useAppTheme();
   const { t } = useTranslation();
@@ -22,11 +22,11 @@ export default function ConfirmLogout({
         onDismiss={() => setIsConfirmation(false)}
       >
         <Dialog.Title style={{ color: theme.colors.onBackground }}>
-          {t("components:profileMenu.logout")}
+          {t("profileMenu.logout", { ns: "components" })}
         </Dialog.Title>
         <Dialog.Content>
           <Text style={{ color: theme.colors.onBackground, fontSize: 18 }}>
-            {t("components:profileMenu.logoutConfirmation")}
+            {t("profileMenu.logoutConfirmation", { ns: "components" })}
           </Text>
         </Dialog.Content>
         <Dialog.Actions>
@@ -34,10 +34,10 @@ export default function ConfirmLogout({
             labelStyle={{ color: theme.colors.onBackground }}
             onPress={() => {
               setIsConfirmation(false);
-              setIsMenuOpen(false);
+              close();
             }}
           >
-            {t("components:common.cancel")}
+            {t("common.cancel", { ns: "components" })}
           </Button>
           <Button
             style={{
@@ -47,10 +47,10 @@ export default function ConfirmLogout({
             labelStyle={{ color: "white" }}
             onPress={() => {
               logout();
-              setIsMenuOpen(false);
+              close();
             }}
           >
-            {t("components:profileMenu.logout")}
+            {t("profileMenu.logout", { ns: "components" })}
           </Button>
         </Dialog.Actions>
       </Dialog>
