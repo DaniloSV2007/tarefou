@@ -79,12 +79,16 @@
     "confirm": "Confirm",
     "back": "Back",
     "next": "Next",
-    "continue": "Continue"
+    "continue": "Continue",
+    "current": "Current",
+    "new": "New",
+    "done": "Done"
   },
   "profileMenu": {
     "appInfo": "App Info",
     "settings": "Settings",
     "logout": "Logout",
     "logoutConfirmation": "Are you sure you want to log out?"
-  }
+  },
+  "passwordConfirmText": "Insert your password to proceed:"
 }

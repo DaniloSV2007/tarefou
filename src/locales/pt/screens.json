@@ -98,6 +98,18 @@
         "add": "Adicionar à família",
         "alreadyExists": "O Membro já está na sua família!"
       }
+    },
+    "familySettings": {
+      "title": "Configurações da Família",
+      "familyName": "Nome da Família:",
+      "owner": "Dono:",
+      "deleteFamily": "Excluir família",
+      "members": "Membros:"
+    },
+    "changeNameTitle": "Mudar Nome da Família",
+    "changeOwner": {
+      "title": "Mudar Dono da Família",
+      "selectPlaceholder": "Selecionar novo dono"
     }
   },
   "member": {

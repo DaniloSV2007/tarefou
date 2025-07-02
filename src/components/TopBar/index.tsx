@@ -54,7 +54,7 @@ export default function TopBar(props: Props) {
         <Appbar.Content
           title={title}
           titleStyle={{
-            fontSize: 28,
+            fontSize: 24,
             fontWeight: "bold",
             alignItems: "center",
             color: titleColor,

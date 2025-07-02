@@ -11,7 +11,7 @@ import {
 import React, { useState, useEffect } from "react";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useAuth } from "@/context/AuthContext";
-import { useTranslations } from "@/hooks/useTranslations";
+import { useTranslation } from "react-i18next";
 import TopBar from "@/components/TopBar";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
@@ -31,11 +31,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "@/services/api";
 import { Header } from "react-native/Libraries/NewAppScreen";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import PasswordConfirmation from "@/components/PasswordConfirmation";
 
 export default function ChangeFamilyName() {
   const theme = useAppTheme();
   const { token } = useAuth();
-  const { t } = useTranslations();
+  const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams();
@@ -90,36 +91,6 @@ export default function ChangeFamilyName() {
     }
   };
 
-  const checkPassword = async () => {
-    setVisible(false);
-    if (updating) {
-      setUpdating(false);
-      return;
-    }
-    setUpdating(true);
-    const username = await AsyncStorage.getItem("username");
-    if (!username) throw new Error("Username not found");
-    try {
-      const data = {
-        username,
-        password,
-      };
-      const res = await api.post("/login/verify", data);
-      if (res.status === 200) {
-        await handleChangeFamilyName();
-      }
-    } catch (error) {
-      console.error(error);
-      const timer = setTimeout(() => {
-        setUpdating(false);
-      }, 2000);
-
-      return () => {
-        clearTimeout(timer);
-      };
-    }
-  };
-
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -132,7 +103,10 @@ export default function ChangeFamilyName() {
           backgroundColor: theme.colors.background,
         }}
       >
-        <TopBar title={"Change Family Name"} isBackButtonEnable />
+        <TopBar
+          title={t("members.changeNameTitle", { ns: "screens" })}
+          isBackButtonEnable
+        />
 
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={{ flex: 1 }}>
@@ -149,7 +123,7 @@ export default function ChangeFamilyName() {
                   color: theme.colors.onSurfaceDisabled,
                 }}
               >
-                Current:
+                {t("common.current", { ns: "components" })}:
               </Text>
               <TextInput
                 value={Array.isArray(familyName) ? familyName[0] : familyName}
@@ -157,7 +131,9 @@ export default function ChangeFamilyName() {
                 disabled
               />
 
-              <Text style={{ fontSize: 20, marginTop: 16 }}>New:</Text>
+              <Text style={{ fontSize: 20, marginTop: 16 }}>
+                {t("common.new", { ns: "components" })}:
+              </Text>
               <TextInput
                 value={text}
                 onChangeText={setText}
@@ -165,72 +141,14 @@ export default function ChangeFamilyName() {
               />
             </View>
 
-            <Portal>
-              <Dialog
-                visible={visible}
-                onDismiss={() => setVisible(false)}
-                style={{
-                  marginBottom: keyboardVisible ? "40%" : 0,
-                  paddingVertical: 12,
-                }}
-              >
-                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                  <Dialog.Content>
-                    <View>
-                      <Text style={{ fontSize: 20 }}>
-                        Insert your password to proceed:
-                      </Text>
-                      <TextInput
-                        value={password}
-                        onChangeText={setPassword}
-                        contentStyle={{ fontSize: 20 }}
-                        secureTextEntry
-                        autoCapitalize="none"
-                        style={{ marginTop: 8 }}
-                      />
-                    </View>
-                  </Dialog.Content>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                  <Dialog.Actions style={{ justifyContent: "space-between" }}>
-                    <Pressable
-                      onPress={() => setVisible(false)}
-                      className="p-2 rounded-lg"
-                      style={{
-                        borderWidth: 1,
-                        borderColor: theme.colors.onSurfaceDisabled,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          color: theme.colors.onBackground,
-                        }}
-                      >
-                        Cancel
-                      </Text>
-                    </Pressable>
-                    <Pressable
-                      disabled={!password}
-                      onPress={checkPassword}
-                      style={{
-                        backgroundColor: password
-                          ? theme.colors.primary
-                          : theme.colors.surfaceDisabled,
-                        paddingVertical: 8,
-                        paddingHorizontal: 16,
-                        borderRadius: 999,
-                      }}
-                    >
-                      {updating ? (
-                        <ActivityIndicator />
-                      ) : (
-                        <Text style={{ color: "white" }}>Done</Text>
-                      )}
-                    </Pressable>
-                  </Dialog.Actions>
-                </TouchableWithoutFeedback>
-              </Dialog>
-            </Portal>
+            <PasswordConfirmation
+              visible={visible}
+              setVisible={setVisible}
+              updating={updating}
+              setUpdating={setUpdating}
+              onPasswordConfirmation={handleChangeFamilyName}
+            />
+
             <View
               style={{
                 width: "100%",
@@ -258,7 +176,7 @@ export default function ChangeFamilyName() {
                 android_ripple={{ color: theme.custom.ripple }}
               >
                 {updating ? (
-                  <ActivityIndicator />
+                  <ActivityIndicator color="white" />
                 ) : (
                   <Text
                     style={{
@@ -268,7 +186,7 @@ export default function ChangeFamilyName() {
                           : theme.colors.onSurfaceDisabled,
                     }}
                   >
-                    Done
+                    {t("common.done", { ns: "components" })}
                   </Text>
                 )}
               </Pressable>

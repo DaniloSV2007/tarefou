@@ -7,7 +7,7 @@
       "import React from \"react\";",
       "import { useAppTheme } from \"@/hooks/useAppTheme\";",
       "import { useAuth } from \"@/context/AuthContext\";",
-      "import { useTranslations } from \"@/hooks/useTranslations\";",
+      "import { useTranslation } from \"react-i18next\";",
       "import TopBar from \"@/components/TopBar\";",
       "import { useRouter } from \"expo-router\";",
       "",

@@ -5,10 +5,17 @@ import { useTranslation } from "react-i18next";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import TopBar from "@/components/TopBar";
 import { UserType } from "../../admin/members";
-import { Avatar, Card, Icon, Text } from "react-native-paper";
+import {
+  ActivityIndicator,
+  Avatar,
+  Card,
+  Icon,
+  Text,
+} from "react-native-paper";
 import placeholder from "@/assets/Profile/user.png";
 import api from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
+import PasswordConfirmation from "@/components/PasswordConfirmation";
 
 export type Family = {
   id: string;
@@ -27,16 +34,17 @@ export default function FamilySettings() {
   const [familyInfo, setFamilyInfo] = useState<Family | undefined>();
   const [clicked, setClicked] = useState(false);
 
+  const [updating, setUpdating] = useState(false);
+  const [visible, setVisible] = useState(false);
+
   const familyParams = Array.isArray(params.family)
     ? params.family[0]
     : params.family;
 
-  // Carrega e atualiza os avatares ao inicializar
   useEffect(() => {
     const init = async () => {
       const decoded: Family = JSON.parse(decodeURIComponent(familyParams));
 
-      // Busca todos os avatares de uma vez
       const updatedUsers = await Promise.all(
         decoded.users.map(async (user) => {
           const avatar = await getAvatarFromServer(user.username);
@@ -79,7 +87,10 @@ export default function FamilySettings() {
 
   return (
     <>
-      <TopBar title={"Family Settings"} isBackButtonEnable />
+      <TopBar
+        title={t("members.familySettings.title", { ns: "screens" })}
+        isBackButtonEnable
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={{ backgroundColor: theme.colors.background }}
@@ -107,7 +118,7 @@ export default function FamilySettings() {
                   className="text-3xl"
                   style={{ color: theme.colors.onBackground }}
                 >
-                  Family Name:
+                  {t("members.familySettings.familyName", { ns: "screens" })}
                 </Text>
                 <Text
                   className="text-xl my-2"
@@ -135,7 +146,7 @@ export default function FamilySettings() {
                   className="text-3xl"
                   style={{ color: theme.colors.onBackground }}
                 >
-                  Owner:
+                  {t("members.familySettings.owner", { ns: "screens" })}
                 </Text>
                 <Text
                   className="text-xl my-2"
@@ -148,11 +159,32 @@ export default function FamilySettings() {
                 </View>
               </Pressable>
 
+              <View className="w-full items-center">
+                <Pressable
+                  className="px-4 py-4 rounded-2xl bg-red-500 flex-row"
+                  android_ripple={{ color: theme.custom.ripple }}
+                  onPress={() => setVisible(true)}
+                >
+                  {updating ? (
+                    <ActivityIndicator color="white" />
+                  ) : (
+                    <>
+                      <Icon source={"trash-can"} color="white" size={24} />
+                      <Text className="text-xl" style={{ color: "white" }}>
+                        {t("members.familySettings.deleteFamily", {
+                          ns: "screens",
+                        })}
+                      </Text>
+                    </>
+                  )}
+                </Pressable>
+              </View>
+
               <Text
                 className="text-3xl mb-4"
                 style={{ color: theme.colors.onBackground }}
               >
-                Members:
+                {t("members.familySettings.members", { ns: "screens" })}
               </Text>
               <View className="items-center gap-4">
                 {familyInfo?.users.map((user) => (
@@ -211,6 +243,13 @@ export default function FamilySettings() {
           </Card>
         </View>
       </ScrollView>
+      <PasswordConfirmation
+        visible={visible}
+        setVisible={setVisible}
+        updating={updating}
+        setUpdating={setUpdating}
+        onPasswordConfirmation={() => {}}
+      />
     </>
   );
 }

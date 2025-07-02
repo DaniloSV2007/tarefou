@@ -10,7 +10,7 @@ import {
 import React, { useState, useEffect } from "react";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useAuth } from "@/context/AuthContext";
-import { useTranslations } from "@/hooks/useTranslations";
+import { useTranslation } from "react-i18next";
 import TopBar from "@/components/TopBar";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
@@ -29,11 +29,12 @@ import { Family } from "../[family]";
 import { UserType } from "@/app/(logged)/admin/members";
 import { Dropdown } from "react-native-element-dropdown";
 import placeholder from "@/assets/Profile/user.png";
+import PasswordConfirmation from "@/components/PasswordConfirmation";
 
 export default function ChangeFamilyName() {
   const theme = useAppTheme();
   const { token } = useAuth();
-  const { t } = useTranslations();
+  const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams();
@@ -43,8 +44,6 @@ export default function ChangeFamilyName() {
   const [text, setText] = useState<any>([]);
   const [updating, setUpdating] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [password, setPassword] = useState("");
-  const [focused, setIsFocused] = useState(false);
   const [focus, setIsFocus] = useState(false);
   const [avatarsFetched, setAvatarsFetched] = useState(false);
 
@@ -143,30 +142,12 @@ export default function ChangeFamilyName() {
     }
   };
 
-  const checkPassword = async () => {
-    setVisible(false);
-    if (updating) return;
-    setUpdating(true);
-    const username = await AsyncStorage.getItem("username");
-    if (!username) throw new Error("Username not found");
-    try {
-      const res = await api.post("/login/verify", {
-        username,
-        password,
-      });
-      if (res.status === 200) {
-        await handleChangeFamilyOwner();
-      }
-    } catch (error) {
-      console.error(error);
-      const timer = setTimeout(() => setUpdating(false), 2000);
-      return () => clearTimeout(timer);
-    }
-  };
-
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <TopBar title={"Change Family Owner"} isBackButtonEnable />
+      <TopBar
+        title={t("members.changeOwner.title", { ns: "screens" })}
+        isBackButtonEnable
+      />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={{ flex: 1 }}>
           <View style={{ flex: 1, padding: 16, gap: 5 }}>
@@ -177,29 +158,33 @@ export default function ChangeFamilyName() {
                 color: theme.colors.onSurfaceDisabled,
               }}
             >
-              Current:
+              {t("common.current", { ns: "components" })}:
             </Text>
             <TextInput
               value={familyInfo?.owner}
               style={{ backgroundColor: "transparent", fontSize: 24 }}
               disabled
             />
-            <Text style={{ fontSize: 20, marginTop: 16 }}>New:</Text>
+            <Text style={{ fontSize: 20, marginTop: 16 }}>
+              {t("common.new", { ns: "components" })}:
+            </Text>
             <Dropdown
               data={data}
               labelField="label"
               valueField="value"
               value={text.value}
-              placeholder="Select Item"
+              placeholder={t("members.changeOwner.selectPlaceholder", {
+                ns: "screens",
+              })}
               onChange={(item) => setText(item)}
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}
               selectedTextStyle={{
-                color: "white",
+                color: theme.colors.onBackground,
                 marginLeft: 12,
                 fontSize: 24,
               }}
-              placeholderStyle={{ color: "white" }}
+              placeholderStyle={{ color: theme.colors.onBackground }}
               style={{
                 backgroundColor: theme.custom.cardColor,
                 paddingVertical: 20,
@@ -231,10 +216,16 @@ export default function ChangeFamilyName() {
                   }}
                 >
                   <View className="flex-row gap-3">
-                    <Avatar.Image
-                      size={46}
-                      source={item.avatar ? { uri: item.avatar } : placeholder}
-                    />
+                    {text.avatar ? (
+                      <Avatar.Image
+                        size={46}
+                        source={
+                          item.avatar ? { uri: item.avatar } : placeholder
+                        }
+                      />
+                    ) : (
+                      <Avatar.Icon size={46} icon={"account"} color="white" />
+                    )}
                     <View>
                       <Text
                         className="text-2xl -mb-1 w-80"
@@ -273,78 +264,19 @@ export default function ChangeFamilyName() {
             />
           </View>
 
-          <Portal>
-            <KeyboardAvoidingView style={{ flex: 1 }}>
-              <Dialog
-                visible={visible}
-                onDismiss={() => setVisible(false)}
-                style={{
-                  paddingVertical: 12,
-                  marginBottom: focused ? "60%" : 0,
-                }}
-              >
-                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                  <Dialog.Content>
-                    <View>
-                      <Text style={{ fontSize: 20 }}>
-                        Insert your password to proceed:
-                      </Text>
-                      <TextInput
-                        value={password}
-                        onChangeText={setPassword}
-                        contentStyle={{ fontSize: 20 }}
-                        secureTextEntry
-                        autoCapitalize="none"
-                        style={{ marginTop: 8 }}
-                        onFocus={() => setIsFocused(true)}
-                        onBlur={() => setIsFocused(false)}
-                      />
-                    </View>
-                  </Dialog.Content>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                  <Dialog.Actions style={{ justifyContent: "space-between" }}>
-                    <Pressable
-                      onPress={() => setVisible(false)}
-                      className="p-2 rounded-lg"
-                      style={{
-                        borderWidth: 1,
-                        borderColor: theme.colors.onSurfaceDisabled,
-                      }}
-                    >
-                      <Text style={{ color: theme.colors.onBackground }}>
-                        Cancel
-                      </Text>
-                    </Pressable>
-                    <Pressable
-                      disabled={!password}
-                      onPress={checkPassword}
-                      style={{
-                        backgroundColor: password
-                          ? theme.colors.primary
-                          : theme.colors.surfaceDisabled,
-                        paddingVertical: 8,
-                        paddingHorizontal: 16,
-                        borderRadius: 999,
-                      }}
-                    >
-                      {updating ? (
-                        <ActivityIndicator />
-                      ) : (
-                        <Text style={{ color: "white" }}>Done</Text>
-                      )}
-                    </Pressable>
-                  </Dialog.Actions>
-                </TouchableWithoutFeedback>
-              </Dialog>
-            </KeyboardAvoidingView>
-          </Portal>
+          <PasswordConfirmation
+            visible={visible}
+            setVisible={setVisible}
+            onPasswordConfirmation={handleChangeFamilyOwner}
+            updating={updating}
+            setUpdating={setUpdating}
+          />
 
           <View
             style={{
               width: "100%",
               padding: 12,
-              paddingBottom: 24,
+              paddingBottom: 12 + insets.bottom,
               borderTopWidth: 0.5,
               borderColor: "#ccc",
               flexDirection: "row",
@@ -367,7 +299,7 @@ export default function ChangeFamilyName() {
               android_ripple={{ color: theme.custom.ripple }}
             >
               {updating ? (
-                <ActivityIndicator />
+                <ActivityIndicator color="white" />
               ) : (
                 <Text
                   style={{
@@ -377,7 +309,7 @@ export default function ChangeFamilyName() {
                         : theme.colors.onSurfaceDisabled,
                   }}
                 >
-                  Done
+                  {t("common.done", { ns: "components" })}
                 </Text>
               )}
             </Pressable>

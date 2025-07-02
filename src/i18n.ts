@@ -9,6 +9,7 @@ import ptComponents from "@/locales/pt/components.json";
 import enScreens from "@/locales/en/screens.json";
 import ptScreens from "@/locales/pt/screens.json";
 
+export const defaultNS = "translation";
 export const resources = {
   en: {
     translation: enIndex,
@@ -34,7 +35,7 @@ i18n.use(initReactI18next).init({
     escapeValue: false,
   },
   ns: ["translation", "components", "screens"],
-  defaultNS: "translation",
+  defaultNS,
 });
 
 export default i18n;

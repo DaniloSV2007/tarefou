@@ -98,8 +98,21 @@
         "add": "Add to family",
         "alreadyExists": "Member already exists in your family!"
       }
+    },
+    "familySettings": {
+      "title": "Family Settings",
+      "familyName": "Family Name:",
+      "owner": "Owner:",
+      "deleteFamily": "Delete family",
+      "members": "Members:"
+    },
+    "changeNameTitle": "Change Family Name",
+    "changeOwner": {
+      "title": "Change Family Owner",
+      "selectPlaceholder": "Select new owner"
     }
   },
+
   "member": {
     "profile": {
       "title": "Member Profile",

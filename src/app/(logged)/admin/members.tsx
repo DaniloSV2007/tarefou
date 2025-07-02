@@ -98,12 +98,6 @@ export default function Members() {
         })),
       };
 
-      console.log(
-        familyInfo.owner,
-        username,
-        familyInfo.owner.trim() == username.trim()
-      );
-
       setFamilyEncoded(encodeURIComponent(JSON.stringify(familyInfoNoAvatars)));
     }
   }, [familyInfo]);
@@ -230,7 +224,10 @@ export default function Members() {
           styles.container,
         ]}
       >
-        <TopBar title={t("screens:members.title")} showNotification />
+        <TopBar
+          title={t("members.title", { ns: "screens" })}
+          showNotification
+        />
 
         <View
           style={{
@@ -304,7 +301,7 @@ export default function Members() {
       ]}
     >
       <TopBar
-        title={familyName ? familyName : t("screens:members.title")}
+        title={familyName ? familyName : t("members.title", { ns: "screens" })}
         showNotification
       >
         {familyInfo && familyInfo.owner === username && (

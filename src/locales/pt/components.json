@@ -71,12 +71,16 @@
     "confirm": "Confirmar",
     "back": "Voltar",
     "next": "Próximo",
-    "continue": "Continuar"
+    "continue": "Continuar",
+    "current": "Atual",
+    "new": "Novo",
+    "done": "Feito"
   },
   "profileMenu": {
     "appInfo": "Informações do App",
     "settings": "Configurações",
     "logout": "Sair",
     "logoutConfirmation": "Tem certeza que deseja sair?"
-  }
+  },
+  "passwordConfirmText": "Insira a sua senha para prosseguir:"
 }
