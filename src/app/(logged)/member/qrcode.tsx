@@ -12,6 +12,15 @@ import React from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import scan from "@/assets/scan.png";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+  Easing,
+} from "react-native-reanimated";
+
+const AnimatedImage = Animated.createAnimatedComponent(Image);
 
 export default function QRCode() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -22,6 +31,25 @@ export default function QRCode() {
   const [isLoading, setIsLoading] = useState(false);
   const { token } = useAuth();
   const insets = useSafeAreaInsets();
+
+  const scale = useSharedValue(1);
+
+  useEffect(() => {
+    scale.value = withRepeat(
+      withTiming(1.01, {
+        duration: 1200,
+        easing: Easing.inOut(Easing.ease),
+      }),
+      -1,
+      true
+    );
+  }, []);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+    };
+  });
 
   const handleQRCode = (qrcode: any) => {
     if (scanned || !qrcode.data) return;
@@ -45,7 +73,6 @@ export default function QRCode() {
       setIsLoading(false);
     }
 
-    // Permitir novo scan após 3s
     setTimeout(() => setScanned(false), 3000);
   };
 
@@ -104,7 +131,17 @@ export default function QRCode() {
               onBarcodeScanned={handleQRCode}
               barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
             >
-              <Image source={scan} className="w-80 h-80" />
+              <AnimatedImage
+                source={scan}
+                style={[
+                  {
+                    width: 250,
+                    height: 250,
+                  },
+                  animatedStyle,
+                ]}
+                resizeMode="contain"
+              />
               {isLoading && (
                 <View
                   style={{

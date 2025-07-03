@@ -1,4 +1,4 @@
-import ProfileMenu from "@/components/Profile/ProfileMenu";
+import ProfileMenu from "@/components/Profile/Menu";
 import ProfileLogged from "@/components/ProfileLogged";
 import TopBar from "@/components/TopBar";
 import { useEffect, useState } from "react";

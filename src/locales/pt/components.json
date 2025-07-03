@@ -76,11 +76,14 @@
     "new": "Novo",
     "done": "Feito"
   },
-  "profileMenu": {
+  "menu": {
     "appInfo": "Informações do App",
     "settings": "Configurações",
     "logout": "Sair",
-    "logoutConfirmation": "Tem certeza que deseja sair?"
+    "logoutConfirmation": "Tem certeza que deseja sair?",
+    "takePhoto": "Tirar uma foto",
+    "gallery": "Pegar da galeria",
+    "remove": "Remover atual"
   },
   "passwordConfirmText": "Insira a sua senha para prosseguir:"
 }

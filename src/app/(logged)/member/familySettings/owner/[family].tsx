@@ -23,7 +23,6 @@ import {
   TextInput,
 } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "@/services/api";
 import { Family } from "../[family]";
 import { UserType } from "@/app/(logged)/admin/members";
@@ -216,13 +215,8 @@ export default function ChangeFamilyName() {
                   }}
                 >
                   <View className="flex-row gap-3">
-                    {text.avatar ? (
-                      <Avatar.Image
-                        size={46}
-                        source={
-                          item.avatar ? { uri: item.avatar } : placeholder
-                        }
-                      />
+                    {item.avatar ? (
+                      <Avatar.Image size={46} source={{ uri: item.avatar }} />
                     ) : (
                       <Avatar.Icon size={46} icon={"account"} color="white" />
                     )}

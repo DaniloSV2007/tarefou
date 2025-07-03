@@ -14,7 +14,7 @@
       "export default function $1() {",
       "  const theme = useAppTheme();",
       "  const { token } = useAuth();",
-      "  const { t } = useTranslations();",
+      "  const { t } = useTranslation();",
       "  const router =useRouter();",
       "",
       "  return (",

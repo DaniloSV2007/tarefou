@@ -1,16 +1,17 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View, StyleSheet, Alert, Pressable } from "react-native";
 import { Text, FAB, Avatar, Portal, IconButton } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import imagePlaceholder from "@/assets/Profile/user.png";
-import ImageSelection from "./ImageSelection";
-import * as SystemUI from "expo-system-ui";
 import { useThemeContext } from "@/context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
+import Menu from "../Menu";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import MenuButton from "../Menu/MenuButton";
 
 export default function AvatarProfile({
   setImageProp,
@@ -26,30 +27,24 @@ export default function AvatarProfile({
   const [image, setImage] = useState<string | null>(null);
   const placeholder = imagePlaceholder;
 
-  //Menu State
-  const [isSelectionOpen, setIsSelectionOpen] = useState(false);
-  const [menuAnimation, setMenuAnimation] = useState(false);
-
   //User Info
   const [name, setName] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
+
+  const profileMenuState = useRef<BottomSheetModal>(null);
+
+  const openMenu = useCallback(() => {
+    profileMenuState.current?.present();
+  }, []);
+
+  const closeMenu = useCallback(() => {
+    profileMenuState.current?.close();
+  }, []);
 
   useEffect(() => {
     getAvatarImage();
     getNameAndRole();
   }, []);
-
-  useEffect(() => {
-    SystemUI.setBackgroundColorAsync(isDark ? "#000" : "#fff");
-  }, [isDark]);
-
-  useEffect(() => {
-    if (isSelectionOpen) {
-      SystemUI.setBackgroundColorAsync(theme.custom.cardColor);
-    } else {
-      SystemUI.setBackgroundColorAsync(theme.colors.background);
-    }
-  }, [isSelectionOpen, isDark]);
 
   useEffect(() => {
     if (image !== null) {
@@ -190,6 +185,7 @@ export default function AvatarProfile({
           quality: 0.5,
           aspect: [1, 1],
           base64: true,
+          legacy: true,
         });
         if (!result.canceled) {
           const base64 = result.assets[0].base64;
@@ -240,7 +236,7 @@ export default function AvatarProfile({
         <View style={{ position: "absolute", bottom: 0, right: 0, zIndex: 1 }}>
           <FAB
             icon="camera-outline"
-            onPress={() => setIsSelectionOpen(true)}
+            onPress={openMenu}
             rippleColor={theme.custom.ripple}
             color={theme.colors.onBackground}
             mode="flat"
@@ -271,8 +267,12 @@ export default function AvatarProfile({
           }}
         >
           {role === "MEMBER"
-            ? t("screens:profileLogged.personalInfo.roleMember")
-            : t("screens:profileLogged.personalInfo.roleAdmin")}
+            ? t("profileLogged.personalInfo.roleMember", {
+                ns: "screens",
+              })
+            : t("profileLogged.personalInfo.roleAdmin", {
+                ns: "screens",
+              })}
         </Text>
         <IconButton
           icon={"qrcode"}
@@ -292,18 +292,27 @@ export default function AvatarProfile({
       >
         {name}
       </Text>
-      {isSelectionOpen && (
-        <Portal>
-          <ImageSelection
-            image={image}
-            isSelectionOpen={isSelectionOpen}
-            setIsSelectionOpen={setIsSelectionOpen}
-            menuAnimation={menuAnimation}
-            setMenuAnimation={setMenuAnimation}
-            changeAvatar={changeAvatar}
-          />
-        </Portal>
-      )}
+
+      <Menu ref={profileMenuState} close={closeMenu}>
+        <MenuButton
+          text={t("menu.takePhoto", { ns: "components" })}
+          icon="camera"
+          close={closeMenu}
+          onPress={() => changeAvatar(1)}
+        />
+        <MenuButton
+          text={t("menu.gallery", { ns: "components" })}
+          icon="image"
+          close={closeMenu}
+          onPress={() => changeAvatar(2)}
+        />
+        <MenuButton
+          text={t("menu.remove", { ns: "components" })}
+          icon="image-off"
+          close={closeMenu}
+          onPress={() => changeAvatar(3)}
+        />
+      </Menu>
     </View>
   );
 }

@@ -22,11 +22,11 @@ export default function ConfirmLogout({
         onDismiss={() => setIsConfirmation(false)}
       >
         <Dialog.Title style={{ color: theme.colors.onBackground }}>
-          {t("profileMenu.logout", { ns: "components" })}
+          {t("menu.logout", { ns: "components" })}
         </Dialog.Title>
         <Dialog.Content>
           <Text style={{ color: theme.colors.onBackground, fontSize: 18 }}>
-            {t("profileMenu.logoutConfirmation", { ns: "components" })}
+            {t("menu.logoutConfirmation", { ns: "components" })}
           </Text>
         </Dialog.Content>
         <Dialog.Actions>
@@ -50,7 +50,7 @@ export default function ConfirmLogout({
               close();
             }}
           >
-            {t("profileMenu.logout", { ns: "components" })}
+            {t("menu.logout", { ns: "components" })}
           </Button>
         </Dialog.Actions>
       </Dialog>

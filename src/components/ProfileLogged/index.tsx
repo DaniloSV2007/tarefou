@@ -1,4 +1,4 @@
-import ProfileMenu from "@/components/Profile/ProfileMenu";
+import ProfileMenu from "@/components/Profile/Menu";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";

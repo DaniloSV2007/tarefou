@@ -1,4 +1,4 @@
-import ProfileMenu from "@/components/Profile/ProfileMenu";
+import Menu from "@/components/Profile/Menu";
 import ProfileLogged from "@/components/ProfileLogged";
 import TopBar from "@/components/TopBar";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -16,15 +16,19 @@ import BottomSheet, {
   BottomSheetModal,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
+import MenuButton from "@/components/Profile/Menu/MenuButton";
+import ConfirmLogout from "@/components/Profile/Menu/ConfirmLogout";
 
 export default function Profile() {
-  const { isLoggedIn, isLoading } = useAuth();
+  const { isLoggedIn, isLoading, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menuAnimation, setMenuAnimation] = useState(false);
   const theme = useAppTheme();
   const { isDark } = useThemeContext();
   const { t } = useTranslation();
   const router = useRouter();
+
+  const [isConfirmation, setIsConfirmation] = useState(false);
 
   const profileMenuState = useRef<BottomSheetModal>(null);
 
@@ -85,7 +89,36 @@ export default function Profile() {
         Go to User routes
       </Button>
 
-      <ProfileMenu isAdmin={true} ref={profileMenuState} close={closeMenu} />
+      <Menu ref={profileMenuState} close={closeMenu}>
+        <MenuButton
+          close={closeMenu}
+          text={t("menu.appInfo", { ns: "components" })}
+          icon="information-outline"
+          onPress={() => router.push("/appinfo")}
+        />
+        <MenuButton
+          close={closeMenu}
+          text={t("menu.settings", { ns: "components" })}
+          icon="cog"
+          onPress={() => router.push("/settings")}
+        />
+        {isLoggedIn && (
+          <MenuButton
+            close={closeMenu}
+            text={t("menu.logout", { ns: "components" })}
+            icon="logout"
+            onPress={() => setIsConfirmation(true)}
+          />
+        )}
+      </Menu>
+      {isConfirmation && (
+        <ConfirmLogout
+          isConfirmation={isConfirmation}
+          setIsConfirmation={setIsConfirmation}
+          logout={logout}
+          close={close}
+        />
+      )}
     </>
   );
 }

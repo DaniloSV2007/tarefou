@@ -76,7 +76,7 @@ export default function Update({ isUpdateAvailable }: UpdateProps) {
     }
 
     const previous = await AsyncStorage.getItem("updateOtaNumber");
-    const next = previous ? parseInt(previous) + 1 : 1;
+    const next = previous ? parseInt(previous) + 1 : 0;
     await AsyncStorage.setItem("updateOtaNumber", `${next}`);
     console.log("Update OTA count:", next);
   };

@@ -84,11 +84,14 @@
     "new": "New",
     "done": "Done"
   },
-  "profileMenu": {
+  "menu": {
     "appInfo": "App Info",
     "settings": "Settings",
     "logout": "Logout",
-    "logoutConfirmation": "Are you sure you want to log out?"
+    "logoutConfirmation": "Are you sure you want to log out?",
+    "takePhoto": "Take a photo",
+    "gallery": "Get from gallery",
+    "remove": "Remove current"
   },
   "passwordConfirmText": "Insert your password to proceed:"
 }
