@@ -1,30 +1,21 @@
 import Menu from "@/components/Profile/Menu";
 import ProfileLogged from "@/components/ProfileLogged";
 import TopBar from "@/components/TopBar";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { ActivityIndicator, Button, Text } from "react-native-paper";
+import { ActivityIndicator, Button } from "react-native-paper";
 import { useAuth } from "@/context/AuthContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import React from "react";
-import { useThemeContext } from "@/context/ThemeContext";
-import * as SystemUI from "expo-system-ui";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
-import * as StatusBar from "expo-status-bar";
-import BottomSheet, {
-  BottomSheetModal,
-  BottomSheetView,
-} from "@gorhom/bottom-sheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import MenuButton from "@/components/Profile/Menu/MenuButton";
 import ConfirmLogout from "@/components/Profile/Menu/ConfirmLogout";
 
 export default function Profile() {
   const { isLoggedIn, isLoading, logout } = useAuth();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [menuAnimation, setMenuAnimation] = useState(false);
   const theme = useAppTheme();
-  const { isDark } = useThemeContext();
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -40,10 +31,6 @@ export default function Profile() {
     profileMenuState.current?.close();
   }, []);
 
-  useEffect(() => {
-    SystemUI.setBackgroundColorAsync(isDark ? "#000" : "#fff");
-  }, [isDark]);
-
   function LoadingPageIndicator() {
     return (
       <View
@@ -56,18 +43,6 @@ export default function Profile() {
       </View>
     );
   }
-
-  useEffect(() => {
-    if (menuAnimation && !isDark) {
-      StatusBar.setStatusBarStyle("light");
-      StatusBar.setStatusBarTranslucent(false);
-      StatusBar.setStatusBarBackgroundColor("#808181");
-    } else {
-      StatusBar.setStatusBarStyle(isDark ? "light" : "dark");
-      StatusBar.setStatusBarTranslucent(true);
-      StatusBar.setStatusBarBackgroundColor(theme.colors.background);
-    }
-  }, [menuAnimation]);
 
   if (isLoading) return <LoadingPageIndicator />;
 

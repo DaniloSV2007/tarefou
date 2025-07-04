@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 
 interface Task {
   id: string;
-  name: string;
+  title: string;
   status: boolean;
   description: string;
 }
@@ -15,10 +15,9 @@ interface Task {
 interface TasksCardProps {
   name: string;
   tasks: Task[];
-  setTasks: (tasks: Task[]) => void;
 }
 
-export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
+export default function TasksCard({ name, tasks }: TasksCardProps) {
   const theme = useAppTheme();
   const router = useRouter();
   const { t } = useTranslation();
@@ -29,35 +28,16 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
       console.error("Invalid task data");
       return;
     }
-
     try {
       router.push({
-        pathname: "/tasks/[userFullName]/[taskId]",
+        pathname: "/tasks/[userFullName]/[task]",
         params: {
           userFullName: name,
-          taskId: task.id.toString(),
+          task: encodeURIComponent(JSON.stringify(tasks)),
         },
       });
     } catch (error) {
       console.error("Error navigating to task:", error);
-    }
-  };
-
-  const handleTaskStatusChange = (taskIndex: number) => {
-    if (!Array.isArray(tasks) || taskIndex < 0 || taskIndex >= tasks.length) {
-      console.error("Invalid task index or tasks array");
-      return;
-    }
-
-    try {
-      const updatedTasks = [...tasks];
-      updatedTasks[taskIndex] = {
-        ...updatedTasks[taskIndex],
-        status: !updatedTasks[taskIndex].status,
-      };
-      setTasks(updatedTasks);
-    } catch (error) {
-      console.error("Error updating task status:", error);
     }
   };
 
@@ -73,7 +53,10 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
         ]}
       >
         <Card.Title
-          title={t("components:taskCard.title", { name: name.split(" ")[0] })}
+          title={t("taskCard.title", {
+            name: name.split(" ")[0],
+            ns: "components",
+          })}
           titleStyle={{
             fontSize: 24,
             fontWeight: "bold",
@@ -106,7 +89,7 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
               marginLeft: 24,
             }}
           >
-            {t("components:taskCard.noTasks")}
+            {t("taskCard.noTasks", { ns: "components" })}
           </Text>
         </Card.Content>
       </Card>
@@ -128,7 +111,10 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
       mode="elevated"
     >
       <Card.Title
-        title={t("components:taskCard.title", { name: name.split(" ")[0] })}
+        title={t("taskCard.title", {
+          name: name.split(" ")[0],
+          ns: "components",
+        })}
         titleStyle={{
           fontSize: 24,
           fontWeight: "bold",
@@ -172,7 +158,7 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
                     numberOfLines={1}
                     ellipsizeMode="tail"
                   >
-                    {task.name}
+                    {task.title}
                   </Text>
                   <Text
                     style={[
@@ -211,7 +197,7 @@ export default function TasksCard({ name, tasks, setTasks }: TasksCardProps) {
         >
           <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
             <Text style={{ color: linkColor }}>
-              {t("components:taskCard.viewAll")}
+              {t("taskCard.viewAll", { ns: "components" })}
             </Text>
 
             <View

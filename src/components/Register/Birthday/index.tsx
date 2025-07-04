@@ -167,7 +167,7 @@ export default function Birthday({
           labelStyle={styles.buttonText}
           disabled={isTooYoung}
         >
-          {t("components:common.next")}
+          {t("common.next", { ns: "components" })}
         </Button>
       </View>
     </>

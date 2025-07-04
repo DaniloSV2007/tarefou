@@ -22,7 +22,7 @@
       "      <TopBar title={\"$2\"}/>",
       "      <View>$3</View>",
       "    </>",
-      "  )s",
+      "  )",
       "}",
     ],
     "description": "Create a exported function with the basics needs for a Tarefou component",

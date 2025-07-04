@@ -7,10 +7,33 @@ import { useTranslation } from "react-i18next";
 import React from "react";
 import { Card } from "react-native-paper";
 import ContentLoader, { Circle, List, Rect } from "react-content-loader/native";
+import CustomCard from "@/components/CustomCard";
+import CardInfo from "@/components/Report/CardInfo";
 
 export default function Report() {
   const theme = useAppTheme();
   const { t } = useTranslation();
+
+  const totalTasks = 20;
+  const completedTasks = 15;
+  const completionRate = completedTasks / totalTasks;
+
+  const weekCompletedTasks = 22;
+  const weekTotalTasks = 45;
+  const weekCompletionRate = weekCompletedTasks / weekTotalTasks;
+
+  const totalMembersInfo = {
+    today: {
+      completedTasks: completedTasks,
+      totalCompletedTasks: totalTasks,
+      completionRate: completionRate,
+    },
+    week: {
+      completedTasks: weekCompletedTasks,
+      totalCompletedTasks: weekTotalTasks,
+      completionRate: weekCompletionRate,
+    },
+  };
 
   const MyLoader = () => (
     <ContentLoader
@@ -36,7 +59,7 @@ export default function Report() {
 
   return (
     <>
-      <TopBar title={t("screens:report.title")} />
+      <TopBar title={t("report.title", { ns: "screens" })} />
       <ScrollView
         style={{
           flex: 1,
@@ -45,7 +68,11 @@ export default function Report() {
         showsVerticalScrollIndicator={false}
       >
         <View style={{ alignItems: "center", gap: 16, paddingBottom: 12 }}>
-          <GeneralReportCard />
+          <CustomCard title={t("report.general.title", { ns: "screens" })}>
+            <CardInfo tasksInfo={totalMembersInfo.today} />
+            <CardInfo tasksInfo={totalMembersInfo.week} isWeek={true} />
+          </CustomCard>
+
           <ReportCard title="Danilo Voiski" username="@DaniloSV07" />
           <ReportCard title="Guilherme Voiski" username="@guilherme2017" />
           <Card

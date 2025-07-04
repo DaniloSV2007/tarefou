@@ -1,13 +1,23 @@
 import { Link, useRouter } from "expo-router";
-import { ScrollView, StyleSheet, View } from "react-native";
-import { Card, FAB, Icon } from "react-native-paper";
+import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Card, FAB, Icon } from "react-native-paper";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import TopBar from "@/components/TopBar";
 import ResumeCard from "@/components/Home/ResumeCard";
 import TasksCard from "@/components/Home/TasksCard";
 import { useTranslation } from "react-i18next";
 import ContentLoader, { Circle, List, Rect } from "react-content-loader/native";
+import CustomCard from "@/components/CustomCard";
+import CardInfo from "@/components/Report/CardInfo";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { UserType } from "./members";
+import api from "@/services/api";
+import { useAuth } from "@/context/AuthContext";
+
+interface UserTasksType extends UserType {
+  tasks: [];
+}
 
 interface Task {
   id: string;
@@ -37,115 +47,190 @@ export default function Home() {
   const router = useRouter();
   const theme = useAppTheme();
   const { t } = useTranslation();
+  const { token } = useAuth();
 
-  const [members, setMembers] = useState<Member[]>([
-    {
-      name: "Guilherme Voiski",
-      username: "@guilherme2017",
-      tasks: [],
-    },
-    {
-      name: "Danilo Voiski",
-      username: "@DaniloSV07",
-      tasks: [
-        {
-          id: "1",
-          name: "Find a bug",
-          status: true,
-          description: "Find a bug in the code",
-        },
-        {
-          id: "2",
-          name: "Fix a bug",
-          status: false,
-          description: "Fix a bug in the code",
-        },
-        {
-          id: "3",
-          name: "Task 3",
-          status: true,
-          description: "Task 3 description",
-        },
-        {
-          id: "4",
-          name: "Task 4",
-          status: false,
-          description: "Task 4 description",
-        },
-        {
-          id: "5",
-          name: "Task 5",
-          status: false,
-          description: "Task 5 description",
-        },
-        {
-          id: "6",
-          name: "Task 6",
-          status: false,
-          description: "Task 6 description",
-        },
-        {
-          id: "7",
-          name: "Task 7",
-          status: false,
-          description: "Task 7 description",
-        },
-        {
-          id: "8",
-          name: "Task 8",
-          status: false,
-          description: "Task 8 description",
-        },
-      ],
-    },
-  ]);
+  const [username, setUsername] = useState("");
 
-  const calculateStats = () => {
-    const totalTasks = members.reduce(
-      (acc, member) => acc + member.tasks.length,
-      0
-    );
-    const completedTasks = members.reduce(
-      (acc, member) => acc + member.tasks.filter((task) => task.status).length,
-      0
-    );
-    const completionRate = totalTasks > 0 ? completedTasks / totalTasks : 0;
+  const [loadingUsers, setLoadingUsers] = useState(false);
 
-    const weekTotalTasks = 45;
-    const weekCompletedTasks = 22;
-    const weekCompletionRate =
-      weekTotalTasks > 0 ? weekCompletedTasks / weekTotalTasks : 0;
+  const [familyInfo, setFamilyInfo] = useState<any>();
+  const [familyEncoded, setFamilyEncoded] = useState<any>();
 
-    return {
-      today: {
-        completedTasks,
-        totalCompletedTasks: totalTasks,
-        completionRate,
-      },
-      week: {
-        completedTasks: weekCompletedTasks,
-        totalCompletedTasks: weekTotalTasks,
-        completionRate: weekCompletionRate,
-      },
+  const [usersLength, setUsersLength] = useState(0);
+  const [users, setUsers] = useState<UserTasksType[]>([]);
+
+  useEffect(() => {
+    reflesh();
+    const getUsername = async () => {
+      const username = await AsyncStorage.getItem("username");
+      setUsername(username ?? "");
     };
+    getUsername();
+  }, []);
+
+  useEffect(() => {
+    if (familyInfo) {
+      const familyInfoNoAvatars = {
+        ...familyInfo,
+        users: familyInfo.users.map((user: UserType) => ({
+          ...user,
+          avatar: "",
+        })),
+      };
+      users.map((user) => {
+        getUsersTasks(user.username);
+      });
+
+      setFamilyEncoded(encodeURIComponent(JSON.stringify(familyInfoNoAvatars)));
+    }
+  }, [familyInfo]);
+
+  const filterUsers = async (users: []) => {
+    const newUsers = users.filter(
+      (user: UserType) => user.role !== "FAMILY_ADMIN"
+    );
+
+    await AsyncStorage.setItem("numOfMembersTasks", `${newUsers.length}`);
+    setUsersLength(newUsers.length);
+    setUsers(newUsers);
   };
 
-  const stats = calculateStats();
+  const getUsers = async () => {
+    setLoadingUsers(true);
+    const familyId = await getFamilyId();
 
-  const handleUpdateTasks = (memberIndex: number, updatedTasks: Task[]) => {
+    if (!familyId) {
+      await AsyncStorage.setItem("numOfMembersTasks", "0");
+      setUsersLength(0);
+      setLoadingUsers(false);
+      setRefreshing(false);
+      return;
+    }
     try {
-      const newMembers = [...members];
-      if (memberIndex >= 0 && memberIndex < newMembers.length) {
-        newMembers[memberIndex] = {
-          ...newMembers[memberIndex],
-          tasks: updatedTasks,
-        };
-        setMembers(newMembers);
+      const res = await api.get("/families/" + familyId, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
+      if (res.status === 200) {
+        const { users } = res.data;
+        await filterUsers(users);
+        setFamilyInfo(res.data);
+        setLoadingUsers(false);
       }
     } catch (error) {
-      console.error("Error updating tasks:", error);
+      console.error(error);
+    } finally {
+      setRefreshing(false);
     }
   };
+
+  const getFamilyId = async () => {
+    const familyId = await AsyncStorage.getItem("familyId");
+    if (familyId) {
+      return familyId;
+    }
+
+    const username = await AsyncStorage.getItem("username");
+    try {
+      const res = await api.get("/users/" + username, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
+
+      if (res.status === 200) {
+        return res.data.familyId;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const membersLength = async () => {
+    const lenght = await AsyncStorage.getItem("numOfMembersTasks");
+    const lenghtNum = parseInt(lenght ?? "0");
+    if (lenghtNum) {
+      setUsersLength(lenghtNum);
+    }
+  };
+
+  const getUsersTasks = async (username: string) => {
+    if (!username) throw new Error("User not found");
+    try {
+      const res = await api.get("/tasks/" + username);
+
+      if (res.status === 200) {
+        const newUsers = users.map((user) => ({ ...user, tasks: res.data }));
+        setUsers(newUsers);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    try {
+      reflesh();
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
+
+  const reflesh = () => {
+    getUsers();
+    membersLength();
+  };
+
+  // const calculateStats = () => {
+  //   const totalTasks = members.reduce(
+  //     (acc, member) => acc + member.tasks.length,
+  //     0
+  //   );
+  //   const completedTasks = members.reduce(
+  //     (acc, member) => acc + member.tasks.filter((task) => task.status).length,
+  //     0
+  //   );
+  //   const completionRate = totalTasks > 0 ? completedTasks / totalTasks : 0;
+
+  //   const weekTotalTasks = 45;
+  //   const weekCompletedTasks = 22;
+  //   const weekCompletionRate =
+  //     weekTotalTasks > 0 ? weekCompletedTasks / weekTotalTasks : 0;
+
+  //   return {
+  //     today: {
+  //       completedTasks,
+  //       totalCompletedTasks: totalTasks,
+  //       completionRate,
+  //     },
+  //     week: {
+  //       completedTasks: weekCompletedTasks,
+  //       totalCompletedTasks: weekTotalTasks,
+  //       completionRate: weekCompletionRate,
+  //     },
+  //   };
+  // };
+
+  // const stats = calculateStats();
+
+  // const handleUpdateTasks = (memberIndex: number, updatedTasks: Task[]) => {
+  //   try {
+  //     const newMembers = [...members];
+  //     if (memberIndex >= 0 && memberIndex < newMembers.length) {
+  //       newMembers[memberIndex] = {
+  //         ...newMembers[memberIndex],
+  //         tasks: updatedTasks,
+  //       };
+  //       setMembers(newMembers);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error updating tasks:", error);
+  //   }
+  // };
 
   const handleAddTask = () => {
     try {
@@ -171,6 +256,66 @@ export default function Home() {
     </ContentLoader>
   );
 
+  if (loadingUsers)
+    return (
+      <>
+        <FAB
+          style={[styles.fab, { backgroundColor: theme.colors.primary }]}
+          icon="plus"
+          onPress={handleAddTask}
+          color="white"
+        />
+        <TopBar title={t("home.title")} />
+        <ScrollView
+          style={[
+            styles.container,
+            { backgroundColor: theme.colors.background },
+          ]}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              colors={[theme.colors.onBackground]}
+              progressBackgroundColor={theme.custom.cardTaskBackground}
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+            />
+          }
+        >
+          <View style={styles.content}>
+            {usersLength === 0 && (
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <ActivityIndicator size={32} />
+              </View>
+            )}
+            {Array.from({ length: usersLength }).map((_, i) => (
+              <Card
+                key={i}
+                style={[
+                  styles.card,
+                  {
+                    backgroundColor: theme.custom.cardColor,
+                    marginBottom: 16,
+                    paddingBottom: 12,
+                    paddingTop: 0,
+                  },
+                ]}
+              >
+                <Card.Content style={{ alignItems: "center", marginTop: -24 }}>
+                  <MyLoader />
+                </Card.Content>
+              </Card>
+            ))}
+          </View>
+        </ScrollView>
+      </>
+    );
+
   return (
     <>
       <FAB
@@ -183,37 +328,28 @@ export default function Home() {
       <ScrollView
         style={[styles.container, { backgroundColor: theme.colors.background }]}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            colors={[theme.colors.onBackground]}
+            progressBackgroundColor={theme.custom.cardTaskBackground}
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
       >
         <View style={styles.content}>
-          <ResumeCard stats={stats} />
-          {members
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((member, index) => (
+          {/* <CustomCard title={t("home.resume.title")}>
+            <CardInfo tasksInfo={familyInfo} />
+          </CustomCard> */}
+          {users
+            .sort((a, b) => a?.name.localeCompare(b?.name))
+            .map((user: UserTasksType) => (
               <TasksCard
-                key={member.username}
-                name={member.name}
-                tasks={member.tasks}
-                setTasks={(updatedTasks) =>
-                  handleUpdateTasks(index, updatedTasks)
-                }
+                key={user.username}
+                name={user.name}
+                tasks={user.tasks}
               />
             ))}
-
-          <Card
-            style={[
-              styles.card,
-              {
-                backgroundColor: theme.custom.cardColor,
-                marginBottom: 16,
-                paddingBottom: 12,
-                paddingTop: 0,
-              },
-            ]}
-          >
-            <Card.Content style={{ alignItems: "center", marginTop: -24 }}>
-              <MyLoader />
-            </Card.Content>
-          </Card>
         </View>
       </ScrollView>
     </>
@@ -223,6 +359,7 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingVertical: 16,
   },
   title: {
     textAlign: "center",
@@ -234,9 +371,8 @@ const styles = StyleSheet.create({
   },
   fab: {
     position: "absolute",
-    margin: 16,
-    right: 0,
-    bottom: 0,
+    right: 16,
+    bottom: 24,
     zIndex: 1000,
   },
   card: {

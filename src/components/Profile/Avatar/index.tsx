@@ -5,6 +5,7 @@ import { View, StyleSheet, Alert, Pressable } from "react-native";
 import { Text, FAB, Avatar, Portal, IconButton } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import imagePlaceholder from "@/assets/Profile/user.png";
+import * as SystemUI from "expo-system-ui";
 import { useThemeContext } from "@/context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "@/services/api";
@@ -27,6 +28,10 @@ export default function AvatarProfile({
   const [image, setImage] = useState<string | null>(null);
   const placeholder = imagePlaceholder;
 
+  //Menu State
+  const [isSelectionOpen, setIsSelectionOpen] = useState(false);
+  const [menuAnimation, setMenuAnimation] = useState(false);
+
   //User Info
   const [name, setName] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
@@ -45,6 +50,18 @@ export default function AvatarProfile({
     getAvatarImage();
     getNameAndRole();
   }, []);
+
+  useEffect(() => {
+    SystemUI.setBackgroundColorAsync(isDark ? "#000" : "#fff");
+  }, [isDark]);
+
+  useEffect(() => {
+    if (isSelectionOpen) {
+      SystemUI.setBackgroundColorAsync(theme.custom.cardColor);
+    } else {
+      SystemUI.setBackgroundColorAsync(theme.colors.background);
+    }
+  }, [isSelectionOpen, isDark]);
 
   useEffect(() => {
     if (image !== null) {
@@ -185,7 +202,6 @@ export default function AvatarProfile({
           quality: 0.5,
           aspect: [1, 1],
           base64: true,
-          legacy: true,
         });
         if (!result.canceled) {
           const base64 = result.assets[0].base64;

@@ -117,7 +117,7 @@ export default function MemberInfo({
           />
           <Card.Content>
             <Text variant="bodyMedium">
-              {t("components:memberCard.placeholder")}
+              {t("memberCard.placeholder", { ns: "components" })}
             </Text>
             <ImageView
               images={imageArray}
@@ -129,8 +129,9 @@ export default function MemberInfo({
           <Card.Actions>
             <View style={{ flex: 1, flexDirection: "row" }}>
               <Text style={{ color: theme.colors.onSurfaceVariant }}>
-                {t("components:memberCard.memberSince", {
+                {t("memberCard.memberSince", {
                   date: formatDate(user.createdAt ?? ""),
+                  ns: "components",
                 })}
               </Text>
             </View>
@@ -148,7 +149,7 @@ export default function MemberInfo({
               >
                 <Icon source={"pencil"} size={16} />
                 <Text style={{ fontSize: 16 }}>
-                  {t("components:memberCard.actions.edit")}
+                  {t("memberCard.actions.edit", { ns: "components" })}
                 </Text>
               </Button>
             </TouchableOpacity>

@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next";
 
 type Task = {
   id: string;
-  name: string;
+  title: string;
   description?: string;
   status: boolean;
 };
@@ -62,10 +62,10 @@ export default function AllTasks() {
     if (!task || !task.id) return;
 
     router.push({
-      pathname: "/tasks/[userFullName]/[taskId]",
+      pathname: "/tasks/[userFullName]/[task]",
       params: {
         userFullName: users[0].name,
-        taskId: task.id.toString(),
+        task: encodeURIComponent(JSON.stringify(task)),
       },
     });
   };
@@ -143,7 +143,7 @@ export default function AllTasks() {
                                 : theme.colors.onBackground,
                             }}
                           >
-                            {task.name}
+                            {task.title}
                           </Text>
                         </View>
 

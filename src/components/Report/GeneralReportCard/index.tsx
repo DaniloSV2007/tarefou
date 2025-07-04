@@ -41,7 +41,7 @@ export default function GeneralReportCard() {
       }}
     >
       <Card.Title
-        title={t("screens:report.general.title")}
+        title={t("report.general.title", { ns: "screens" })}
         titleStyle={{ fontSize: 28 }}
       />
       <Card.Content>

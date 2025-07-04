@@ -260,7 +260,7 @@ export default function Members() {
             rippleColor={theme.custom.ripple}
             color="white"
             backdropColor="#2e2e2ebf"
-            fabStyle={[{ backgroundColor: theme.colors.primary }]}
+            fabStyle={[{ backgroundColor: theme.colors.primary }, styles.fab]}
             actions={[
               {
                 icon: "email-newsletter",
@@ -368,7 +368,7 @@ export default function Members() {
         rippleColor={theme.custom.ripple}
         color="white"
         backdropColor="#2e2e2ebf"
-        fabStyle={[{ backgroundColor: theme.colors.primary }]}
+        fabStyle={[{ backgroundColor: theme.colors.primary }, styles.fab]}
         actions={[
           {
             icon: "email-newsletter",
@@ -402,10 +402,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   fab: {
-    position: "absolute",
-    bottom: 0,
-    right: 0,
-    margin: 16,
+    marginBottom: 0,
   },
   card: {
     width: "90%",
