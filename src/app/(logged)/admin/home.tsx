@@ -158,7 +158,9 @@ export default function Home() {
   const getUsersTasks = async (username: string) => {
     if (!username) throw new Error("User not found");
     try {
-      const res = await api.get("/tasks/" + username);
+      const res = await api.get("/tasks/" + username, {
+        headers: { Authorization: token },
+      });
 
       if (res.status === 200) {
         const newUsers = users.map((user) => ({ ...user, tasks: res.data }));

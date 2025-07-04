@@ -20,8 +20,14 @@
     },
     "newTask": {
       "title": "New Task",
-      "description": "Description",
-      "status": "Status"
+      "titlePlaceholder": "Task name",
+      "descriptionPlaceholder": "Task description",
+      "selectDeadline": "Select a deadline to the task(optional):",
+      "selectDate": "Select date",
+      "selectmembers": "Select members to the task:",
+      "selectMembersPlaceholder": "Select members",
+      "selectedNumber": "Selected {{number}}",
+      "createTask": "Create task"
     }
   },
   "routes": {

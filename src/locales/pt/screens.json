@@ -36,18 +36,15 @@
     }
   },
   "tasks": {
-    "list": {
-      "title": "Minhas Tarefas",
-      "empty": "Nenhuma tarefa encontrada",
-      "addNew": "Adicionar Nova Tarefa"
+    "admin": {
+      "allTasks": {
+        "title": "Tarefas de {{name}}",
+        "searchPlaceholder": "Procurar tarefas...",
+        "description": "Descrição:"
+      }
     },
-    "details": {
-      "title": "Detalhes da Tarefa",
-      "description": "Descrição",
-      "status": "Status",
-      "dueDate": "Data de Vencimento",
-      "priority": "Prioridade",
-      "assignedTo": "Atribuído a"
+    "common": {
+      "noTasksFound": "Nenhuma taref encontrada"
     }
   },
   "report": {

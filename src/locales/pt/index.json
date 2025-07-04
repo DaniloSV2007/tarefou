@@ -20,8 +20,14 @@
     },
     "newTask": {
       "title": "Nova Tarefa",
-      "description": "Descrição",
-      "status": "Status"
+      "titlePlaceholder": "Nome da tarefa",
+      "descriptionPlaceholder": "Descrição da tarefa",
+      "selectDeadline": "Selecione um prazo para a tarefa(opcional):",
+      "selectDate": "Selecionar data",
+      "selectmembers": "Selecione membros para a tarefa:",
+      "selectMembersPlaceholder": "Selecionar membros",
+      "selectedNumber": "Selecionado {{number}}",
+      "createTask": "Criar tarefa"
     }
   },
   "routes": {

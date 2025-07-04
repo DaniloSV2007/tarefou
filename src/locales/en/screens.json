@@ -36,18 +36,15 @@
     }
   },
   "tasks": {
-    "list": {
-      "title": "My Tasks",
-      "empty": "No tasks found",
-      "addNew": "Add New Task"
+    "admin": {
+      "allTasks": {
+        "title": "All {{name}} tasks",
+        "searchPlaceholder": "Search tasks...",
+        "description": "Description:"
+      }
     },
-    "details": {
-      "title": "Task Details",
-      "description": "Description",
-      "status": "Status",
-      "dueDate": "Due Date",
-      "priority": "Priority",
-      "assignedTo": "Assigned To"
+    "common": {
+      "noTasksFound": "No tasks found"
     }
   },
   "report": {
