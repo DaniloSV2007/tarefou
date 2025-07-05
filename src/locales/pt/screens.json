@@ -40,11 +40,12 @@
       "allTasks": {
         "title": "Tarefas de {{name}}",
         "searchPlaceholder": "Procurar tarefas...",
-        "description": "Descrição:"
+        "description": "Descrição:",
+        "deadline": "Fazer até:"
       }
     },
     "common": {
-      "noTasksFound": "Nenhuma taref encontrada"
+      "noTasksFound": "Nenhuma tarefa encontrada"
     }
   },
   "report": {

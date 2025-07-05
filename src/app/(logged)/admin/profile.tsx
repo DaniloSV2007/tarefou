@@ -91,7 +91,7 @@ export default function Profile() {
           isConfirmation={isConfirmation}
           setIsConfirmation={setIsConfirmation}
           logout={logout}
-          close={close}
+          close={closeMenu}
         />
       )}
     </>

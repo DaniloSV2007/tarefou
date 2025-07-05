@@ -2,26 +2,42 @@ import { useAppTheme } from "@/hooks/useAppTheme";
 import { Link, useRouter } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 import { Card, Checkbox, Divider, Icon, Text } from "react-native-paper";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-
-interface Task {
-  id: string;
-  title: string;
-  status: boolean;
-  description: string;
-}
+import { Task } from "@/app/(logged)/tasks/[tasks]";
 
 interface TasksCardProps {
-  name: string;
+  name?: string;
   tasks: Task[];
+  isMember?: boolean;
+  deadlineCloseList?: boolean;
 }
 
-export default function TasksCard({ name, tasks }: TasksCardProps) {
+export default function TasksCard({
+  name,
+  tasks,
+  isMember = false,
+  deadlineCloseList = false,
+}: TasksCardProps) {
   const theme = useAppTheme();
   const router = useRouter();
   const { t } = useTranslation();
   const [linkColor, setLinkColor] = useState(theme.colors.onBackground);
+
+  const [tasksCloseToDeadline, setTasksCloseToDeadline] = useState<Task[]>([]);
+
+  useEffect(() => {
+    const tasksIsCloseToDeadline = tasks.filter((task) => {
+      if (!task.deadline) return false;
+      const date = new Date();
+      const isCloseToDeadline = new Date(task.deadline);
+      isCloseToDeadline.setDate(isCloseToDeadline.getDate() - 2);
+      if (date >= isCloseToDeadline) return true;
+
+      return false;
+    });
+    setTasksCloseToDeadline(tasksIsCloseToDeadline);
+  }, []);
 
   const handleTaskPress = (task: Task) => {
     if (!task || !task.id) {
@@ -54,7 +70,7 @@ export default function TasksCard({ name, tasks }: TasksCardProps) {
       >
         <Card.Title
           title={t("taskCard.title", {
-            name: name.split(" ")[0],
+            name: name?.split(" ")[0],
             ns: "components",
           })}
           titleStyle={{
@@ -105,6 +121,171 @@ export default function TasksCard({ name, tasks }: TasksCardProps) {
 
   const json = encodeURIComponent(JSON.stringify(user));
 
+  if (isMember)
+    return (
+      <Card
+        style={[styles.card, { backgroundColor: theme.custom.cardColor }]}
+        mode="elevated"
+      >
+        <Card.Title
+          title={deadlineCloseList ? "Prazo quase acabando" : "Tarefas à fazer"}
+          titleStyle={{
+            fontSize: 24,
+            fontWeight: "bold",
+            color: theme.colors.onBackground,
+          }}
+        />
+        <Card.Content>
+          <View style={styles.tasksContainer}>
+            {deadlineCloseList
+              ? tasksCloseToDeadline.map((task, index) => (
+                  <React.Fragment key={task.id}>
+                    <Pressable
+                      style={styles.taskContainer}
+                      android_ripple={{ color: theme.custom.ripple }}
+                      onPress={() => handleTaskPress(task)}
+                    >
+                      {task.isCompleted ? (
+                        <Icon source="check" size={24} />
+                      ) : (
+                        <Icon source="clock" size={24} />
+                      )}
+
+                      <Text
+                        style={[
+                          styles.progressText,
+                          {
+                            color: task.isCompleted
+                              ? theme.colors.onSurfaceDisabled
+                              : theme.colors.onBackground,
+                            textDecorationLine: task.isCompleted
+                              ? "line-through"
+                              : "none",
+                            fontWeight: "bold",
+                          },
+                        ]}
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                      >
+                        {task.title}
+                      </Text>
+                      <Text
+                        style={[
+                          styles.descriptionText,
+                          { color: theme.colors.onSurface },
+                        ]}
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                      >
+                        {task.description}
+                      </Text>
+                      <View style={{ position: "absolute", right: 0 }}>
+                        <Icon
+                          source="chevron-right"
+                          size={32}
+                          color={theme.colors.secondary}
+                        />
+                      </View>
+                    </Pressable>
+                    {index < tasks.length - 1 && (
+                      <Divider
+                        style={{ backgroundColor: theme.colors.surface }}
+                      />
+                    )}
+                  </React.Fragment>
+                ))
+              : tasks
+                  .filter((task) => !task.isCompleted)
+                  .map((task, index) => (
+                    <React.Fragment key={task.id}>
+                      <Pressable
+                        style={styles.taskContainer}
+                        android_ripple={{ color: theme.custom.ripple }}
+                        onPress={() => handleTaskPress(task)}
+                      >
+                        {task.isCompleted ? (
+                          <Icon source="check" size={24} />
+                        ) : (
+                          <Icon source="clock" size={24} />
+                        )}
+
+                        <Text
+                          style={[
+                            styles.progressText,
+                            {
+                              color: task.isCompleted
+                                ? theme.colors.onSurfaceDisabled
+                                : theme.colors.onBackground,
+                              textDecorationLine: task.isCompleted
+                                ? "line-through"
+                                : "none",
+                              fontWeight: "bold",
+                            },
+                          ]}
+                          numberOfLines={1}
+                          ellipsizeMode="tail"
+                        >
+                          {task.title}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.descriptionText,
+                            { color: theme.colors.onSurface },
+                          ]}
+                          numberOfLines={1}
+                          ellipsizeMode="tail"
+                        >
+                          {task.description}
+                        </Text>
+                        <View style={{ position: "absolute", right: 0 }}>
+                          <Icon
+                            source="chevron-right"
+                            size={32}
+                            color={theme.colors.secondary}
+                          />
+                        </View>
+                      </Pressable>
+                      {index < tasks.length - 1 && (
+                        <Divider
+                          style={{ backgroundColor: theme.colors.surface }}
+                        />
+                      )}
+                    </React.Fragment>
+                  ))}
+          </View>
+          <Link
+            href={`/tasks/${json}`}
+            onPressIn={() => setLinkColor(theme.colors.onSurfaceDisabled)}
+            onPressOut={() => setLinkColor(theme.colors.onSurface)}
+            style={[
+              { color: linkColor, paddingTop: 4 },
+              linkColor === theme.colors.primary && {
+                textDecorationLine: "underline",
+              },
+            ]}
+          >
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+            >
+              <Text style={{ color: linkColor }}>
+                {t("taskCard.viewAll", { ns: "components" })}
+              </Text>
+
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: 3,
+                }}
+              >
+                <Icon source="chevron-right" size={24} color={linkColor} />
+              </View>
+            </View>
+          </Link>
+        </Card.Content>
+      </Card>
+    );
+
   return (
     <Card
       style={[styles.card, { backgroundColor: theme.custom.cardColor }]}
@@ -112,7 +293,7 @@ export default function TasksCard({ name, tasks }: TasksCardProps) {
     >
       <Card.Title
         title={t("taskCard.title", {
-          name: name.split(" ")[0],
+          name: name?.split(" ")[0],
           ns: "components",
         })}
         titleStyle={{
@@ -125,8 +306,8 @@ export default function TasksCard({ name, tasks }: TasksCardProps) {
         <View style={styles.tasksContainer}>
           {tasks
             .sort((a, b) => {
-              if (a.status === b.status) return 0;
-              return a.status ? 1 : -1;
+              if (a.isCompleted === b.isCompleted) return 0;
+              return a.isCompleted ? 1 : -1;
             })
             .slice(0, 4)
             .map((task, index) => (
@@ -136,7 +317,7 @@ export default function TasksCard({ name, tasks }: TasksCardProps) {
                   android_ripple={{ color: theme.custom.ripple }}
                   onPress={() => handleTaskPress(task)}
                 >
-                  {task.status ? (
+                  {task.isCompleted ? (
                     <Icon source="check" size={24} />
                   ) : (
                     <Icon source="clock" size={24} />
@@ -146,10 +327,10 @@ export default function TasksCard({ name, tasks }: TasksCardProps) {
                     style={[
                       styles.progressText,
                       {
-                        color: task.status
+                        color: task.isCompleted
                           ? theme.colors.onSurfaceDisabled
                           : theme.colors.onBackground,
-                        textDecorationLine: task.status
+                        textDecorationLine: task.isCompleted
                           ? "line-through"
                           : "none",
                         fontWeight: "bold",

@@ -30,6 +30,9 @@
       "createTask": "Criar tarefa"
     }
   },
+  "tasks": {
+    "title": "Tarefas"
+  },
   "routes": {
     "home": "Início",
     "report": "Relatório",

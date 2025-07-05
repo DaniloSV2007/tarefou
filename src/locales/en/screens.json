@@ -40,7 +40,8 @@
       "allTasks": {
         "title": "All {{name}} tasks",
         "searchPlaceholder": "Search tasks...",
-        "description": "Description:"
+        "description": "Description:",
+        "deadline": "Do until:"
       }
     },
     "common": {

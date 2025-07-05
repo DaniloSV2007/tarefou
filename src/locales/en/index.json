@@ -30,6 +30,9 @@
       "createTask": "Create task"
     }
   },
+  "tasks": {
+    "title": "Tasks"
+  },
   "routes": {
     "home": "Home",
     "report": "Report",

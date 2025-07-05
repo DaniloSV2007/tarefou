@@ -14,11 +14,15 @@ import { useAppTheme } from "@/hooks/useAppTheme";
 import { Card, Icon, Searchbar } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 
-type Task = {
+export type Task = {
   id: string;
   title: string;
   description?: string;
-  status: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deadline?: Date;
+  isCompleted?: boolean;
+  userId: string;
 };
 
 interface User {
@@ -160,10 +164,10 @@ export default function AllTasks() {
                             }}
                           >
                             <Icon
-                              source={task.status ? "check" : "clock"}
+                              source={task.isCompleted ? "check" : "clock"}
                               size={32}
                               color={
-                                task.status
+                                task.isCompleted
                                   ? theme.colors.onSurfaceDisabled
                                   : theme.colors.onBackground
                               }
@@ -172,10 +176,10 @@ export default function AllTasks() {
                               ellipsizeMode="tail"
                               numberOfLines={1}
                               style={{
-                                fontSize: 28,
+                                fontSize: 24,
                                 fontWeight: "bold",
                                 marginLeft: 8,
-                                color: task.status
+                                color: task.isCompleted
                                   ? theme.colors.onSurfaceDisabled
                                   : theme.colors.onBackground,
                                 maxWidth: "85%",
@@ -252,10 +256,10 @@ export default function AllTasks() {
                           style={{ flexDirection: "row", alignItems: "center" }}
                         >
                           <Icon
-                            source={task.status ? "check" : "clock"}
+                            source={task.isCompleted ? "check" : "clock"}
                             size={32}
                             color={
-                              task.status
+                              task.isCompleted
                                 ? theme.colors.onSurfaceDisabled
                                 : theme.colors.onBackground
                             }
@@ -264,10 +268,10 @@ export default function AllTasks() {
                             ellipsizeMode="tail"
                             numberOfLines={1}
                             style={{
-                              fontSize: 28,
+                              fontSize: 24,
                               fontWeight: "bold",
                               marginLeft: 8,
-                              color: task.status
+                              color: task.isCompleted
                                 ? theme.colors.onSurfaceDisabled
                                 : theme.colors.onBackground,
                               maxWidth: "85%",

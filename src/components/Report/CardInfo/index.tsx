@@ -2,18 +2,53 @@ import { useAppTheme } from "@/hooks/useAppTheme";
 import { View, StyleSheet } from "react-native";
 import { Text, ProgressBar } from "react-native-paper";
 import { useTranslation } from "react-i18next";
+import { Task } from "@/app/(logged)/tasks/[tasks]";
+import { useEffect, useState } from "react";
+import tasks from "@/app/(logged)/user/tasks";
 
 interface CardInfoProps {
-  tasksInfo: {
-    completedTasks: number;
-    totalCompletedTasks: number;
-    completionRate: number;
-  };
+  tasksInfo: Task[];
   isWeek?: boolean;
 }
 export default function CardInfo({ tasksInfo, isWeek = false }: CardInfoProps) {
   const theme = useAppTheme();
   const { t } = useTranslation();
+
+  const [completedTasks, setCompletedTasks] = useState(0);
+  const [totalTask, setTotalTask] = useState(0);
+  const [completionRate, setCompletionRate] = useState(0);
+
+  useEffect(() => {
+    getStatistics();
+  }, []);
+
+  useEffect(() => {
+    if (totalTask > 0) {
+      setCompletionRate(completedTasks / totalTask);
+    }
+  }, [totalTask, completedTasks]);
+
+  const getStatistics = () => {
+    getTotalTasks();
+    getCompletedTasks();
+  };
+
+  const getTotalTasks = () => {
+    const allTasks = tasksInfo.filter((task) => {
+      if (!task.deadline) return true;
+      const date = new Date();
+      const noShowIf = new Date(task.deadline);
+      noShowIf.setDate(noShowIf.getDate() + 2);
+      if (date >= noShowIf) return false;
+      return true;
+    });
+    setTotalTask(allTasks.length);
+  };
+
+  const getCompletedTasks = () => {
+    const tasksCompleted = tasksInfo.filter((task) => task.isCompleted);
+    setCompletedTasks(tasksCompleted.length);
+  };
 
   return (
     <View>
@@ -21,11 +56,11 @@ export default function CardInfo({ tasksInfo, isWeek = false }: CardInfoProps) {
         variant="bodyMedium"
         style={[styles.progressText, { color: theme.colors.onBackground }]}
       >
-        {t(isWeek ? "home.resume.week" : "home.resume.today")}:{" "}
-        {tasksInfo.completedTasks}/{tasksInfo.totalCompletedTasks}
+        {t(isWeek ? "home.resume.week" : "home.resume.today")}: {completedTasks}
+        /{totalTask}
       </Text>
       <ProgressBar
-        progress={tasksInfo.completionRate}
+        progress={completionRate}
         color={theme.colors.primary}
         style={{
           height: 10,
@@ -35,8 +70,7 @@ export default function CardInfo({ tasksInfo, isWeek = false }: CardInfoProps) {
       />
       <View style={{ marginTop: 16 }}>
         <Text variant="bodySmall" style={styles.percentageText}>
-          {Math.round(tasksInfo.completionRate * 100)}%{" "}
-          {t("home.resume.completed")}
+          {Math.round(completionRate * 100)}% {t("home.resume.completed")}
         </Text>
       </View>
     </View>
