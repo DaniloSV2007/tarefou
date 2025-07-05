@@ -12,6 +12,7 @@ import { useRouter } from "expo-router";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import MenuButton from "@/components/Profile/Menu/MenuButton";
 import ConfirmLogout from "@/components/Profile/Menu/ConfirmLogout";
+import Constants from "expo-constants";
 
 export default function Profile() {
   const { isLoggedIn, isLoading, logout } = useAuth();
@@ -60,9 +61,11 @@ export default function Profile() {
       {}
       <ProfileLogged />
 
-      <Button onPress={() => router.replace("/user/home")}>
-        Go to User routes
-      </Button>
+      {Constants.appOwnership === "expo" && (
+        <Button onPress={() => router.replace("/user/home")}>
+          Go to User routes
+        </Button>
+      )}
 
       <Menu ref={profileMenuState} close={closeMenu}>
         <MenuButton

@@ -44,6 +44,15 @@
         "deadline": "Do until:"
       }
     },
+    "user": {
+      "taskInfo": {
+        "description": "Description:",
+        "status": "Status:",
+        "statusDone": "Done",
+        "statusPending": "Pending",
+        "markDone": "Mark as done"
+      }
+    },
     "common": {
       "noTasksFound": "No tasks found"
     }

@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, StyleProp, ViewStyle } from "react-native";
 import React from "react";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { Card } from "react-native-paper";
@@ -6,9 +6,18 @@ import { Card } from "react-native-paper";
 interface CardButton {
   title: string;
   children: any;
+  cardStyle?: StyleProp<ViewStyle>;
+  contentStyle?: StyleProp<ViewStyle>;
+  className?: string;
 }
 
-export default function CustomCard({ title, children }: CardButton) {
+export default function CustomCard({
+  title,
+  children,
+  cardStyle,
+  contentStyle,
+  className,
+}: CardButton) {
   const theme = useAppTheme();
 
   return (
@@ -18,7 +27,9 @@ export default function CustomCard({ title, children }: CardButton) {
           backgroundColor: theme.custom.cardColor,
         },
         styles.card,
+        cardStyle,
       ]}
+      className={className}
     >
       <Card.Title
         //   t("home.resume.title")
@@ -26,7 +37,7 @@ export default function CustomCard({ title, children }: CardButton) {
         titleStyle={{ fontSize: 28 }}
       />
       <Card.Content style={{ gap: 16 }}>
-        <View>
+        <View style={contentStyle}>
           {children}
           {/* <CardInfo tasksInfo={stats.today} /> */}
         </View>

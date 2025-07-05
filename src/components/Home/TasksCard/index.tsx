@@ -27,16 +27,18 @@ export default function TasksCard({
   const [tasksCloseToDeadline, setTasksCloseToDeadline] = useState<Task[]>([]);
 
   useEffect(() => {
-    const tasksIsCloseToDeadline = tasks.filter((task) => {
-      if (!task.deadline) return false;
-      const date = new Date();
-      const isCloseToDeadline = new Date(task.deadline);
-      isCloseToDeadline.setDate(isCloseToDeadline.getDate() - 2);
-      if (date >= isCloseToDeadline) return true;
+    if (isMember) {
+      const tasksIsCloseToDeadline = tasks.filter((task) => {
+        if (!task.deadline || task.isCompleted) return false;
+        const date = new Date();
+        const isCloseToDeadline = new Date(task.deadline);
+        isCloseToDeadline.setDate(isCloseToDeadline.getDate() - 2);
+        if (date >= isCloseToDeadline) return true;
 
-      return false;
-    });
-    setTasksCloseToDeadline(tasksIsCloseToDeadline);
+        return false;
+      });
+      setTasksCloseToDeadline(tasksIsCloseToDeadline);
+    }
   }, []);
 
   const handleTaskPress = (task: Task) => {
@@ -253,35 +255,68 @@ export default function TasksCard({
                     </React.Fragment>
                   ))}
           </View>
-          <Link
-            href={`/tasks/${json}`}
-            onPressIn={() => setLinkColor(theme.colors.onSurfaceDisabled)}
-            onPressOut={() => setLinkColor(theme.colors.onSurface)}
-            style={[
-              { color: linkColor, paddingTop: 4 },
-              linkColor === theme.colors.primary && {
-                textDecorationLine: "underline",
-              },
-            ]}
-          >
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+          {tasks.length > 0 && isMember ? (
+            <Pressable
+              onPress={() => router.replace("/(logged)/user/tasks")}
+              onPressIn={() => setLinkColor(theme.colors.onSurfaceDisabled)}
+              onPressOut={() => setLinkColor(theme.colors.onSurface)}
             >
-              <Text style={{ color: linkColor }}>
-                {t("taskCard.viewAll", { ns: "components" })}
-              </Text>
-
               <View
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginTop: 3,
-                }}
+                style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
               >
-                <Icon source="chevron-right" size={24} color={linkColor} />
+                <Text
+                  style={[
+                    { color: linkColor, paddingTop: 4 },
+                    linkColor === theme.colors.primary && {
+                      textDecorationLine: "underline",
+                    },
+                  ]}
+                >
+                  {t("taskCard.viewAll", { ns: "components" })}
+                </Text>
+
+                <View
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: 3,
+                  }}
+                >
+                  <Icon source="chevron-right" size={24} color={linkColor} />
+                </View>
               </View>
-            </View>
-          </Link>
+            </Pressable>
+          ) : (
+            <Link
+              href={`/tasks/${json}`}
+              onPressIn={() => setLinkColor(theme.colors.onSurfaceDisabled)}
+              onPressOut={() => setLinkColor(theme.colors.onSurface)}
+              style={[
+                { color: linkColor, paddingTop: 4 },
+                linkColor === theme.colors.primary && {
+                  textDecorationLine: "underline",
+                },
+              ]}
+            >
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+              >
+                <Text style={{ color: linkColor }}>
+                  {t("taskCard.viewAll", { ns: "components" })}
+                </Text>
+
+                <View
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: 3,
+                  }}
+                >
+                  <Icon source="chevron-right" size={24} color={linkColor} />
+                </View>
+              </View>
+            </Link>
+          )}
         </Card.Content>
       </Card>
     );

@@ -44,6 +44,15 @@
         "deadline": "Fazer até:"
       }
     },
+    "user": {
+      "taskInfo": {
+        "description": "Descrição:",
+        "status": "Estado:",
+        "statusDone": "Feito",
+        "statusPending": "Pendente",
+        "markDone": "Marcar como feito"
+      }
+    },
     "common": {
       "noTasksFound": "Nenhuma tarefa encontrada"
     }

@@ -9,6 +9,8 @@ import { Card } from "react-native-paper";
 import ContentLoader, { Circle, List, Rect } from "react-content-loader/native";
 import CustomCard from "@/components/CustomCard";
 import CardInfo from "@/components/Report/CardInfo";
+import { UserTasksType } from "./home";
+import { Task } from "../tasks/[tasks]";
 
 export default function Report() {
   const theme = useAppTheme();
@@ -22,18 +24,7 @@ export default function Report() {
   const weekTotalTasks = 45;
   const weekCompletionRate = weekCompletedTasks / weekTotalTasks;
 
-  const totalMembersInfo = {
-    today: {
-      completedTasks: completedTasks,
-      totalCompletedTasks: totalTasks,
-      completionRate: completionRate,
-    },
-    week: {
-      completedTasks: weekCompletedTasks,
-      totalCompletedTasks: weekTotalTasks,
-      completionRate: weekCompletionRate,
-    },
-  };
+  const totalMembersInfo: Task[] = [];
 
   const MyLoader = () => (
     <ContentLoader
@@ -69,12 +60,12 @@ export default function Report() {
       >
         <View style={{ alignItems: "center", gap: 16, paddingBottom: 12 }}>
           <CustomCard title={t("report.general.title", { ns: "screens" })}>
-            <CardInfo tasksInfo={totalMembersInfo.today} />
-            <CardInfo tasksInfo={totalMembersInfo.week} isWeek={true} />
+            <CardInfo tasksInfo={totalMembersInfo} />
+            {totalMembersInfo.length > 0 && (
+              <CardInfo tasksInfo={totalMembersInfo} isWeek={true} />
+            )}
           </CustomCard>
 
-          <ReportCard title="Danilo Voiski" username="@DaniloSV07" />
-          <ReportCard title="Guilherme Voiski" username="@guilherme2017" />
           <Card
             style={{
               backgroundColor: theme.custom.cardColor,

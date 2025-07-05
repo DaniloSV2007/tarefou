@@ -5,12 +5,18 @@ import { useTranslation } from "react-i18next";
 import { Task } from "@/app/(logged)/tasks/[tasks]";
 import { useEffect, useState } from "react";
 import tasks from "@/app/(logged)/user/tasks";
+import React from "react";
 
 interface CardInfoProps {
   tasksInfo: Task[];
   isWeek?: boolean;
+  isMember?: boolean;
 }
-export default function CardInfo({ tasksInfo, isWeek = false }: CardInfoProps) {
+export default function CardInfo({
+  tasksInfo,
+  isWeek = false,
+  isMember = false,
+}: CardInfoProps) {
   const theme = useAppTheme();
   const { t } = useTranslation();
 
@@ -34,45 +40,57 @@ export default function CardInfo({ tasksInfo, isWeek = false }: CardInfoProps) {
   };
 
   const getTotalTasks = () => {
-    const allTasks = tasksInfo.filter((task) => {
-      if (!task.deadline) return true;
-      const date = new Date();
-      const noShowIf = new Date(task.deadline);
-      noShowIf.setDate(noShowIf.getDate() + 2);
-      if (date >= noShowIf) return false;
-      return true;
-    });
-    setTotalTask(allTasks.length);
+    if (tasksInfo.length > 0) {
+      const allTasks = tasksInfo.filter((task) => {
+        if (!task.deadline) return true;
+        const date = new Date();
+        const noShowIf = new Date(task.deadline);
+        noShowIf.setDate(noShowIf.getDate() + 2);
+        if (date >= noShowIf) return false;
+        return true;
+      });
+      setTotalTask(allTasks.length);
+    }
   };
 
   const getCompletedTasks = () => {
-    const tasksCompleted = tasksInfo.filter((task) => task.isCompleted);
-    setCompletedTasks(tasksCompleted.length);
+    if (tasksInfo.length > 0) {
+      const tasksCompleted = tasksInfo.filter((task) => task.isCompleted);
+      setCompletedTasks(tasksCompleted.length);
+    }
   };
 
   return (
     <View>
-      <Text
-        variant="bodyMedium"
-        style={[styles.progressText, { color: theme.colors.onBackground }]}
-      >
-        {t(isWeek ? "home.resume.week" : "home.resume.today")}: {completedTasks}
-        /{totalTask}
-      </Text>
-      <ProgressBar
-        progress={completionRate}
-        color={theme.colors.primary}
-        style={{
-          height: 10,
-          borderRadius: 8,
-          backgroundColor: theme.colors.surface,
-        }}
-      />
-      <View style={{ marginTop: 16 }}>
-        <Text variant="bodySmall" style={styles.percentageText}>
-          {Math.round(completionRate * 100)}% {t("home.resume.completed")}
-        </Text>
-      </View>
+      {tasksInfo.length > 0 ? (
+        <>
+          <Text
+            variant="bodyMedium"
+            style={[styles.progressText, { color: theme.colors.onBackground }]}
+          >
+            {t(isWeek ? "home.resume.week" : "home.resume.today")}:{" "}
+            {completedTasks}/{totalTask}
+          </Text>
+          <ProgressBar
+            progress={completionRate}
+            color={theme.colors.primary}
+            style={{
+              height: 10,
+              borderRadius: 8,
+              backgroundColor: theme.colors.surface,
+            }}
+          />
+          <View style={{ marginTop: 16 }}>
+            <Text variant="bodySmall" style={styles.percentageText}>
+              {Math.round(completionRate * 100)}% {t("home.resume.completed")}
+            </Text>
+          </View>
+        </>
+      ) : (
+        <View className="items-center py-8">
+          <Text>{t("tasks.common.noTasksFound", { ns: "screens" })}</Text>
+        </View>
+      )}
     </View>
   );
 }

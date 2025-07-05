@@ -74,10 +74,10 @@ export default function UserHome() {
         headers: { Authorization: token },
       });
       if (res.status === 200) {
-        const tasksWithParsedDeadline = res.data.map((task: any) => ({
+        const tasksWithParsedDeadline: Task[] = res.data.map((task: Task) => ({
           ...task,
           deadline: task.deadline ? new Date(task.deadline) : undefined,
-          status: task.status ?? false,
+          isCompleted: task.isCompleted ?? false,
         }));
         setTasks(tasksWithParsedDeadline);
       }
@@ -169,12 +169,30 @@ export default function UserHome() {
       >
         {tasks.length > 0 && (
           <CustomCard title={t("home.resume.title")}>
-            <CardInfo tasksInfo={tasks} />
+            <CardInfo tasksInfo={tasks} isMember />
           </CustomCard>
         )}
-
-        <TasksCard name={fullName} tasks={tasks} isMember deadlineCloseList />
-        <TasksCard name={fullName} tasks={tasks} isMember />
+        {tasks.length > 0 &&
+        tasks.filter((task) => !task.isCompleted).length > 0 ? (
+          <>
+            <TasksCard
+              name={fullName}
+              tasks={tasks}
+              isMember
+              deadlineCloseList
+            />
+            <TasksCard name={fullName} tasks={tasks} isMember />
+          </>
+        ) : (
+          <View className="flex-1 items-center justify-center">
+            <Text
+              className="text-2xl"
+              style={{ color: theme.colors.onBackground }}
+            >
+              Oba! Nenhuma tarefa para fazer!
+            </Text>
+          </View>
+        )}
       </ScrollView>
     </>
   );

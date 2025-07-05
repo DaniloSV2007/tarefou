@@ -14,33 +14,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserType } from "./members";
 import api from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
+import { Task } from "../tasks/[tasks]";
 
-interface UserTasksType extends UserType {
-  tasks: [];
-}
-
-interface Task {
-  id: string;
-  name: string;
-  status: boolean;
-  description: string;
-}
-
-interface Member {
-  name: string;
-  username: string;
+export interface UserTasksType extends UserType {
   tasks: Task[];
-}
-
-interface TaskStats {
-  completedTasks: number;
-  totalCompletedTasks: number;
-  completionRate: number;
-}
-
-interface MemberStats {
-  today: TaskStats;
-  week: TaskStats;
 }
 
 export default function Home() {
@@ -163,7 +140,15 @@ export default function Home() {
       });
 
       if (res.status === 200) {
-        const newUsers = users.map((user) => ({ ...user, tasks: res.data }));
+        const tasksWithDefaults: Task[] = res.data.map((task: Task) => ({
+          ...task,
+          deadline: task.deadline ? new Date(task.deadline) : undefined,
+        }));
+        const newUsers = users.map((user) =>
+          user.username === username
+            ? { ...user, tasks: tasksWithDefaults }
+            : user
+        );
         setUsers(newUsers);
       }
     } catch (error) {
@@ -343,15 +328,17 @@ export default function Home() {
           {/* <CustomCard title={t("home.resume.title")}>
             <CardInfo tasksInfo={familyInfo} />
           </CustomCard> */}
-          {users
-            .sort((a, b) => a?.name.localeCompare(b?.name))
-            .map((user: UserTasksType) => (
-              <TasksCard
-                key={user.username}
-                name={user.name}
-                tasks={user.tasks}
-              />
-            ))}
+
+          {users &&
+            users
+              .sort((a, b) => a?.name.localeCompare(b?.name))
+              .map((user: UserTasksType) => (
+                <TasksCard
+                  key={user.username}
+                  name={user.name}
+                  tasks={user.tasks}
+                />
+              ))}
         </View>
       </ScrollView>
     </>
