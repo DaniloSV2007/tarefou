@@ -6,7 +6,7 @@ import { PaperProvider } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider, useThemeContext } from "@/context/ThemeContext";
 import { LanguageProvider } from "@/context/LanguageContext";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import * as SystemUI from "expo-system-ui";
 import * as Font from "expo-font";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -26,6 +26,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import * as QuickActions from "expo-quick-actions";
 
 function RootInnerLayout() {
   const { theme, isDark } = useThemeContext();
@@ -71,6 +72,17 @@ function RootInnerLayout() {
     };
     checkUpdates();
     checkIsNewBuild();
+  }, []);
+
+  useEffect(() => {
+    QuickActions.setItems([
+      {
+        title: "New Task",
+        icon: "plus",
+        id: "0",
+        params: { href: "/(logged)/tasks/new/" },
+      },
+    ]);
   }, []);
 
   const checkIsNewBuild = async (): Promise<boolean> => {
