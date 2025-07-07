@@ -36,7 +36,6 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     const loadThemePref = async () => {
       try {
         const stored = await AsyncStorage.getItem("theme");
-        console.log(stored);
         if (stored !== null && isMounted) {
           const parsed = parseInt(stored, 10);
           if ([0, 1, 2].includes(parsed)) {
@@ -70,24 +69,21 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   }, [themePreference, systemColorScheme]);
 
   useEffect(() => {
-    const effectiveDark =
-      themePreference === 0
-        ? systemColorScheme === "dark"
-        : themePreference === 2;
+    const subscription = Appearance.addChangeListener(({ colorScheme }) => {
+      const effectiveDark =
+        themePreference === 0 ? colorScheme === "dark" : themePreference === 2;
 
-    setIsDark(effectiveDark);
-  }, [themePreference, systemColorScheme]);
+      setIsDark(effectiveDark);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [themePreference]);
 
   const toggleTheme = async (mode?: ThemePreference) => {
     try {
-      let newPref: ThemePreference;
-
-      if (mode !== undefined) {
-        newPref = mode;
-      } else {
-        newPref = themePreference === 2 ? 1 : 2;
-      }
-
+      const newPref = mode ?? (isDark ? 1 : 2);
       await AsyncStorage.setItem("theme", newPref.toString());
       setThemePreference(newPref);
       setError(null);
@@ -98,18 +94,14 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const theme = useMemo(() => {
-    try {
-      const baseTheme = isDark ? darkTheme : lightTheme;
-      return {
-        ...baseTheme,
-        colors: {
-          ...baseTheme.colors,
-          secondaryContainer: "transparent",
-        },
-      };
-    } catch {
-      return lightTheme;
-    }
+    const baseTheme = isDark ? darkTheme : lightTheme;
+    return {
+      ...baseTheme,
+      colors: {
+        ...baseTheme.colors,
+        secondaryContainer: "transparent",
+      },
+    };
   }, [isDark]);
 
   return (
