@@ -169,7 +169,7 @@ export default function UserHome() {
       >
         {tasks.length > 0 && (
           <CustomCard title={t("home.resume.title")}>
-            <CardInfo tasksInfo={tasks} isMember />
+            <CardInfo tasksInfo={tasks} isMember reflesh={onRefresh} />
           </CustomCard>
         )}
         {tasks.length > 0 &&

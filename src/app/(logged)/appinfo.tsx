@@ -33,6 +33,10 @@ export default function AppInfo() {
   const checkUpdates = async () => {
     setIsChecking(true);
     try {
+      if (Constants.appOwnership === "expo") {
+        setIsChecking(false);
+        return;
+      }
       const update = await Updates.checkForUpdateAsync();
 
       if (update.isAvailable) {

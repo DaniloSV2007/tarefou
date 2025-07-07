@@ -27,10 +27,13 @@ import Constants from "expo-constants";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as QuickActions from "expo-quick-actions";
+import { useQuickActionRouting } from "expo-quick-actions/router";
 
 function RootInnerLayout() {
   const { theme, isDark } = useThemeContext();
   const appTheme = useAppTheme();
+
+  useQuickActionRouting();
 
   const { isUpdateAvailable, isDownloading, isRestarting, isUpdatePending } =
     Updates.useUpdates();
@@ -70,7 +73,9 @@ function RootInnerLayout() {
         console.error(error);
       }
     };
-    checkUpdates();
+    if (Constants.appOwnership !== "expo") {
+      checkUpdates();
+    }
     checkIsNewBuild();
   }, []);
 
@@ -78,7 +83,7 @@ function RootInnerLayout() {
     QuickActions.setItems([
       {
         title: "New Task",
-        icon: "plus",
+        icon: "new_task",
         id: "0",
         params: { href: "/(logged)/tasks/new/" },
       },

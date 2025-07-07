@@ -46,9 +46,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (newToken: string, role: string, username: string) => {
     try {
       setIsLoading(true);
-      await AsyncStorage.setItem("userToken", newToken);
-      await AsyncStorage.setItem("userRole", role);
-      await AsyncStorage.setItem("username", username);
+      await AsyncStorage.multiSet([
+        ["userToken", newToken],
+        ["userRole", role],
+        ["username", username],
+      ]);
       setToken(newToken);
       setIsLoggedIn(true);
       setError(null);

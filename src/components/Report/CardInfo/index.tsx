@@ -6,19 +6,24 @@ import { Task } from "@/app/(logged)/tasks/[tasks]";
 import { useEffect, useState } from "react";
 import tasks from "@/app/(logged)/user/tasks";
 import React from "react";
+import api from "@/services/api";
+import { useAuth } from "@/context/AuthContext";
 
 interface CardInfoProps {
   tasksInfo: Task[];
   isWeek?: boolean;
   isMember?: boolean;
+  reflesh: () => void;
 }
 export default function CardInfo({
   tasksInfo,
   isWeek = false,
   isMember = false,
+  reflesh,
 }: CardInfoProps) {
   const theme = useAppTheme();
   const { t } = useTranslation();
+  const { token } = useAuth();
 
   const [completedTasks, setCompletedTasks] = useState(0);
   const [totalTask, setTotalTask] = useState(0);
@@ -44,9 +49,19 @@ export default function CardInfo({
       const allTasks = tasksInfo.filter((task) => {
         if (!task.deadline) return true;
         const date = new Date();
-        const noShowIf = new Date(task.deadline);
-        noShowIf.setDate(noShowIf.getDate() + 2);
-        if (date >= noShowIf) return false;
+        const noShowIfDeadline = new Date(task.deadline);
+        noShowIfDeadline.setDate(noShowIfDeadline.getDate() + 2);
+        if (date >= noShowIfDeadline) {
+          deleteFromDatabase(task);
+          return false;
+        }
+
+        if (task.isCompleted && task.updatedAt) {
+          const deleteIf = new Date(task.updatedAt);
+          deleteIf.setDate(deleteIf.getDate() + 2);
+          if (date >= deleteIf) deleteFromDatabase(task);
+        }
+
         return true;
       });
       setTotalTask(allTasks.length);
@@ -57,6 +72,19 @@ export default function CardInfo({
     if (tasksInfo.length > 0) {
       const tasksCompleted = tasksInfo.filter((task) => task.isCompleted);
       setCompletedTasks(tasksCompleted.length);
+    }
+  };
+
+  const deleteFromDatabase = async (task: Task) => {
+    try {
+      if (!task) throw new Error("Task not provided");
+      await api.delete("/tasks/", {
+        data: task,
+        headers: { Authorization: token },
+      });
+      reflesh();
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -87,9 +115,13 @@ export default function CardInfo({
           </View>
         </>
       ) : (
-        <View className="items-center py-8">
-          <Text>{t("tasks.common.noTasksFound", { ns: "screens" })}</Text>
-        </View>
+        !isWeek && (
+          <View className="items-center py-8">
+            <Text className="text-xl">
+              {t("tasks.common.noTasksFound", { ns: "screens" })}
+            </Text>
+          </View>
+        )
       )}
     </View>
   );

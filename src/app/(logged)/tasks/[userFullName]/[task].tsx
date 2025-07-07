@@ -47,8 +47,6 @@ export default function TaskDetails() {
       const parsed = JSON.parse(decodeURIComponent(params.task));
       const task = Array.isArray(parsed) ? parsed[0] : parsed;
 
-      console.log(task);
-
       setTaskData(task);
     } catch (error) {
       console.error("Error loading task data:", error);

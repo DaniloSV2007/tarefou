@@ -48,7 +48,6 @@ export default function AllTasks() {
     async function fetchTasks() {
       try {
         const usersDecoded = JSON.parse(decodeURIComponent(params.tasks));
-        console.log(usersDecoded);
 
         if (usersDecoded.length === 0) {
           setLoading(false);
@@ -125,114 +124,135 @@ export default function AllTasks() {
           </View>
 
           {tasks.length === 0 ? (
-            <Text>{t("tasks.common.noTasksFound", { ns: "screens" })}.</Text>
+            <View className="items-center justify-center">
+              <Text className="text-2xl">
+                {t("tasks.common.noTasksFound", { ns: "screens" })}.
+              </Text>
+            </View>
           ) : users?.tasks && users.tasks.length > 0 ? (
             searchValue !== "" ? (
-              <View style={{ gap: 16 }}>
-                {tasks
-                  .filter(
-                    (task) =>
-                      task.title
-                        .toLowerCase()
-                        .includes(searchValue.toLowerCase()) ||
-                      (task.description
-                        ?.toLowerCase()
-                        .includes(searchValue.toLowerCase()) ??
-                        false)
-                  )
-                  .map((task) => (
-                    <Card
-                      key={task.id}
-                      style={[
-                        styles.card,
-                        {
-                          backgroundColor: theme.custom.cardColor,
-                          paddingHorizontal: 16,
-                          alignSelf: "center",
-                        },
-                      ]}
-                    >
-                      <Pressable
-                        android_ripple={{ color: theme.custom.ripple }}
-                        onPress={() => handleTaskPress(task)}
+              tasks.filter(
+                (task) =>
+                  task.title
+                    .toLowerCase()
+                    .includes(searchValue.toLowerCase()) ||
+                  (task.description
+                    ?.toLowerCase()
+                    .includes(searchValue.toLowerCase()) ??
+                    false)
+              ).length === 0 ? (
+                <View className="items-center">
+                  <Text className="text-2xl">
+                    {t("tasks.common.noTasksFound", { ns: "screens" })}.
+                  </Text>
+                </View>
+              ) : (
+                <View style={{ gap: 16 }}>
+                  {tasks
+                    .filter(
+                      (task) =>
+                        task.title
+                          .toLowerCase()
+                          .includes(searchValue.toLowerCase()) ||
+                        (task.description
+                          ?.toLowerCase()
+                          .includes(searchValue.toLowerCase()) ??
+                          false)
+                    )
+                    .map((task) => (
+                      <Card
+                        key={task.id}
+                        style={[
+                          styles.card,
+                          {
+                            backgroundColor: theme.custom.cardColor,
+                            paddingHorizontal: 16,
+                            alignSelf: "center",
+                          },
+                        ]}
                       >
-                        <Card.Content style={styles.tasksContainer}>
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Icon
-                              source={task.isCompleted ? "check" : "clock"}
-                              size={32}
-                              color={
-                                task.isCompleted
-                                  ? theme.colors.onSurfaceDisabled
-                                  : theme.colors.onBackground
-                              }
-                            />
-                            <Text
-                              ellipsizeMode="tail"
-                              numberOfLines={1}
+                        <Pressable
+                          android_ripple={{ color: theme.custom.ripple }}
+                          onPress={() => handleTaskPress(task)}
+                        >
+                          <Card.Content style={styles.tasksContainer}>
+                            <View
                               style={{
-                                fontSize: 24,
-                                fontWeight: "bold",
-                                marginLeft: 8,
-                                color: task.isCompleted
-                                  ? theme.colors.onSurfaceDisabled
-                                  : theme.colors.onBackground,
-                                maxWidth: "85%",
+                                flexDirection: "row",
+                                alignItems: "center",
                               }}
                             >
-                              {task.title}
-                            </Text>
-                          </View>
+                              <Icon
+                                source={task.isCompleted ? "check" : "clock"}
+                                size={32}
+                                color={
+                                  task.isCompleted
+                                    ? theme.colors.onSurfaceDisabled
+                                    : theme.colors.onBackground
+                                }
+                              />
+                              <Text
+                                ellipsizeMode="tail"
+                                numberOfLines={1}
+                                style={{
+                                  fontSize: 24,
+                                  fontWeight: "bold",
+                                  marginLeft: 8,
+                                  color: task.isCompleted
+                                    ? theme.colors.onSurfaceDisabled
+                                    : theme.colors.onBackground,
+                                  maxWidth: "85%",
+                                }}
+                              >
+                                {task.title}
+                              </Text>
+                            </View>
 
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Text
-                              style={[
-                                { color: theme.colors.onSurface },
-                                styles.textBold,
-                              ]}
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                              }}
                             >
-                              {t("tasks.admin.allTasks.description", {
-                                ns: "screens",
-                              })}{" "}
-                            </Text>
-                            <Text
-                              style={[
-                                styles.descriptionText,
-                                { color: theme.colors.onSurface },
-                              ]}
-                              numberOfLines={1}
-                              ellipsizeMode="tail"
-                            >
-                              {task.description}
-                            </Text>
-                          </View>
+                              <Text
+                                style={[
+                                  { color: theme.colors.onSurface },
+                                  styles.textBold,
+                                ]}
+                              >
+                                {t("tasks.admin.allTasks.description", {
+                                  ns: "screens",
+                                })}{" "}
+                              </Text>
+                              <Text
+                                style={[
+                                  styles.descriptionText,
+                                  { color: theme.colors.onSurface },
+                                ]}
+                                numberOfLines={1}
+                                ellipsizeMode="tail"
+                              >
+                                {task.description}
+                              </Text>
+                            </View>
 
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              alignItems: "center",
-                              position: "absolute",
-                              right: 0,
-                              top: "40%",
-                            }}
-                          >
-                            <Icon source="chevron-right" size={32} />
-                          </View>
-                        </Card.Content>
-                      </Pressable>
-                    </Card>
-                  ))}
-              </View>
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                position: "absolute",
+                                right: 0,
+                                top: "40%",
+                              }}
+                            >
+                              <Icon source="chevron-right" size={32} />
+                            </View>
+                          </Card.Content>
+                        </Pressable>
+                      </Card>
+                    ))}
+                </View>
+              )
             ) : (
               <View style={{ gap: 16 }}>
                 {tasks.map((task) => (

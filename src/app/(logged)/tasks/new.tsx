@@ -69,6 +69,7 @@ export default function NewTask() {
   const [usersSelected, setUsersSelected] = useState<UserType[]>([]);
 
   const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
 
   const onChangeDate = (event: DateTimePickerEvent, selectedDate?: Date) => {
     if (date === selectedDate) {
@@ -99,6 +100,7 @@ export default function NewTask() {
 
   useEffect(() => {
     getUsers();
+    getRole();
   }, []);
 
   useEffect(() => {
@@ -138,6 +140,15 @@ export default function NewTask() {
     );
 
     setUsers(newUsers);
+  };
+
+  const getRole = async () => {
+    const role = await AsyncStorage.getItem("userRole");
+    if (!role) {
+      router.replace("/(logged)/");
+      return;
+    }
+    setRole(role);
   };
 
   const getUsers = async () => {
@@ -229,9 +240,20 @@ export default function NewTask() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-        <TopBar title={t("home.newTask.title")} isBackButtonEnable={true} />
+        <TopBar
+          title={t("home.newTask.title")}
+          isBackButtonEnable={true}
+          backButtonHref={() =>
+            router.replace(
+              `/(logged)/${role === "MEMBER" ? "user" : "admin"}/home`
+            )
+          }
+        />
         <View style={{ flex: 1, padding: 16, alignItems: "center" }}>
-          <CustomCard title={t("home.newTask.title")}>
+          <CustomCard
+            title={t("home.newTask.title")}
+            cardStyle={{ width: "95%", borderRadius: 24 }}
+          >
             <View className="gap-5">
               <View className="gap-5">
                 <TextInput

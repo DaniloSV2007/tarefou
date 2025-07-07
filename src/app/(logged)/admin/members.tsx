@@ -34,6 +34,7 @@ import MenuItem from "react-native-paper/lib/typescript/components/Menu/MenuItem
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import { useAuth } from "@/context/AuthContext";
+import Constants from "expo-constants";
 
 export interface UserType {
   name: string;
@@ -226,7 +227,7 @@ export default function Members() {
       >
         <TopBar
           title={t("members.title", { ns: "screens" })}
-          showNotification
+          showNotification={Constants.appOwnership === "expo"}
         />
 
         <View
@@ -302,7 +303,7 @@ export default function Members() {
     >
       <TopBar
         title={familyName ? familyName : t("members.title", { ns: "screens" })}
-        showNotification
+        showNotification={Constants.appOwnership === "expo"}
       >
         {familyInfo && familyInfo.owner === username && (
           <Appbar.Action

@@ -48,17 +48,20 @@
         }
       }
     ],
-    "expo-localization",
-    "expo-sqlite",
-    "expo-quick-actions",
-    {
-      "androidIcons": {
-        "new-task": {
-          "monochromeImage": "./assets/adaptive-icon-monochrome.png",
-          "backgroundColor": "#337efc"
+    [
+      "expo-quick-actions",
+      {
+        "androidIcons": {
+          "new_task": {
+            "foregroundImage": "./assets/new-task-icon.png",
+            "monochromeImage": "./assets/new-task-icon.png",
+            "backgroundColor": "#fff"
+          }
         }
       }
-    }
+    ],
+    "expo-localization",
+    "expo-sqlite"
   ],
   "androidNavigationBar": {
     "backgroundColor": "#00000000"
