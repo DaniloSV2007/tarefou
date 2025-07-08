@@ -170,7 +170,7 @@ export default function Register() {
                 ]}
               >
                 <Card.Title
-                  title={t(steps[page])}
+                  title={t(steps[page] as any)}
                   titleNumberOfLines={3}
                   titleStyle={{
                     fontSize: 32,

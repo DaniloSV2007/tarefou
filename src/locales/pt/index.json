@@ -28,7 +28,8 @@
       "selectMembersPlaceholder": "Selecionar membros",
       "selectedNumber": "Selecionado {{number}}",
       "createTask": "Criar tarefa"
-    }
+    },
+    "noUserFound": "Nenhum membro encontrado. Comece adicionando um membro na página Membros."
   },
   "tasks": {
     "title": "Tarefas"

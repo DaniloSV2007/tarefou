@@ -341,14 +341,10 @@ export default function Members() {
           />
         ))}
         {usersLength === 0 && (
-          <View
-            style={{
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Text>No members found</Text>
+          <View className="flex-1 items-center justify-center px-6">
+            <Text className="text-xl">
+              {t("members.noMembersFound", { ns: "screens" })}
+            </Text>
           </View>
         )}
 
@@ -371,11 +367,11 @@ export default function Members() {
         backdropColor="#2e2e2ebf"
         fabStyle={[{ backgroundColor: theme.colors.primary }, styles.fab]}
         actions={[
-          {
-            icon: "email-newsletter",
-            label: "Invite",
-            onPress: () => console.log("Pressed Invite"),
-          },
+          // {
+          //   icon: "email-newsletter",
+          //   label: "Invite",
+          //   onPress: () => console.log("Pressed Invite"),
+          // },
           {
             icon: "account-search",
             label: "Username",
@@ -386,11 +382,11 @@ export default function Members() {
             label: "QRCode",
             onPress: () => router.push("/member/qrcode"),
           },
-          {
-            icon: "whatsapp",
-            label: "Whatsapp",
-            onPress: () => shareWhatsapp(),
-          },
+          // {
+          //   icon: "whatsapp",
+          //   label: "Whatsapp",
+          //   onPress: () => shareWhatsapp(),
+          // },
         ]}
         onStateChange={onStateChange}
       />

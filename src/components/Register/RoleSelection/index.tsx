@@ -20,10 +20,10 @@ export default function RoleSelection({
 
   const handleRoleSelection = (role: string) => {
     setRole(role);
-    if (age >= 18) {
-      setPage(5);
-    } else {
+    if (role === "MEMBER") {
       setPage(6);
+    } else {
+      setPage(5);
     }
   };
 
@@ -77,7 +77,7 @@ export default function RoleSelection({
               styles.buttonText,
               { color: theme.colors.onBackground },
             ]}
-            children={t("components:common.back")}
+            children={t("common.back", { ns: "components" })}
             onPress={() => setPage(3)}
           />
         </View>

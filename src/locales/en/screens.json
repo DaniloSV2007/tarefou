@@ -117,7 +117,8 @@
     "changeOwner": {
       "title": "Change Family Owner",
       "selectPlaceholder": "Select new owner"
-    }
+    },
+    "noMembersFound": "No members found. Add a new member by clicking the plus button."
   },
 
   "member": {

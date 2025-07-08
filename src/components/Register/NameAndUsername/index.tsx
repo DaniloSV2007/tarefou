@@ -47,9 +47,19 @@ export default function NameAndUsername({
     setName(text);
   };
 
-  const usernameHandler = async (text: string) => {
-    setUsername(text);
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      setError("");
+      setSuccess("");
+      if (username.length > 2) {
+        usernameHandler(username);
+      }
+    }, 2000); // espera 800ms após parar de digitar
 
+    return () => clearTimeout(delayDebounce);
+  }, [username]);
+
+  const usernameHandler = async (text: string) => {
     if (text.trim() === "") {
       setError("");
       setSuccess("");
@@ -57,14 +67,11 @@ export default function NameAndUsername({
     }
 
     try {
-      const res = await api.get(`/users/${text}/exists`, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
-      const existingUsername = res.data.username;
+      const res = await api.get(`/users/${text}/exists`);
 
-      if (existingUsername) {
+      const usernameExists = res.data.username;
+      console.log(usernameExists);
+      if (res.status === 200 && usernameExists && usernameExists !== "") {
         setError(t("register.error.usernameExists"));
       } else {
         setSuccess(t("register.nameAndUsername.usernameAvailable"));
@@ -128,7 +135,7 @@ export default function NameAndUsername({
           onFocus={() => setIsFocusedUsername(true)}
           onBlur={() => setIsFocusedUsername(false)}
           value={username}
-          onChangeText={usernameHandler}
+          onChangeText={(text) => setUsername(text)}
           autoCapitalize="none"
         />
       </View>
@@ -162,13 +169,15 @@ export default function NameAndUsername({
           mode="contained"
           onPress={() => {
             setPage(3);
-            setDoneName(true);
           }}
           style={[
             styles.button,
             {
               backgroundColor:
-                name.length < 3 || username.length < 3 || error !== ""
+                name.length < 3 ||
+                username.length < 3 ||
+                error !== "" ||
+                success === ""
                   ? theme.colors.surfaceDisabled
                   : theme.colors.primary,
             },
@@ -177,12 +186,20 @@ export default function NameAndUsername({
             styles.buttonText,
             {
               color:
-                name.length < 3 || username.length < 3 || error !== ""
+                name.length < 3 ||
+                username.length < 3 ||
+                error !== "" ||
+                success === ""
                   ? theme.colors.onSurfaceDisabled
                   : "white",
             },
           ]}
-          disabled={name.length < 3 || username.length < 3 || error !== ""}
+          disabled={
+            name.length < 3 ||
+            username.length < 3 ||
+            error !== "" ||
+            success === ""
+          }
         >
           {t("register.nameAndUsername.next")}
         </Button>

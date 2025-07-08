@@ -117,7 +117,8 @@
     "changeOwner": {
       "title": "Mudar Dono da Família",
       "selectPlaceholder": "Selecionar novo dono"
-    }
+    },
+    "noMembersFound": "Nenhum membro encontrado. Adicione um novo membro pressionando o botão de mais."
   },
   "member": {
     "profile": {

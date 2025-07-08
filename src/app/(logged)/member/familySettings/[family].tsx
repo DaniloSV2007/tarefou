@@ -159,7 +159,7 @@ export default function FamilySettings() {
                 </View>
               </Pressable>
 
-              <View className="w-full items-center">
+              {/* <View className="w-full items-center">
                 <Pressable
                   className="px-4 py-4 rounded-2xl bg-red-500 flex-row"
                   android_ripple={{ color: theme.custom.ripple }}
@@ -178,7 +178,7 @@ export default function FamilySettings() {
                     </>
                   )}
                 </Pressable>
-              </View>
+              </View> */}
 
               <Text
                 className="text-3xl mb-4"
@@ -198,12 +198,17 @@ export default function FamilySettings() {
                     onPress={() => goToUserInfo(user)}
                   >
                     <View className="flex-row gap-3">
-                      <Avatar.Image
-                        size={48}
-                        source={
-                          user.avatar ? { uri: user.avatar } : placeholder
-                        }
-                      />
+                      {user.avatar ? (
+                        <Avatar.Image
+                          size={48}
+                          source={
+                            user.avatar ? { uri: user.avatar } : placeholder
+                          }
+                        />
+                      ) : (
+                        <Avatar.Icon size={48} icon={"account"} />
+                      )}
+
                       <View>
                         <Text
                           className="text-2xl -mb-1 w-60"

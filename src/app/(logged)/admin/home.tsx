@@ -15,6 +15,7 @@ import { UserType } from "./members";
 import api from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
 import { Task } from "../tasks/[tasks]";
+import { Text } from "react-native-paper";
 
 export interface UserTasksType extends UserType {
   tasks: Task[];
@@ -325,11 +326,16 @@ export default function Home() {
         }
       >
         <View style={styles.content}>
-          {/* <CustomCard title={t("home.resume.title")}>
-            <CardInfo tasksInfo={familyInfo} />
-          </CustomCard> */}
+          <CustomCard title={t("home.resume.title")}>
+            <CardInfo
+              tasksInfo={users.flatMap((user) =>
+                Array.isArray(user.tasks) ? user.tasks : []
+              )}
+              reflesh={onRefresh}
+            />
+          </CustomCard>
 
-          {users &&
+          {users.length > 0 ? (
             users
               .sort((a, b) => a?.name.localeCompare(b?.name))
               .map((user: UserTasksType) => (
@@ -338,7 +344,14 @@ export default function Home() {
                   name={user.name}
                   tasks={user.tasks}
                 />
-              ))}
+              ))
+          ) : (
+            <View className="flex-1 items-center px-6 mt-12 justify-center ">
+              <Text className="text-xl " style={{ textAlign: "center" }}>
+                {t("home.noUserFound")}
+              </Text>
+            </View>
+          )}
         </View>
       </ScrollView>
     </>

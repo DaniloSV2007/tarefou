@@ -50,17 +50,14 @@ export default function EmailAndPassword({
       return;
     }
 
+    console.log;
+
     const data = {
       email: email.trim(),
     };
 
     try {
-      const res = await api.post("/users/email", {
-        headers: {
-          Authorization: `${token}`,
-        },
-        data,
-      });
+      const res = await api.post("/users/email", data);
       const existingEmail = res.data.code === 200;
 
       if (existingEmail) {

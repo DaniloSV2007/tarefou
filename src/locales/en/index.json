@@ -28,7 +28,8 @@
       "selectMembersPlaceholder": "Select members",
       "selectedNumber": "Selected {{number}}",
       "createTask": "Create task"
-    }
+    },
+    "noUserFound": "No member found. Start by adding a new member in Members page."
   },
   "tasks": {
     "title": "Tasks"

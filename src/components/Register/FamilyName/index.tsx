@@ -53,7 +53,7 @@ export default function FamilyName({
             { backgroundColor: theme.custom.cardTaskBackground },
           ]}
           labelStyle={[styles.buttonText, { color: theme.colors.onBackground }]}
-          children={t("components:common.back")}
+          children={t("common.back", { ns: "components" })}
           onPress={() => setPage(4)}
         />
         <Button
@@ -67,7 +67,7 @@ export default function FamilyName({
           ]}
           labelStyle={styles.buttonText}
         >
-          {t("components:common.next")}
+          {t("common.next", { ns: "components" })}
         </Button>
       </View>
     </>

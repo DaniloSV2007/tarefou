@@ -23,6 +23,7 @@ export default function AvatarProfile({
   const { t } = useTranslation();
   const { isDark } = useThemeContext();
   const { token } = useAuth();
+  const { isLoggedIn } = useAuth();
 
   //Profile Picture
   const [image, setImage] = useState<string | null>(null);
@@ -109,6 +110,7 @@ export default function AvatarProfile({
 
   //User Avatar Functions
   const getAvatarImageDatabase = async () => {
+    if (!isLoggedIn) return;
     const username = await AsyncStorage.getItem("username");
     if (!username) return console.error("Username not found. Are you logged?");
 
