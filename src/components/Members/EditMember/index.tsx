@@ -7,6 +7,7 @@ import api from "@/services/api";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Props = {
   user: UserType | undefined;
@@ -56,6 +57,7 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
       if (res.status === 200) {
         setSelectedRole(newRole);
         setChanged(true);
+        await AsyncStorage.setItem("userRole", newRole);
       }
     } catch (error) {
       console.error("Erro ao mudar cargo:", error);

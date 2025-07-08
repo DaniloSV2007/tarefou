@@ -16,7 +16,7 @@ export default function Logged() {
       logout();
       return;
     }
-    if ((await role) === "MEMBER") {
+    if (role === "MEMBER") {
       router.replace("/user/home");
     } else {
       router.replace("/admin/home");
