@@ -104,10 +104,10 @@ function RootInnerLayout() {
 
   return (
     <SQLiteProvider databaseName="tarefou.db" onInit={setupDB}>
-      <SafeAreaProvider>
-        <PaperProvider theme={theme}>
-          <LanguageProvider>
-            <AuthProvider>
+      <AuthProvider>
+        <SafeAreaProvider>
+          <PaperProvider theme={theme}>
+            <LanguageProvider>
               <GestureHandlerRootView>
                 <BottomSheetModalProvider>
                   <View
@@ -129,10 +129,10 @@ function RootInnerLayout() {
                   </View>
                 </BottomSheetModalProvider>
               </GestureHandlerRootView>
-            </AuthProvider>
-          </LanguageProvider>
-        </PaperProvider>
-      </SafeAreaProvider>
+            </LanguageProvider>
+          </PaperProvider>
+        </SafeAreaProvider>
+      </AuthProvider>
     </SQLiteProvider>
   );
 }

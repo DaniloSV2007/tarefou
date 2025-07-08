@@ -74,7 +74,8 @@
     "continue": "Continuar",
     "current": "Atual",
     "new": "Novo",
-    "done": "Feito"
+    "done": "Feito",
+    "username": "Nome de Usuário"
   },
   "menu": {
     "appInfo": "Informações do App",

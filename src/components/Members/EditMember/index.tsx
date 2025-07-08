@@ -11,7 +11,7 @@ import { useAuth } from "@/context/AuthContext";
 type Props = {
   user: UserType | undefined;
   setEditVisible: (state: boolean) => void;
-  reflesh: () => void | void;
+  reflesh: () => void;
 };
 
 export default function EditMember({ user, setEditVisible, reflesh }: Props) {
@@ -19,46 +19,46 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
   const { t } = useTranslation();
   const { token } = useAuth();
 
-  const [visible, setVisible] = useState(false);
-  const [selectedRole, setSelectedRole] = useState(user?.role);
-  const [selected, setSelected] = useState(
-    user?.role === "MEMBER"
-      ? `${t("screens:members.edit.roleMember")}`
-      : `${t("screens:members.edit.roleAdmin")}`
-  );
-
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [selectedRole, setSelectedRole] = useState(user?.role ?? "MEMBER");
   const [loading, setLoading] = useState(false);
-
   const [confirmationVisible, setConfirmationVisible] = useState(false);
-
   const [changed, setChanged] = useState(false);
 
-  const handleChangeRole = async (selectedOption: string) => {
+  // Define roles com label e value
+  const roles = [
+    {
+      label: t("members.edit.roleAdmin", { ns: "screens" }),
+      value: "FAMILY_ADMIN",
+    },
+    {
+      label: t("members.edit.roleMember", { ns: "screens" }),
+      value: "MEMBER",
+    },
+  ];
+
+  const selectedLabel =
+    roles.find((r) => r.value === selectedRole)?.label ?? "";
+
+  const handleChangeRole = async (newRole: string) => {
+    if (newRole === selectedRole) return;
+
     setLoading(true);
-    if (selectedOption === selected) {
-      setLoading(false);
-      return;
-    }
-    const data = {
-      role: selectedOption === "Member" ? "MEMBER" : "FAMILY_ADMIN",
-    };
+    const data = { role: newRole };
+
     try {
-      const res = await api.put("/users/" + user?.username, {
+      const res = await api.put(`/users/${user?.username}`, data, {
         headers: {
           Authorization: `${token}`,
         },
-        data,
       });
 
       if (res.status === 200) {
-        setSelected(selectedOption);
-        setSelectedRole(
-          selectedOption === "Member" ? "MEMBER" : "FAMILY_ADMIN"
-        );
-        setLoading(false);
+        setSelectedRole(newRole);
+        setChanged(true);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Erro ao mudar cargo:", error);
     } finally {
       setLoading(false);
     }
@@ -66,15 +66,13 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
 
   const handleRemove = async () => {
     setLoading(true);
-    const data = {
-      familyId: null,
-    };
+    const data = { familyId: null };
+
     try {
-      const res = await api.put("/users/" + user?.username, {
+      const res = await api.put(`/users/${user?.username}`, data, {
         headers: {
           Authorization: `${token}`,
         },
-        data,
       });
 
       if (res.data.code === 200) {
@@ -82,7 +80,7 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
         setEditVisible(false);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Erro ao remover usuário da família:", error);
     } finally {
       setLoading(false);
     }
@@ -94,7 +92,7 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
         visible={true}
         dismissable={!loading}
         onDismiss={() => {
-          reflesh();
+          if (changed) reflesh();
           setEditVisible(false);
         }}
       >
@@ -104,55 +102,53 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
             variant="headlineSmall"
             style={{ color: theme.colors.onSurfaceVariant }}
           >
-            {t("screens:members.edit.title")}
+            {t("members.edit.title", { ns: "screens" })}
           </Text>
+
           <View style={{ alignItems: "center" }}>
             <Menu
-              visible={visible}
-              onDismiss={() => setVisible(false)}
+              visible={menuVisible}
               style={{ width: "63%" }}
+              onDismiss={() => setMenuVisible(false)}
               anchor={
                 <Button
                   mode="outlined"
                   labelStyle={{ color: theme.colors.onBackground }}
                   style={{ borderRadius: 5, minWidth: 256 }}
-                  onPress={() => setVisible(true)}
+                  onPress={() => setMenuVisible(true)}
                 >
-                  {selected}
+                  {selectedLabel}
                 </Button>
               }
             >
-              {[
-                `${t("screens:members.edit.roleAdmin")}`,
-                `${t("screens:members.edit.roleMember")}`,
-              ].map((option) => (
+              {roles.map((role) => (
                 <Menu.Item
-                  key={option}
-                  title={option}
-                  style={{}}
+                  key={role.value}
+                  title={role.label}
                   onPress={() => {
-                    handleChangeRole(option);
-                    setVisible(false);
-                    setChanged(true);
+                    handleChangeRole(role.value);
+                    setMenuVisible(false);
                   }}
                 />
               ))}
             </Menu>
           </View>
         </Dialog.Content>
+
         <Dialog.Actions style={{ justifyContent: "space-between" }}>
           <Button
             mode="outlined"
             textColor={theme.colors.onBackground}
             onPress={() => {
-              changed && reflesh();
+              if (changed) reflesh();
               setEditVisible(false);
             }}
             style={{ borderRadius: 12, paddingHorizontal: 5 }}
             disabled={loading}
           >
-            {t("components:common.back")}
+            {t("common.back", { ns: "components" })}
           </Button>
+
           <Button
             mode="contained"
             buttonColor="red"
@@ -162,7 +158,7 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
             disabled={loading}
             rippleColor={theme.custom.ripple}
           >
-            {t("screens:members.edit.removeFamily")}
+            {t("members.edit.removeFamily", { ns: "screens" })}
           </Button>
         </Dialog.Actions>
       </Dialog>
@@ -174,15 +170,16 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
           onDismiss={() => setConfirmationVisible(false)}
         >
           <Dialog.Title style={{ fontSize: 28 }}>
-            {t("screens:members.edit.removeConfirmTitle")}
+            {t("members.edit.removeConfirmTitle", { ns: "screens" })}
           </Dialog.Title>
           <Dialog.Content style={{ gap: 32 }}>
             <Text
               variant="titleMedium"
               style={{ color: theme.colors.onSurfaceVariant }}
             >
-              {t("screens:members.edit.removeConfirmText", {
-                name: user?.name.split(" ")[0],
+              {t("members.edit.removeConfirmText", {
+                ns: "screens",
+                name: user?.name?.split(" ")[0],
               })}
             </Text>
           </Dialog.Content>
@@ -194,7 +191,7 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
               style={{ borderRadius: 12, paddingHorizontal: 5 }}
               disabled={loading}
             >
-              {t("components:common.cancel")}
+              {t("common.cancel", { ns: "components" })}
             </Button>
             <Button
               mode="contained"
@@ -205,10 +202,10 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
               disabled={loading}
               rippleColor={theme.custom.ripple}
             >
-              {t("screens:members.edit.removeButton", {
-                name: user?.name.split(" ")[0],
-              })}{" "}
-              {}
+              {t("members.edit.removeButton", {
+                ns: "screens",
+                name: user?.name?.split(" ")[0],
+              })}
             </Button>
           </Dialog.Actions>
         </Dialog>

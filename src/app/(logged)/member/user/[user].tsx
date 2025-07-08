@@ -122,16 +122,17 @@ export default function User() {
     const data = { familyId };
 
     try {
-      const res = await api.put("/users/" + userInfo?.username, {
+      const res = await api.put("/users/" + userInfo?.username, data, {
         headers: {
           Authorization: `${token}`,
         },
-        data,
       });
       if (res.status === 200 && res.data.code === 200) {
         router.replace("/admin/members");
       } else if (res.data.code === 400) {
-        handleError(t("screens:members.newMember.userInfo.alreadyExists"));
+        handleError(
+          t("members.newMember.userInfo.alreadyExists", { ns: "screens" })
+        );
       }
     } catch (error) {
       console.error(error);
@@ -168,7 +169,7 @@ export default function User() {
   return (
     <>
       <TopBar
-        title={t("screens:members.newMember.tabBar")}
+        title={t("members.newMember.tabBar", { ns: "screens" })}
         isBackButtonEnable={true}
       />
       <View
@@ -222,13 +223,14 @@ export default function User() {
               @{userInfo?.username}
             </Text>
             <Text style={[{ color: theme.colors.onBackground }, styles.text]}>
-              {t("screens:members.newMember.userInfo.age")} {age}
+              {t("members.newMember.userInfo.age", { ns: "screens" })} {age}
             </Text>
             <Text style={[{ color: theme.colors.onBackground }, styles.text]}>
               Email: {userInfo?.email}
             </Text>
             <Text style={[{ color: theme.colors.onBackground }, styles.text]}>
-              {t("screens:members.newMember.userInfo.memberSince")} {createdAt}
+              {t("members.newMember.userInfo.memberSince", { ns: "screens" })}{" "}
+              {createdAt}
             </Text>
           </Card.Content>
           <Card.Actions style={{ justifyContent: "space-between" }}>
@@ -237,10 +239,10 @@ export default function User() {
               textColor={theme.colors.onBackground}
               onPress={() => router.replace("/admin/members")}
             >
-              {t("components:common.cancel")}
+              {t("common.cancel", { ns: "components" })}
             </Button>
             <Button mode="contained" onPress={handleAdd}>
-              {t("screens:members.newMember.userInfo.add")}
+              {t("members.newMember.userInfo.add", { ns: "screens" })}
             </Button>
           </Card.Actions>
         </Card>

@@ -263,14 +263,14 @@ export default function Members() {
             backdropColor="#2e2e2ebf"
             fabStyle={[{ backgroundColor: theme.colors.primary }, styles.fab]}
             actions={[
-              {
-                icon: "email-newsletter",
-                label: "Invite",
-                onPress: () => console.log("Pressed Invite"),
-              },
+              // {
+              //   icon: "email-newsletter",
+              //   label: "Invite",
+              //   onPress: () => console.log("Pressed Invite"),
+              // },
               {
                 icon: "account-search",
-                label: "Username",
+                label: t("common.username", { ns: "components" }),
                 onPress: () => router.push("/member/username"),
               },
               {
@@ -278,11 +278,11 @@ export default function Members() {
                 label: "QRCode",
                 onPress: () => router.push("/member/qrcode"),
               },
-              {
-                icon: "whatsapp",
-                label: "Whatsapp",
-                onPress: () => shareWhatsapp(),
-              },
+              // {
+              //   icon: "whatsapp",
+              //   label: "Whatsapp",
+              //   onPress: () => shareWhatsapp(),
+              // },
             ]}
             onStateChange={onStateChange}
           />
@@ -348,7 +348,7 @@ export default function Members() {
           </View>
         )}
 
-        {editVisible && (
+        {editVisible && userInfo?.role && (
           <Portal>
             <EditMember
               user={userInfo}
@@ -374,7 +374,7 @@ export default function Members() {
           // },
           {
             icon: "account-search",
-            label: "Username",
+            label: t("common.username", { ns: "components" }),
             onPress: () => router.push("/member/username"),
           },
           {

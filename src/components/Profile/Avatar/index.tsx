@@ -301,15 +301,22 @@ export default function AvatarProfile({
         />
       </View>
 
-      <Text
+      <View
+        className="flex-row"
         style={{
-          fontWeight: "bold",
-          color: theme.colors.onBackground,
-          fontSize: 24,
+          width: "85%",
         }}
       >
-        {name}
-      </Text>
+        <Text
+          style={{
+            fontWeight: "bold",
+            color: theme.colors.onBackground,
+            fontSize: 24,
+          }}
+        >
+          {name}
+        </Text>
+      </View>
 
       <Menu ref={profileMenuState} close={closeMenu}>
         <MenuButton

@@ -103,17 +103,21 @@ export default function MemberInfo({
               color: theme.colors.onSurfaceVariant,
               marginLeft: 10,
             }}
-            left={() => (
-              <Pressable
-                android_ripple={{ color: theme.custom.ripple }}
-                onPress={() => setIsVisible(true)}
-              >
-                <Avatar.Image
-                  source={{ uri: user.avatar ?? undefined }}
-                  size={48}
-                />
-              </Pressable>
-            )}
+            left={(props) =>
+              user.avatar ? (
+                <Pressable
+                  android_ripple={{ color: theme.custom.ripple }}
+                  onPress={() => setIsVisible(true)}
+                >
+                  <Avatar.Image
+                    {...props}
+                    source={{ uri: user.avatar ?? undefined }}
+                  />
+                </Pressable>
+              ) : (
+                <Avatar.Icon {...props} icon={"account"} color="white" />
+              )
+            }
           />
           <Card.Content>
             <Text variant="bodyMedium">

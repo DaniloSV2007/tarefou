@@ -95,7 +95,8 @@ export default function UserProfile() {
   return (
     <>
       <TopBar
-        title={t("screens:member.profile.memberName", {
+        title={t("member.profile.memberName", {
+          ns: "screens",
           name: memberData.name.split(" ")[0],
         })}
         isBackButtonEnable={true}
@@ -114,7 +115,7 @@ export default function UserProfile() {
             style={[styles.card, { backgroundColor: theme.custom?.cardColor }]}
           >
             <Card.Title
-              title={t("screens:member.profile.personalInfo.title")}
+              title={t("member.profile.personalInfo.title", { ns: "screens" })}
               titleStyle={styles.title}
             />
             <Card.Content>
@@ -158,13 +159,13 @@ export default function UserProfile() {
                 @{memberData.username}
               </Text>
               <Text style={[{ color: theme.colors.onBackground }, styles.text]}>
-                {t("screens:members.newMember.userInfo.age")} {age}
+                {t("members.newMember.userInfo.age", { ns: "screens" })} {age}
               </Text>
               <Text style={[{ color: theme.colors.onBackground }, styles.text]}>
                 Email: {memberData.email}
               </Text>
               <Text style={[{ color: theme.colors.onBackground }, styles.text]}>
-                {t("screens:members.newMember.userInfo.memberSince")}{" "}
+                {t("members.newMember.userInfo.memberSince", { ns: "screens" })}{" "}
                 {createdAt}
               </Text>
             </Card.Content>
