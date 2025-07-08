@@ -57,7 +57,6 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
       if (res.status === 200) {
         setSelectedRole(newRole);
         setChanged(true);
-        await AsyncStorage.setItem("userRole", newRole);
       }
     } catch (error) {
       console.error("Erro ao mudar cargo:", error);
