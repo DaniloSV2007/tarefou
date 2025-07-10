@@ -47,33 +47,33 @@ export default function Report() {
       const fetchTasks = async () => {
         if (!users || users.length === 0) return;
 
-        const updatedUsers: UserTasksType[] = await Promise.all(
-          users.map(async (user) => {
-            try {
-              const res = await api.get("/tasks/" + user.username, {
-                headers: { Authorization: `Bearer ${token}` },
-              });
+        //   const updatedUsers: UserTasksType[] = await Promise.all(
+        //     users.map(async (user) => {
+        //       try {
+        //         const res = await api.get("/tasks/" + user.username, {
+        //           headers: { Authorization: `Bearer ${token}` },
+        //         });
 
-              if (res.status === 200) {
-                const tasksWithDefaults: Task[] = res.data.map(
-                  (task: Task) => ({
-                    ...task,
-                    deadline: task.deadline
-                      ? new Date(task.deadline)
-                      : undefined,
-                  })
-                );
-                return { ...user, tasks: tasksWithDefaults };
-              }
-            } catch (error) {
-              console.log("Erro ao buscar tarefas de", user.username, error);
-            }
-            return user;
-          })
-        );
+        //         if (res.status === 200) {
+        //           const tasksWithDefaults: Task[] = res.data.map(
+        //             (task: Task) => ({
+        //               ...task,
+        //               deadline: task.deadline
+        //                 ? new Date(task.deadline)
+        //                 : undefined,
+        //             })
+        //           );
+        //           return { ...user, tasks: tasksWithDefaults };
+        //         }
+        //       } catch (error) {
+        //         console.log("Erro ao buscar tarefas de", user.username, error);
+        //       }
+        //       return user;
+        //     })
+        //   );
 
-        setUsers(updatedUsers);
-        setTotalMembersInfo(updatedUsers.map((u) => u.tasks || []).flat());
+        //   setUsers(updatedUsers);
+        //   setTotalMembersInfo(updatedUsers.map((u) => u.tasks || []).flat());
       };
 
       fetchTasks();
