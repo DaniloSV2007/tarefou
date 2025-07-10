@@ -76,7 +76,7 @@ export default function TaskDetails() {
         await loadTaskData();
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

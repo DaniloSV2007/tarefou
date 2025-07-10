@@ -157,16 +157,16 @@ export default function AvatarProfile({
     }
 
     try {
-      const uid = user?.uid;
-      if (!uid) {
-        console.error("User UID is undefined");
-        return;
+      const q = query(usersCollection, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const userId = querySnapshot.docs[0].id;
+        const userDoc = doc(db, "users", userId);
+        await updateDoc(userDoc, {
+          avatar: imageUri,
+        });
+        setImage(imageUri);
       }
-      const userDoc = doc(db, "users", uid);
-      await updateDoc(userDoc, {
-        avatar: imageUri,
-      });
-      setImage(imageUri);
     } catch (error) {
       console.error(error);
     }
@@ -326,12 +326,14 @@ export default function AvatarProfile({
           close={closeMenu}
           onPress={() => changeAvatar(2)}
         />
-        <MenuButton
-          text={t("menu.remove", { ns: "components" })}
-          icon="image-off"
-          close={closeMenu}
-          onPress={() => changeAvatar(3)}
-        />
+        {image && image !== "" ? (
+          <MenuButton
+            text={t("menu.remove", { ns: "components" })}
+            icon="image-off"
+            close={closeMenu}
+            onPress={() => changeAvatar(3)}
+          />
+        ) : null}
       </Menu>
     </View>
   );

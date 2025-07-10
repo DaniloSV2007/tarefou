@@ -35,15 +35,25 @@ import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import { useAuth } from "@/context/AuthContext";
 import Constants from "expo-constants";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  Timestamp,
+  where,
+} from "firebase/firestore";
+import { db } from "../../../../FirebaseConfig";
 
 export interface UserType {
   name: string;
   username: string;
-  birthday: Date;
+  birthday: Date | Timestamp;
   email: string;
   role: string;
   avatar: string;
-  createdAt?: Date;
+  createdAt?: Date | Timestamp;
   familyId?: string;
 }
 
@@ -63,10 +73,11 @@ export default function Members() {
   const router = useRouter();
   const { t } = useTranslation();
   const { token } = useAuth();
+  const usersCollection = collection(db, "users");
 
   const [username, setUsername] = useState("");
 
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<UserType[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [usersLength, setUsersLength] = useState(0);
 
@@ -103,14 +114,14 @@ export default function Members() {
     }
   }, [familyInfo]);
 
-  const findFamilyOwner = async (users: [], owner: string) => {
+  const findFamilyOwner = async (usersDb: any[], owner: string) => {
     if (!owner) return;
 
-    const ownerIndex = users.findIndex(
+    const ownerIndex = usersDb.findIndex(
       (user: UserType) => user.username === owner
     );
     if (ownerIndex !== -1) {
-      const newUsers = [...users];
+      const newUsers = [...usersDb];
       newUsers.splice(ownerIndex, 1);
       await AsyncStorage.setItem("numOfMembers", `${newUsers.length}`);
       setUsersLength(newUsers.length);
@@ -123,23 +134,19 @@ export default function Members() {
     const familyId = await getFamilyId();
 
     if (!familyId) {
-      await AsyncStorage.setItem("numOfMembers", "0");
+      await AsyncStorage.setItem("numOfMembersTasks", "0");
       setUsersLength(0);
       setLoadingUsers(false);
       setRefreshing(false);
       return;
     }
     try {
-      const res = await api.get("/families/" + familyId, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
-      if (res.status === 200) {
-        const { users, owner, name } = res.data;
-        findFamilyOwner(users, owner);
-        setFamilyName(name);
-        setFamilyInfo(res.data);
+      const q = query(usersCollection, where("familyId", "==", familyId));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const usersDocs = querySnapshot.docs;
+        const users = usersDocs.map((user: any) => user.data());
+        getFamilyInfo(familyId, users);
         setLoadingUsers(false);
       }
     } catch (error) {
@@ -157,25 +164,33 @@ export default function Members() {
 
     const username = await AsyncStorage.getItem("username");
     try {
-      const res = await api.get("/users/" + username, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
+      const q = query(usersCollection, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
 
-      if (res.status === 200) {
-        return res.data.familyId;
+      if (!querySnapshot.empty) {
+        const user = querySnapshot.docs[0];
+        const data = user.data();
+        return data.familyId;
       }
     } catch (error) {
       console.error(error);
     }
   };
 
-  const membersLength = async () => {
-    const lenght = await AsyncStorage.getItem("numOfMembers");
-    const lenghtNum = parseInt(lenght ?? "0");
-    if (lenghtNum) {
-      setUsersLength(lenghtNum);
+  const getFamilyInfo = async (familyId: string, users: any[]) => {
+    if (!familyId) return;
+
+    try {
+      const familyDoc = doc(db, "families", familyId);
+      const family = await getDoc(familyDoc);
+      const data = family.data();
+      if (data) {
+        setFamilyInfo({ ...data, users });
+        findFamilyOwner(users, data.owner);
+        setFamilyName(data.name);
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -192,7 +207,6 @@ export default function Members() {
 
   const reflesh = () => {
     getUsers();
-    membersLength();
   };
 
   const [state, setState] = useState({ open: false });

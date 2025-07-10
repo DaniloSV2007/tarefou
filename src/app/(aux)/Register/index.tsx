@@ -34,6 +34,7 @@ import {
   query,
   where,
   getDocs,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../../../../FirebaseConfig";
 import {
@@ -114,6 +115,7 @@ export default function Register() {
           ? familyName.trim()
           : t("register.familyName.value", { name: name.split(" ")[0] }),
         createdAt: Timestamp.now(),
+        owner: username,
       };
       try {
         const familyRef = await addDoc(familiesCollection, familyData);

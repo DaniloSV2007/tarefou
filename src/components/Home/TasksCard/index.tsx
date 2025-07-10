@@ -126,7 +126,10 @@ export default function TasksCard({
   if (isMember)
     return (
       <Card
-        style={[styles.card, { backgroundColor: theme.custom.cardColor }]}
+        style={[
+          styles.card,
+          { backgroundColor: theme.custom.cardColor, width: "90%" },
+        ]}
         mode="elevated"
       >
         <Card.Title
@@ -323,7 +326,10 @@ export default function TasksCard({
 
   return (
     <Card
-      style={[styles.card, { backgroundColor: theme.custom.cardColor }]}
+      style={[
+        styles.card,
+        { backgroundColor: theme.custom.cardColor, width: "90%" },
+      ]}
       mode="elevated"
     >
       <Card.Title

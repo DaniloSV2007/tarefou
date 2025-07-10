@@ -17,7 +17,7 @@ import {
   Avatar,
 } from "react-native-paper";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ImageView from "react-native-image-viewing";
 import React from "react";
 import { UserType } from "@/app/(logged)/admin/members";
@@ -26,6 +26,20 @@ interface Props {
   user: UserType;
   setUserInfo: (user: UserType) => void;
   setEditVisible: (state: boolean) => void;
+}
+
+type User = {
+  name: string;
+  username: string;
+  birthday: Date;
+  email: string;
+  role: string;
+  avatar?: string | null;
+  createdAt?: Date;
+};
+
+function isTimestamp(obj: any): obj is { toDate: () => Date } {
+  return obj && typeof obj.toDate === "function";
 }
 
 export default function MemberInfo({
@@ -41,13 +55,27 @@ export default function MemberInfo({
 
   const userWithoutAvatar: UserType = { ...user, avatar: "" };
 
-  const userEncoded = encodeURIComponent(JSON.stringify(userWithoutAvatar));
+  console.log(user);
+
+  // Converte os campos Timestamp para Date, se necessário
+  const memberData: User = {
+    ...userWithoutAvatar,
+    birthday: isTimestamp(userWithoutAvatar.birthday)
+      ? userWithoutAvatar.birthday.toDate()
+      : userWithoutAvatar.birthday,
+    createdAt: isTimestamp(userWithoutAvatar.createdAt)
+      ? userWithoutAvatar.createdAt.toDate()
+      : userWithoutAvatar.createdAt,
+  };
 
   const [imageArray, setImageArray] = useState<any>([{ uri: user.avatar }]);
   const [visible, setIsVisible] = useState(false);
 
-  const formatDate = (created: string | Date) => {
+  const formatDate = (created: any | Date) => {
+    if (!created) return;
     const date = new Date(created);
+    if (isNaN(date.getTime())) return;
+
     const day = date.getDate().toString().padStart(2, "0");
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear();
@@ -55,6 +83,10 @@ export default function MemberInfo({
       ? `${month}/${day}/${year}`
       : `${day}/${month}/${year}`;
   };
+
+  const createdAt = memberData.createdAt
+    ? formatDate(memberData.createdAt)
+    : "";
 
   return (
     <Card
@@ -67,7 +99,11 @@ export default function MemberInfo({
       }}
     >
       <TouchableRipple
-        onPress={() => router.push(`/member/${userEncoded}`)}
+        onPress={() =>
+          router.push(
+            `/member/${encodeURIComponent(JSON.stringify(userWithoutAvatar))}`
+          )
+        }
         borderless={false}
         rippleColor={theme.custom.ripple}
       >
@@ -134,7 +170,7 @@ export default function MemberInfo({
             <View style={{ flex: 1, flexDirection: "row" }}>
               <Text style={{ color: theme.colors.onSurfaceVariant }}>
                 {t("memberCard.memberSince", {
-                  date: formatDate(user.createdAt ?? ""),
+                  date: createdAt,
                   ns: "components",
                 })}
               </Text>

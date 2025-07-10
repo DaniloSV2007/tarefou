@@ -15,11 +15,14 @@ import api from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "@/context/AuthContext";
 import { UserType } from "./members";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../../../../FirebaseConfig";
 
 export default function Report() {
   const theme = useAppTheme();
   const { t } = useTranslation();
   const { token } = useAuth();
+  const usersCollection = collection(db, "users");
 
   const totalTasks = 20;
   const completedTasks = 15;
@@ -77,12 +80,11 @@ export default function Report() {
     }
   }, [users]);
 
-  const filterUsers = async (users: []) => {
-    const newUsers = users.filter(
-      (user: UserType) => user.role !== "FAMILY_ADMIN"
-    );
+  const filterUsers = async (users: UserType[]) => {
+    const newUsers = users
+      .filter((user: UserType) => user.role !== "FAMILY_ADMIN")
+      .map((user: UserType) => ({ ...user, tasks: [] }));
 
-    await AsyncStorage.setItem("numOfMembersTasks", `${newUsers.length}`);
     setUsers(newUsers);
   };
 
@@ -96,13 +98,11 @@ export default function Report() {
       return;
     }
     try {
-      const res = await api.get("/families/" + familyId, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.status === 200) {
-        const { users } = res.data;
+      const q = query(usersCollection, where("familyId", "==", familyId));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const usersDocs = querySnapshot.docs;
+        const users = usersDocs.map((user: any) => user.data());
         await filterUsers(users);
         setLoadingUsers(false);
       }
@@ -121,14 +121,13 @@ export default function Report() {
 
     const username = await AsyncStorage.getItem("username");
     try {
-      const res = await api.get("/users/" + username, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const q = query(usersCollection, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
 
-      if (res.status === 200) {
-        return res.data.familyId;
+      if (!querySnapshot.empty) {
+        const user = querySnapshot.docs[0];
+        const data = user.data();
+        return data.familyId;
       }
     } catch (error) {
       console.error(error);
@@ -155,7 +154,7 @@ export default function Report() {
         setUsers(newUsers);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

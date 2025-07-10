@@ -88,7 +88,6 @@ export default function Home() {
     const familyId = await getFamilyId();
 
     if (!familyId) {
-      await AsyncStorage.setItem("numOfMembersTasks", "0");
       setUsersLength(0);
       setLoadingUsers(false);
       setRefreshing(false);
@@ -173,7 +172,7 @@ export default function Home() {
         setUsers(newUsers);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -344,11 +343,18 @@ export default function Home() {
             onRefresh={onRefresh}
           />
         }
-        contentContainerStyle={{ alignItems: "center", gap: 16, flex: 1 }}
+        contentContainerStyle={{
+          gap: 16,
+          flex: 1,
+          alignItems: users.length === 0 ? "center" : undefined,
+        }}
       >
         <View style={styles.content}>
           {users.length > 0 && (
-            <CustomCard title={t("home.resume.title")}>
+            <CustomCard
+              title={t("home.resume.title")}
+              cardStyle={{ width: "90%" }}
+            >
               <CardInfo
                 tasksInfo={users.flatMap((user) =>
                   Array.isArray(user.tasks) ? user.tasks : []

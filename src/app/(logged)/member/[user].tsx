@@ -16,10 +16,18 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ImageView from "react-native-image-viewing";
 import { useEffect, useState } from "react";
 import { useLanguageContext } from "@/context/LanguageContext";
-import React from "react";
 import api from "@/services/api";
-import { tokens } from "react-native-paper/lib/typescript/styles/themes/v3/tokens";
 import { useAuth } from "@/context/AuthContext";
+import React from "react";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+import { db } from "../../../../FirebaseConfig";
 
 type User = {
   name: string;
@@ -37,25 +45,43 @@ export default function UserProfile() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { token } = useAuth();
+  const usersCollection = collection(db, "users");
 
   const params = useLocalSearchParams();
   const { languagePreference } = useLanguageContext();
 
   const userParam = Array.isArray(params.user) ? params.user[0] : params.user;
-  const memberData: User = JSON.parse(decodeURIComponent(userParam));
 
-  const [image, setImage] = useState();
+  const memberDataRaw: any = JSON.parse(decodeURIComponent(userParam));
+
+  // Converte os campos Timestamp para Date, se necessário
+  const memberData: User = {
+    ...memberDataRaw,
+    birthday: memberDataRaw.birthday?.seconds
+      ? new Date(memberDataRaw.birthday.seconds * 1000)
+      : new Date(memberDataRaw.birthday),
+    createdAt: memberDataRaw.createdAt?.seconds
+      ? new Date(memberDataRaw.createdAt.seconds * 1000)
+      : memberDataRaw.createdAt
+        ? new Date(memberDataRaw.createdAt)
+        : undefined,
+  };
+
+  const [image, setImage] = useState<string | undefined>();
   const [imageArray, setImageArray] = useState<any>([
     { uri: memberData.avatar },
   ]);
   const [visible, setIsVisible] = useState(false);
 
   const age = memberData.birthday
-    ? new Date().getFullYear() - new Date(memberData.birthday).getFullYear()
+    ? new Date().getFullYear() - memberData.birthday.getFullYear()
     : "";
 
-  const formatDate = (created: string | Date) => {
+  const formatDate = (created: any | Date) => {
+    if (!created) return;
     const date = new Date(created);
+    if (isNaN(date.getTime())) return;
+
     const day = date.getDate().toString().padStart(2, "0");
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear();
@@ -74,16 +100,16 @@ export default function UserProfile() {
 
   const getAvatarImageDatabase = async () => {
     try {
-      if (!memberData.username) throw new Error("Username not provided");
+      const q = query(
+        usersCollection,
+        where("username", "==", memberData.username)
+      );
+      const querySnapshot = await getDocs(q);
 
-      const res = await api.get("/users/" + memberData.username, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (res.status === 200 && res.data) {
-        const { avatar } = res.data;
+      if (!querySnapshot.empty) {
+        const user = querySnapshot.docs[0];
+        const data = user.data();
+        const avatar = data?.avatar;
         setImage(avatar);
         setImageArray([{ uri: avatar }]);
       }
@@ -165,44 +191,14 @@ export default function UserProfile() {
                 Email: {memberData.email}
               </Text>
               <Text style={[{ color: theme.colors.onBackground }, styles.text]}>
-                {t("members.newMember.userInfo.memberSince", { ns: "screens" })}{" "}
+                {t("members.newMember.userInfo.memberSince", {
+                  ns: "screens",
+                })}{" "}
                 {createdAt}
               </Text>
             </Card.Content>
           </Card>
 
-          {/* {memberData && (
-        <Card
-          style={[styles.card, { backgroundColor: theme.custom?.cardColor }]}
-        >
-          <Card.Title
-            title={t("screens:member.profile.statistics.title")}
-            left={(props) => <Icon {...props} source="chart-bar" />}
-            titleStyle={styles.title}
-          />
-          <Card.Content>
-            <View style={styles.infoRow}>
-              <Text variant="labelLarge">
-                {t("screens:member.profile.statistics.tasksCompleted")}:
-              </Text>
-              <Text>{memberData.statistics.tasksCompleted}</Text>
-            </View>
-            <View style={styles.infoRow}>
-              <Text variant="labelLarge">
-                {t("screens:member.profile.statistics.tasksInProgress")}:
-              </Text>
-              <Text>{memberData.statistics.tasksInProgress}</Text>
-            </View>
-
-            <View style={styles.infoRow}>
-              <Text variant="labelLarge">
-                {t("screens:member.profile.statistics.totalScore")}:
-              </Text>
-              <Text>{memberData.statistics.totalScore}</Text>
-            </View>
-          </Card.Content>
-        </Card>
-      )} */}
           <ImageView
             images={imageArray}
             imageIndex={0}
@@ -231,33 +227,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
   },
-  infoRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 8,
-  },
-  fab: {
-    position: "absolute",
-    margin: 16,
-    right: 0,
-    bottom: 0,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginTop: 16,
-    marginHorizontal: "auto",
-  },
+  content: { gap: 8, paddingBottom: 24 },
   card: {
     borderRadius: 32,
     paddingBottom: 16,
     marginVertical: 16,
     width: "95%",
-  },
-  content: { gap: 8, paddingBottom: 24 },
-  subtitle: {
-    fontSize: 18,
   },
   avatar: {
     width: "100%",
@@ -273,5 +248,11 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginTop: 16,
+    marginHorizontal: "auto",
   },
 });

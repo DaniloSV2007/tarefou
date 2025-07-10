@@ -31,6 +31,7 @@ import {
   BottomSheetModal,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
+import React from "react";
 
 export type Ref = BottomSheetModal;
 
@@ -49,7 +50,9 @@ const Menu = forwardRef<Ref, MenuProps>(function ProfileMenu(
 
   const { t } = useTranslation();
 
-  const snapPoints = useMemo(() => ["23%"], []);
+  const childrenCount = React.Children.toArray(children).filter(Boolean).length;
+  const multCount = childrenCount * 5;
+  const snapPoints = useMemo(() => [`${8 + multCount}%`], [childrenCount]);
 
   const renderBackdrop = useCallback(
     (props: any) => (
