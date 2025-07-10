@@ -33,7 +33,7 @@ export default function Logged() {
     }
     try {
       const res = await api.get("users/" + username, {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (res.status === 200) {
         const roleDb = res.data.role;

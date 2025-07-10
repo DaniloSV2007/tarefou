@@ -28,14 +28,16 @@ export default function FindByUsername() {
   const handlesubmit = async () => {
     setError("");
     if (username.trim() === "") {
-      setError(t("screens:members.newMember.findUsername.errors.inputEmpty"));
+      setError(
+        t("members.newMember.findUsername.errors.inputEmpty", { ns: "screens" })
+      );
       return;
     }
     try {
       const usernameNoSpace = username.trim();
       const res = await api.get("/users/" + usernameNoSpace, {
         headers: {
-          Authorization: `${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       if (res.status === 200 && res.data !== null) {
@@ -48,19 +50,23 @@ export default function FindByUsername() {
         });
       } else {
         setError(
-          t("screens:members.newMember.findUsername.errors.userNotExist")
+          t("members.newMember.findUsername.errors.userNotExist", {
+            ns: "screens",
+          })
         );
       }
     } catch (error) {
       console.error(error);
-      setError(t("screens:members.newMember.findUsername.errors.ops"));
+      setError(
+        t("members.newMember.findUsername.errors.ops", { ns: "screens" })
+      );
     }
   };
 
   return (
     <>
       <TopBar
-        title={t("screens:members.newMember.tabBar")}
+        title={t("members.newMember.tabBar", { ns: "screens" })}
         isBackButtonEnable={true}
       />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -82,11 +88,13 @@ export default function FindByUsername() {
               <Text
                 style={[{ color: theme.colors.onBackground }, styles.title]}
               >
-                {t("screens:members.newMember.findUsername.title")}
+                {t("members.newMember.findUsername.title", { ns: "screens" })}
               </Text>
               <TextInput
                 mode="outlined"
-                label={t("screens:members.newMember.findUsername.placeholder")}
+                label={t("members.newMember.findUsername.placeholder", {
+                  ns: "screens",
+                })}
                 textColor={theme.colors.onBackground}
                 cursorColor={theme.colors.onBackground}
                 style={{
@@ -106,7 +114,7 @@ export default function FindByUsername() {
                 style={{ width: "100%", alignItems: "flex-end", marginTop: 48 }}
               >
                 <Button mode="contained" onPress={handlesubmit}>
-                  {t("components:common.next")}
+                  {t("common.next", { ns: "components" })}
                 </Button>
               </View>
             </View>

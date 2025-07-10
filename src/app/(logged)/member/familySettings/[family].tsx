@@ -62,7 +62,7 @@ export default function FamilySettings() {
     try {
       const res = await api.get("/users/" + username, {
         headers: {
-          Authorization: `${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       return res.data?.avatar || "";

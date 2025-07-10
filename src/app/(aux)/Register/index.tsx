@@ -25,6 +25,21 @@ import FamilyName from "@/components/Register/FamilyName";
 import TermsOfService from "@/components/Register/TermsOfService";
 import { useDatabase } from "@/database/useDatabase";
 import api from "@/services/api";
+import {
+  addDoc,
+  collection,
+  setDoc,
+  Timestamp,
+  doc,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+import { db } from "../../../../FirebaseConfig";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 const steps = [
   "",
@@ -53,7 +68,9 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
 
   const database = useDatabase();
-  const { login } = useAuth();
+  const { login, user, auth } = useAuth();
+  const usersCollection = collection(db, "users");
+  const familiesCollection = collection(db, "families");
 
   const handleLogin = async (email: string, password: string) => {
     const data = {
@@ -62,9 +79,28 @@ export default function Register() {
     };
 
     try {
-      const res = await api.post("/login", data);
-      if (res.status === 200) {
-        login(res.data.token, res.data.role, res.data.username);
+      const user = await signInWithEmailAndPassword(auth, email, password);
+      if (user) {
+        const token = await user.user.getIdToken();
+        getUserData(token);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getUserData = async (token: string) => {
+    if (!token) return;
+
+    try {
+      const q = query(usersCollection, where("email", "==", email.trim()));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const doc = querySnapshot.docs[0];
+        const data = doc.data();
+
+        await login(token, data.role, data.username);
       }
     } catch (error) {
       console.error(error);
@@ -77,33 +113,34 @@ export default function Register() {
         name: familyName
           ? familyName.trim()
           : t("register.familyName.value", { name: name.split(" ")[0] }),
-        owner: username,
+        createdAt: Timestamp.now(),
       };
       try {
-        const resFamily = await api.post("/families", familyData);
-        if (resFamily.status !== 201) {
+        const familyRef = await addDoc(familiesCollection, familyData);
+        if (!familyRef?.id) {
           throw new Error("Error creating family");
         }
+
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        const uid = userCredential.user.uid;
 
         const data = {
           name,
           username,
           email,
-          passwordHash: password,
-          birthday,
-          createdAt: new Date().toISOString(),
-          role,
-          familyId: resFamily.data.id,
+          birthday: Timestamp.fromDate(new Date(birthday)),
+          createdAt: Timestamp.now(),
+          role: "FAMILY_ADMIN",
+          familyId: familyRef.id,
         };
 
-        const resUser = await api.post("/users", data);
-        if (resUser.status !== 201) {
-          throw new Error("Error creating user");
-        }
+        await setDoc(doc(usersCollection, uid), data);
 
-        await handleLogin(data.email, data.passwordHash);
-
-        router.replace("/");
+        handleLogin(data.email, password);
       } catch (error) {
         console.error(error);
       }
@@ -112,18 +149,16 @@ export default function Register() {
         name,
         username,
         email,
-        passwordHash: password,
-        birthday,
+        birthday: Timestamp.fromDate(new Date(birthday)),
         createdAt: new Date().toISOString(),
         role,
         familyId: null,
       };
       try {
-        const res = await api.post("/users", data);
-        if (res.status !== 201) {
-          throw new Error("Error creating user");
+        if (user) {
+          await addDoc(usersCollection, data);
+          await handleLogin(data.email, password);
         }
-        await handleLogin(data.email, data.passwordHash);
       } catch (error) {
         console.error(error);
       }

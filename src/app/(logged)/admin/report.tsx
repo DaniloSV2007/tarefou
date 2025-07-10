@@ -48,7 +48,7 @@ export default function Report() {
           users.map(async (user) => {
             try {
               const res = await api.get("/tasks/" + user.username, {
-                headers: { Authorization: token },
+                headers: { Authorization: `Bearer ${token}` },
               });
 
               if (res.status === 200) {
@@ -98,7 +98,7 @@ export default function Report() {
     try {
       const res = await api.get("/families/" + familyId, {
         headers: {
-          Authorization: `${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       if (res.status === 200) {
@@ -123,7 +123,7 @@ export default function Report() {
     try {
       const res = await api.get("/users/" + username, {
         headers: {
-          Authorization: `${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -139,7 +139,7 @@ export default function Report() {
     if (!username) throw new Error("User not found");
     try {
       const res = await api.get("/tasks/" + username, {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (res.status === 200) {

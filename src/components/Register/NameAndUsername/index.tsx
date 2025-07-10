@@ -1,12 +1,14 @@
 import { StyleSheet, TextInput, View } from "react-native";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import React from "react";
 import { Button, Text } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import { useDatabase } from "@/database/useDatabase";
 import api from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../../../../FirebaseConfig";
 interface NameAndUsernameProps {
   setPage: (page: number) => void;
   name: string;
@@ -32,6 +34,10 @@ export default function NameAndUsername({
   const database = useDatabase();
   const [success, setSuccess] = useState("");
   const { token } = useAuth();
+  const usersCollection = collection(db, "users");
+
+  const nameInput = useRef<TextInput>(null);
+  const usernameInput = useRef<TextInput>(null);
 
   useEffect(() => {
     if (name.length > 0 && name.length < 3) {
@@ -52,7 +58,7 @@ export default function NameAndUsername({
       setError("");
       setSuccess("");
       if (username.length > 2) {
-        usernameHandler(username);
+        usernameHandler(username.trim());
       }
     }, 2000); // espera 800ms após parar de digitar
 
@@ -67,11 +73,10 @@ export default function NameAndUsername({
     }
 
     try {
-      const res = await api.get(`/users/${text}/exists`);
+      const q = query(usersCollection, where("username", "==", text));
+      const querySnapshot = await getDocs(q);
 
-      const usernameExists = res.data.username;
-      console.log(usernameExists);
-      if (res.status === 200 && usernameExists && usernameExists !== "") {
+      if (!querySnapshot.empty) {
         setError(t("register.error.usernameExists"));
       } else {
         setSuccess(t("register.nameAndUsername.usernameAvailable"));
@@ -103,6 +108,9 @@ export default function NameAndUsername({
         onBlur={() => setIsFocusedName(false)}
         value={name}
         onChangeText={nameHandler}
+        ref={nameInput}
+        returnKeyType="next"
+        onSubmitEditing={() => usernameInput.current?.focus()}
       />
       <View>
         <Text
@@ -137,6 +145,18 @@ export default function NameAndUsername({
           value={username}
           onChangeText={(text) => setUsername(text)}
           autoCapitalize="none"
+          ref={usernameInput}
+          returnKeyType="done"
+          onSubmitEditing={() => {
+            if (
+              name.length < 3 ||
+              username.length < 3 ||
+              error !== "" ||
+              success === ""
+            ) {
+              setPage(3);
+            }
+          }}
         />
       </View>
 

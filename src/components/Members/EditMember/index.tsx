@@ -50,7 +50,7 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
     try {
       const res = await api.put(`/users/${user?.username}`, data, {
         headers: {
-          Authorization: `${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -72,7 +72,7 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
     try {
       const res = await api.put(`/users/${user?.username}`, data, {
         headers: {
-          Authorization: `${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 

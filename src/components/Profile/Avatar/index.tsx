@@ -13,6 +13,15 @@ import { useAuth } from "@/context/AuthContext";
 import Menu from "../Menu";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import MenuButton from "../Menu/MenuButton";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import { db } from "../../../../FirebaseConfig";
 
 export default function AvatarProfile({
   setImageProp,
@@ -22,8 +31,8 @@ export default function AvatarProfile({
   const theme = useAppTheme();
   const { t } = useTranslation();
   const { isDark } = useThemeContext();
-  const { token } = useAuth();
-  const { isLoggedIn } = useAuth();
+  const { token, isLoggedIn, user } = useAuth();
+  const usersCollection = collection(db, "users");
 
   //Profile Picture
   const [image, setImage] = useState<string | null>(null);
@@ -90,18 +99,16 @@ export default function AvatarProfile({
   const getNameAndRoleDb = async () => {
     const username = await AsyncStorage.getItem("username");
     try {
-      const res = await api.get("/users/" + username, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
+      const q = query(usersCollection, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
 
-      if (res.status === 200) {
-        const { name, role } = res.data;
-        setName(name);
-        setRole(role);
-        await AsyncStorage.setItem("name", name);
-        await AsyncStorage.setItem("role", role);
+      if (!querySnapshot.empty) {
+        const user = querySnapshot.docs[0];
+        const userData = user.data();
+        setName(userData.name);
+        setRole(userData.role);
+        await AsyncStorage.setItem("name", userData.name);
+        await AsyncStorage.setItem("role", userData.role);
       }
     } catch (error) {
       console.error(error);
@@ -115,14 +122,13 @@ export default function AvatarProfile({
     if (!username) return console.error("Username not found. Are you logged?");
 
     try {
-      const res = await api.get("/users/" + username, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
+      const q = query(usersCollection, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
 
-      if (res.status === 200 && res.data) {
-        const { avatar } = res.data;
+      if (!querySnapshot.empty) {
+        const user = querySnapshot.docs[0];
+        const data = user.data();
+        const { avatar } = data;
         setImage(avatar);
       }
     } catch (error) {
@@ -150,28 +156,17 @@ export default function AvatarProfile({
       return;
     }
 
-    const formData = new FormData();
-    if (username) {
-      formData.append("username", username);
-    }
-    if (imageUri && imageUri !== null) {
-      formData.append("avatar", {
-        uri: imageUri,
-        name: "avatar.jpg",
-        type: "image/jpeg",
-      } as any);
-    }
     try {
-      const res = await api.post("/users/uploadAvatar", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `${token}`,
-        },
-      });
-
-      if (res.status === 200) {
-        setImage(imageUri);
+      const uid = user?.uid;
+      if (!uid) {
+        console.error("User UID is undefined");
+        return;
       }
+      const userDoc = doc(db, "users", uid);
+      await updateDoc(userDoc, {
+        avatar: imageUri,
+      });
+      setImage(imageUri);
     } catch (error) {
       console.error(error);
     }

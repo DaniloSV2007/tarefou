@@ -28,6 +28,9 @@ import { useDatabase } from "@/database/useDatabase";
 import { isValidEmail } from "@/utils/isValidEmail";
 import api from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../../../../FirebaseConfig";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 export default function Login() {
   const { login } = useAuth();
@@ -45,34 +48,69 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const database = useDatabase();
+  const usersCollection = collection(db, "users");
+
+  // const handleLogin = async () => {
+  //   setIsLoading(true);
+  //   let data;
+  //   if (isValidEmail(email)) {
+  //     data = {
+  //       email: email,
+  //       password: password,
+  //     };
+  //   } else {
+  //     data = {
+  //       username: email,
+  //       password: password,
+  //     };
+  //   }
+
+  //   try {
+  //     const res = await api.post("/login", data);
+  //     if (res.status === 200) {
+  //       login(res.data.token, res.data.role, res.data.username);
+  //     } else {
+  //       setError("Email ou senha inválidos");
+  //       console.error("Login failed: ", res.data.error);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error logging in: ", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const handleLogin = async () => {
-    setIsLoading(true);
-    let data;
-    if (isValidEmail(email)) {
-      data = {
-        email: email,
-        password: password,
-      };
-    } else {
-      data = {
-        username: email,
-        password: password,
-      };
+    if (!isValidEmail(email)) {
+      setError("Email ou senha inválidos");
+      return;
     }
-
     try {
-      const res = await api.post("/login", data);
-      if (res.status === 200) {
-        login(res.data.token, res.data.role, res.data.username);
-      } else {
-        setError("Email ou senha inválidos");
-        console.error("Login failed: ", res.data.error);
+      const user = await signInWithEmailAndPassword(auth, email, password);
+      if (user) {
+        const token = await user.user.getIdToken();
+        await getUserData(token);
       }
     } catch (error) {
-      console.error("Error logging in: ", error);
-    } finally {
-      setIsLoading(false);
+      console.error(error);
+    }
+  };
+
+  const getUserData = async (token: string) => {
+    if (!token) return;
+
+    try {
+      const q = query(usersCollection, where("email", "==", email.trim()));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const doc = querySnapshot.docs[0];
+        const data = doc.data();
+
+        await login(token, data.role, data.username);
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -233,8 +271,8 @@ export default function Login() {
                           isLoading
                             ? { display: "none" }
                             : email === "" || password.length < 8
-                            ? { color: theme.colors.onSurfaceDisabled }
-                            : { color: "white" },
+                              ? { color: theme.colors.onSurfaceDisabled }
+                              : { color: "white" },
                         ]}
                       >
                         {t("login.loginButton")}

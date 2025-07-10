@@ -100,7 +100,7 @@ export default function User() {
     try {
       const res = await api.get("/users/" + username, {
         headers: {
-          Authorization: `${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -124,7 +124,7 @@ export default function User() {
     try {
       const res = await api.put("/users/" + userInfo?.username, data, {
         headers: {
-          Authorization: `${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       if (res.status === 200 && res.data.code === 200) {

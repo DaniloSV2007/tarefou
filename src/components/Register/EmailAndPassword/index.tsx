@@ -12,6 +12,8 @@ import { useTranslation } from "react-i18next";
 import { useDatabase } from "@/database/useDatabase";
 import api from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../../../../FirebaseConfig";
 
 interface EmailAndPasswordProps {
   setPage: (page: number) => void;
@@ -32,6 +34,8 @@ export default function EmailAndPassword({
   const { t } = useTranslation();
   const [isFocusedEmail, setIsFocusedEmail] = useState(false);
   const [isFocusedPassword, setIsFocusedPassword] = useState(false);
+  const { auth } = useAuth();
+  const usersCollection = collection(db, "users");
 
   const [error, setError] = useState("");
   const [linkColor, setLinkColor] = useState(theme.colors.onBackground);
@@ -52,15 +56,11 @@ export default function EmailAndPassword({
 
     console.log;
 
-    const data = {
-      email: email.trim(),
-    };
-
     try {
-      const res = await api.post("/users/email", data);
-      const existingEmail = res.data.code === 200;
+      const q = query(usersCollection, where("email", "==", email.trim()));
+      const querySnapshot = await getDocs(q);
 
-      if (existingEmail) {
+      if (!querySnapshot.empty) {
         setError(t("register.error.emailExists"));
       } else {
         setError("");

@@ -109,7 +109,7 @@ export default function ChangeFamilyName() {
   const getAvatarDatabase = async (username: string): Promise<string> => {
     try {
       const res = await api.get("/users/" + username, {
-        headers: { Authorization: `${token}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       return res.data?.avatar || "";
     } catch (error) {

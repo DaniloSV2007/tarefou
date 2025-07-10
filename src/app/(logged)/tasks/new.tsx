@@ -14,7 +14,6 @@ import {
   ActivityIndicator,
   Avatar,
   Checkbox,
-  Icon,
   List,
   Text,
   TextInput,
@@ -23,13 +22,23 @@ import { StyleSheet } from "react-native";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import { Dropdown } from "react-native-element-dropdown";
-import placeholder from "@/assets/Profile/user.png";
 import api from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserType } from "../admin/members";
 import { Family } from "../member/familySettings/[family]";
 import { useAuth } from "@/context/AuthContext";
+import { db } from "../../../../FirebaseConfig";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  doc,
+  query,
+  where,
+} from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 interface Task {
   title: string;
@@ -46,6 +55,8 @@ export default function NewTask() {
   const router = useRouter();
   const { token } = useAuth();
   const { t } = useTranslation();
+  const auth = getAuth();
+  const user = auth.currentUser;
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -160,7 +171,7 @@ export default function NewTask() {
     try {
       const res = await api.get("/families/" + familyId, {
         headers: {
-          Authorization: `${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       if (res.status === 200) {
@@ -183,7 +194,7 @@ export default function NewTask() {
     try {
       const res = await api.get("/users/" + username, {
         headers: {
-          Authorization: `${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -198,7 +209,7 @@ export default function NewTask() {
   const getAvatarDatabase = async (username: string): Promise<string> => {
     try {
       const res = await api.get("/users/" + username, {
-        headers: { Authorization: `${token}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       return res.data?.avatar || "";
     } catch (error) {

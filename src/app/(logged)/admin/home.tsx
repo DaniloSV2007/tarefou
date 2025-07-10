@@ -16,6 +16,15 @@ import api from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
 import { Task } from "../tasks/[tasks]";
 import { Text } from "react-native-paper";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+import { db } from "../../../../FirebaseConfig";
 
 export interface UserTasksType extends UserType {
   tasks: Task[];
@@ -25,7 +34,8 @@ export default function Home() {
   const router = useRouter();
   const theme = useAppTheme();
   const { t } = useTranslation();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const usersCollection = collection(db, "users");
 
   const [username, setUsername] = useState("");
 
@@ -63,10 +73,10 @@ export default function Home() {
     }
   }, [familyInfo]);
 
-  const filterUsers = async (users: []) => {
-    const newUsers = users.filter(
-      (user: UserType) => user.role !== "FAMILY_ADMIN"
-    );
+  const filterUsers = async (users: UserType[]) => {
+    const newUsers = users
+      .filter((user: UserType) => user.role !== "FAMILY_ADMIN")
+      .map((user: UserType) => ({ ...user, tasks: [] }));
 
     await AsyncStorage.setItem("numOfMembersTasks", `${newUsers.length}`);
     setUsersLength(newUsers.length);
@@ -85,15 +95,13 @@ export default function Home() {
       return;
     }
     try {
-      const res = await api.get("/families/" + familyId, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
-      if (res.status === 200) {
-        const { users } = res.data;
+      const q = query(usersCollection, where("familyId", "==", familyId));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const usersDocs = querySnapshot.docs;
+        const users = usersDocs.map((user: any) => user.data());
         await filterUsers(users);
-        setFamilyInfo(res.data);
+        getFamilyInfo(familyId);
         setLoadingUsers(false);
       }
     } catch (error) {
@@ -111,15 +119,27 @@ export default function Home() {
 
     const username = await AsyncStorage.getItem("username");
     try {
-      const res = await api.get("/users/" + username, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
+      const q = query(usersCollection, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
 
-      if (res.status === 200) {
-        return res.data.familyId;
+      if (!querySnapshot.empty) {
+        const user = querySnapshot.docs[0];
+        const data = user.data();
+        return data.familyId;
       }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getFamilyInfo = async (familyId: string) => {
+    if (!familyId) return;
+
+    try {
+      const familyDoc = doc(db, "families", familyId);
+      const family = await getDoc(familyDoc);
+
+      setFamilyInfo(family.data);
     } catch (error) {
       console.error(error);
     }
@@ -324,16 +344,19 @@ export default function Home() {
             onRefresh={onRefresh}
           />
         }
+        contentContainerStyle={{ alignItems: "center", gap: 16, flex: 1 }}
       >
         <View style={styles.content}>
-          <CustomCard title={t("home.resume.title")}>
-            <CardInfo
-              tasksInfo={users.flatMap((user) =>
-                Array.isArray(user.tasks) ? user.tasks : []
-              )}
-              reflesh={onRefresh}
-            />
-          </CustomCard>
+          {users.length > 0 && (
+            <CustomCard title={t("home.resume.title")}>
+              <CardInfo
+                tasksInfo={users.flatMap((user) =>
+                  Array.isArray(user.tasks) ? user.tasks : []
+                )}
+                reflesh={onRefresh}
+              />
+            </CustomCard>
+          )}
 
           {users.length > 0 ? (
             users

@@ -83,7 +83,7 @@ export default function QRCode() {
     try {
       const res = await api.get("/users/" + username, {
         headers: {
-          Authorization: `${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 

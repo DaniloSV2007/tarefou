@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import { Auth, getAuth, User } from "firebase/auth";
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -9,6 +10,8 @@ interface AuthContextType {
   logout: () => Promise<void>;
   isLoading: boolean;
   error: string | null;
+  auth: Auth;
+  user: User | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,6 +22,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const auth = getAuth();
+  const user = auth.currentUser;
 
   const loadAuthState = async () => {
     try {
@@ -83,7 +88,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, token, login, logout, isLoading, error }}
+      value={{ isLoggedIn, token, login, logout, isLoading, error, auth, user }}
     >
       {children}
     </AuthContext.Provider>

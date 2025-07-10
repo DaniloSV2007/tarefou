@@ -78,7 +78,7 @@ export default function UserProfile() {
 
       const res = await api.get("/users/" + memberData.username, {
         headers: {
-          Authorization: `${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
