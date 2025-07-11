@@ -55,8 +55,6 @@ export default function MemberInfo({
 
   const userWithoutAvatar: UserType = { ...user, avatar: "" };
 
-  console.log(user);
-
   // Converte os campos Timestamp para Date, se necessário
   const memberData: User = {
     ...userWithoutAvatar,

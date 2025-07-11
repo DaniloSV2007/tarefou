@@ -33,7 +33,7 @@ export default function Home() {
   const router = useRouter();
   const theme = useAppTheme();
   const { t } = useTranslation();
-  const { token, user } = useAuth();
+  const { token } = useAuth();
   const usersCollection = collection(db, "users");
 
   const [username, setUsername] = useState("");
@@ -64,9 +64,9 @@ export default function Home() {
           avatar: "",
         })),
       };
-      users.map((user) => {
-        getUsersTasks(user.username);
-      });
+      // users.map((user) => {
+      //   getUsersTasks(user.username);
+      // });
 
       setFamilyEncoded(encodeURIComponent(JSON.stringify(familyInfoNoAvatars)));
     }
@@ -126,7 +126,7 @@ export default function Home() {
         return data.familyId;
       }
     } catch (error) {
-      console.error(error);
+      console.error("getFamilyId Error:", error);
     }
   };
 

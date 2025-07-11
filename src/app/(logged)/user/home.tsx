@@ -47,7 +47,7 @@ export default function UserHome() {
 
       try {
         const res = await api.get("/users/" + username, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: token },
         });
         if (res.status === 200) {
           setFullName(res.data.name);
@@ -71,7 +71,7 @@ export default function UserHome() {
 
     try {
       const res = await api.get("/tasks/" + username, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: token },
       });
       if (res.status === 200) {
         const tasksWithParsedDeadline: Task[] = res.data.map((task: Task) => ({

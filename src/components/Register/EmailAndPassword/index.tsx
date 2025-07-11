@@ -34,7 +34,6 @@ export default function EmailAndPassword({
   const { t } = useTranslation();
   const [isFocusedEmail, setIsFocusedEmail] = useState(false);
   const [isFocusedPassword, setIsFocusedPassword] = useState(false);
-  const { auth } = useAuth();
   const usersCollection = collection(db, "users");
 
   const [error, setError] = useState("");
@@ -53,8 +52,6 @@ export default function EmailAndPassword({
       setError(t("register.error.invalidEmail"));
       return;
     }
-
-    console.log;
 
     try {
       const q = query(usersCollection, where("email", "==", email.trim()));

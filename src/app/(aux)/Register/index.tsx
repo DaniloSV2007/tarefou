@@ -24,7 +24,6 @@ import RoleSelection from "@/components/Register/RoleSelection";
 import FamilyName from "@/components/Register/FamilyName";
 import TermsOfService from "@/components/Register/TermsOfService";
 import { useDatabase } from "@/database/useDatabase";
-import api from "@/services/api";
 import {
   addDoc,
   collection,
@@ -39,6 +38,7 @@ import {
 import { db } from "../../../../FirebaseConfig";
 import {
   createUserWithEmailAndPassword,
+  getAuth,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 
@@ -69,9 +69,12 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
 
   const database = useDatabase();
-  const { login, user, auth } = useAuth();
+  const { login } = useAuth();
   const usersCollection = collection(db, "users");
   const familiesCollection = collection(db, "families");
+
+  const auth = getAuth();
+  const user = auth.currentUser;
 
   const handleLogin = async (email: string, password: string) => {
     const data = {

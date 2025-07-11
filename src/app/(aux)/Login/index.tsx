@@ -81,8 +81,10 @@ export default function Login() {
   // };
 
   const handleLogin = async () => {
+    setIsLoading(true);
     if (!isValidEmail(email)) {
       setError("Email ou senha inválidos");
+      setIsLoading(false);
       return;
     }
     try {
@@ -93,6 +95,8 @@ export default function Login() {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -250,6 +254,7 @@ export default function Login() {
                   </Text>
 
                   <Pressable
+                    android_ripple={{ color: theme.custom.ripple }}
                     onPress={handleLogin}
                     style={[
                       styles.loginButton,
