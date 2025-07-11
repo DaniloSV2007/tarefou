@@ -23,6 +23,7 @@ export default function Report() {
   const { t } = useTranslation();
   const { token } = useAuth();
   const usersCollection = collection(db, "users");
+  const tasksCollection = collection(db, "tasks");
 
   const totalTasks = 20;
   const completedTasks = 15;
@@ -43,40 +44,13 @@ export default function Report() {
   }, []);
 
   useEffect(() => {
-    if (users.some((user) => !user.tasks || user.tasks.length === 0)) {
-      const fetchTasks = async () => {
-        if (!users || users.length === 0) return;
-
-        //   const updatedUsers: UserTasksType[] = await Promise.all(
-        //     users.map(async (user) => {
-        //       try {
-        //         const res = await api.get("/tasks/" + user.username, {
-        //           headers: { Authorization: `Bearer ${token}` },
-        //         });
-
-        //         if (res.status === 200) {
-        //           const tasksWithDefaults: Task[] = res.data.map(
-        //             (task: Task) => ({
-        //               ...task,
-        //               deadline: task.deadline
-        //                 ? new Date(task.deadline)
-        //                 : undefined,
-        //             })
-        //           );
-        //           return { ...user, tasks: tasksWithDefaults };
-        //         }
-        //       } catch (error) {
-        //         console.log("Erro ao buscar tarefas de", user.username, error);
-        //       }
-        //       return user;
-        //     })
-        //   );
-
-        //   setUsers(updatedUsers);
-        //   setTotalMembersInfo(updatedUsers.map((u) => u.tasks || []).flat());
-      };
-
-      fetchTasks();
+    if (
+      users.length > 0 &&
+      users.some((user) => !user.tasks || user.tasks.length === 0)
+    ) {
+      users.forEach((user) => {
+        getUsersTasks(user.username);
+      });
     }
   }, [users]);
 
@@ -137,15 +111,33 @@ export default function Report() {
   const getUsersTasks = async (username: string) => {
     if (!username) throw new Error("User not found");
     try {
-      const res = await api.get("/tasks/" + username, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const q = query(usersCollection, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
 
-      if (res.status === 200) {
-        const tasksWithDefaults: Task[] = res.data.map((task: Task) => ({
-          ...task,
-          deadline: task.deadline ? new Date(task.deadline) : undefined,
-        }));
+      if (!querySnapshot.empty) {
+        const userId = querySnapshot.docs[0].id;
+
+        const taskQ = query(tasksCollection, where("userId", "==", userId));
+        const tasksQuerySnapshot = await getDocs(taskQ);
+        if (querySnapshot.empty) return;
+
+        const tasks = tasksQuerySnapshot.docs;
+
+        console.log(tasks);
+
+        const tasksWithDefaults: Task[] = tasks.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            title: data.title ?? "",
+            userId: data.userId ?? "",
+            description: data.description,
+            createdAt: data.createdAt ? new Date(data.createdAt) : undefined,
+            updatedAt: data.updatedAt ? new Date(data.updatedAt) : undefined,
+            deadline: data.deadline ? new Date(data.deadline) : undefined,
+            isCompleted: data.isCompleted ?? false,
+          };
+        });
         const newUsers = users.map((user) =>
           user.username === username
             ? { ...user, tasks: tasksWithDefaults }

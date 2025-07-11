@@ -68,7 +68,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = async () => {
     try {
       setIsLoading(true);
+      const versionBackup = await AsyncStorage.getItem("updateOtaNumber");
       await AsyncStorage.clear();
+      await AsyncStorage.setItem("updateOtaNumber", versionBackup ?? "");
       setToken(null);
       setIsLoggedIn(false);
       setError(null);

@@ -26,7 +26,7 @@ import { db } from "../../../../FirebaseConfig";
 import TasksCard from "@/components/Home/TasksCard";
 
 export interface UserTasksType extends UserType {
-  tasks: Task[];
+  tasks?: Task[];
 }
 
 export default function Home() {
@@ -35,6 +35,7 @@ export default function Home() {
   const { t } = useTranslation();
   const { token } = useAuth();
   const usersCollection = collection(db, "users");
+  const tasksCollection = collection(db, "tasks");
 
   const [username, setUsername] = useState("");
 
@@ -56,21 +57,24 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (familyInfo) {
+    if (
+      users.length > 0 &&
+      users.some((user) => !user.tasks || user.tasks.length === 0)
+    ) {
       const familyInfoNoAvatars = {
         ...familyInfo,
-        users: familyInfo.users.map((user: UserType) => ({
+        users: users.map((user: UserType) => ({
           ...user,
           avatar: "",
         })),
       };
-      // users.map((user) => {
-      //   getUsersTasks(user.username);
-      // });
+      users.map((user) => {
+        getUsersTasks(user.username);
+      });
 
       setFamilyEncoded(encodeURIComponent(JSON.stringify(familyInfoNoAvatars)));
     }
-  }, [familyInfo]);
+  }, [users]);
 
   const filterUsers = async (users: UserType[]) => {
     const newUsers = users
@@ -154,15 +158,33 @@ export default function Home() {
   const getUsersTasks = async (username: string) => {
     if (!username) throw new Error("User not found");
     try {
-      const res = await api.get("/tasks/" + username, {
-        headers: { Authorization: token },
-      });
+      const q = query(usersCollection, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
 
-      if (res.status === 200) {
-        const tasksWithDefaults: Task[] = res.data.map((task: Task) => ({
-          ...task,
-          deadline: task.deadline ? new Date(task.deadline) : undefined,
-        }));
+      if (!querySnapshot.empty) {
+        const userId = querySnapshot.docs[0].id;
+
+        const taskQ = query(tasksCollection, where("userId", "==", userId));
+        const tasksQuerySnapshot = await getDocs(taskQ);
+        if (querySnapshot.empty) return;
+
+        const tasks = tasksQuerySnapshot.docs;
+
+        console.log(tasks);
+
+        const tasksWithDefaults: Task[] = tasks.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            title: data.title ?? "",
+            userId: data.userId ?? "",
+            description: data.description,
+            createdAt: data.createdAt ? new Date(data.createdAt) : undefined,
+            updatedAt: data.updatedAt ? new Date(data.updatedAt) : undefined,
+            deadline: data.deadline ? new Date(data.deadline) : undefined,
+            isCompleted: data.isCompleted ?? false,
+          };
+        });
         const newUsers = users.map((user) =>
           user.username === username
             ? { ...user, tasks: tasksWithDefaults }
@@ -190,53 +212,6 @@ export default function Home() {
     getUsers();
     membersLength();
   };
-
-  // const calculateStats = () => {
-  //   const totalTasks = members.reduce(
-  //     (acc, member) => acc + member.tasks.length,
-  //     0
-  //   );
-  //   const completedTasks = members.reduce(
-  //     (acc, member) => acc + member.tasks.filter((task) => task.status).length,
-  //     0
-  //   );
-  //   const completionRate = totalTasks > 0 ? completedTasks / totalTasks : 0;
-
-  //   const weekTotalTasks = 45;
-  //   const weekCompletedTasks = 22;
-  //   const weekCompletionRate =
-  //     weekTotalTasks > 0 ? weekCompletedTasks / weekTotalTasks : 0;
-
-  //   return {
-  //     today: {
-  //       completedTasks,
-  //       totalCompletedTasks: totalTasks,
-  //       completionRate,
-  //     },
-  //     week: {
-  //       completedTasks: weekCompletedTasks,
-  //       totalCompletedTasks: weekTotalTasks,
-  //       completionRate: weekCompletionRate,
-  //     },
-  //   };
-  // };
-
-  // const stats = calculateStats();
-
-  // const handleUpdateTasks = (memberIndex: number, updatedTasks: Task[]) => {
-  //   try {
-  //     const newMembers = [...members];
-  //     if (memberIndex >= 0 && memberIndex < newMembers.length) {
-  //       newMembers[memberIndex] = {
-  //         ...newMembers[memberIndex],
-  //         tasks: updatedTasks,
-  //       };
-  //       setMembers(newMembers);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error updating tasks:", error);
-  //   }
-  // };
 
   const handleAddTask = () => {
     try {
@@ -370,7 +345,7 @@ export default function Home() {
                 <TasksCard
                   key={user.username}
                   name={user.name}
-                  tasks={user.tasks}
+                  tasks={user.tasks ?? []}
                 />
               ))
           ) : (

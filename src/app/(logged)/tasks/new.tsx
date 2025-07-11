@@ -37,8 +37,10 @@ import {
   doc,
   query,
   where,
+  getDoc,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { createdAt } from "expo-updates";
 
 interface Task {
   title: string;
@@ -53,10 +55,9 @@ interface Task {
 export default function NewTask() {
   const theme = useAppTheme();
   const router = useRouter();
-  const { token } = useAuth();
   const { t } = useTranslation();
-  const auth = getAuth();
-  const user = auth.currentUser;
+  const usersCollection = collection(db, "users");
+  const tasksCollection = collection(db, "tasks");
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -72,7 +73,7 @@ export default function NewTask() {
   const [focus, setFocus] = useState(false);
   const [selectText, setSelectText] = useState<any>([]);
 
-  const [familyInfo, setFamilyInfo] = useState<Family | undefined>();
+  const [familyInfo, setFamilyInfo] = useState<any>();
   const [users, setUsers] = useState<UserType[] | undefined>();
   const [avatarsFetched, setAvatarsFetched] = useState(false);
 
@@ -125,7 +126,7 @@ export default function NewTask() {
 
   useEffect(() => {
     const fetchAvatars = async () => {
-      if (!avatarsFetched && familyInfo?.users) {
+      if (!avatarsFetched && users) {
         const updatedUsers = await Promise.all(
           (users ?? []).map(async (user) => {
             const avatar = await getAvatarDatabase(user.username);
@@ -143,12 +144,12 @@ export default function NewTask() {
       }
     };
     fetchAvatars();
-  }, [familyInfo, avatarsFetched]);
+  }, [users, avatarsFetched]);
 
-  const filterUsers = async (users: []) => {
-    const newUsers = users.filter(
-      (user: UserType) => user.role !== "FAMILY_ADMIN"
-    );
+  const filterUsers = async (users: UserType[]) => {
+    const newUsers = users
+      .filter((user: UserType) => user.role !== "FAMILY_ADMIN")
+      .map((user: UserType) => ({ ...user, tasks: [] }));
 
     setUsers(newUsers);
   };
@@ -166,18 +167,16 @@ export default function NewTask() {
     const familyId = await getFamilyId();
 
     if (!familyId) {
-      throw new Error("Family Id not found");
+      return;
     }
     try {
-      const res = await api.get("/families/" + familyId, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.status === 200) {
-        const { users } = res.data;
+      const q = query(usersCollection, where("familyId", "==", familyId));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const usersDocs = querySnapshot.docs;
+        const users = usersDocs.map((user: any) => user.data());
         await filterUsers(users);
-        setFamilyInfo(res.data);
+        getFamilyInfo(familyId);
       }
     } catch (error) {
       console.error(error);
@@ -192,29 +191,47 @@ export default function NewTask() {
 
     const username = await AsyncStorage.getItem("username");
     try {
-      const res = await api.get("/users/" + username, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const q = query(usersCollection, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
 
-      if (res.status === 200) {
-        return res.data.familyId;
+      if (!querySnapshot.empty) {
+        const user = querySnapshot.docs[0];
+        const data = user.data();
+        return data.familyId;
       }
+    } catch (error) {
+      console.error("getFamilyId Error:", error);
+    }
+  };
+
+  const getFamilyInfo = async (familyId: string) => {
+    if (!familyId) return;
+
+    try {
+      const familyDoc = doc(db, "families", familyId);
+      const family = await getDoc(familyDoc);
+
+      setFamilyInfo(family.data);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const getAvatarDatabase = async (username: string): Promise<string> => {
+  const getAvatarDatabase = async (username: string) => {
+    if (!username) return console.error("Username not found. Are you logged?");
+
     try {
-      const res = await api.get("/users/" + username, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      return res.data?.avatar || "";
+      const q = query(usersCollection, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const user = querySnapshot.docs[0];
+        const data = user.data();
+        const { avatar } = data;
+        return avatar;
+      }
     } catch (error) {
       console.error(error);
-      return "";
     }
   };
 
@@ -225,21 +242,26 @@ export default function NewTask() {
       return;
     }
     for (let i = 0; i < usersSelected.length; i++) {
-      const dataTask = {
-        username: usersSelected[i].username,
-        task: {
-          title,
-          description,
-          deadline: deadline,
-        },
-      };
       try {
-        const res = await api.post("/tasks/", dataTask, {
-          headers: { Authorization: token },
-        });
-        if (res.status === 201) {
+        const qUser = query(
+          usersCollection,
+          where("username", "==", usersSelected[i].username)
+        );
+        const userQuerySnapshot = await getDocs(qUser);
+        if (!userQuerySnapshot.empty) {
+          const userId = userQuerySnapshot.docs[0].id;
+          const dataTask = {
+            userId,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            title,
+            description,
+            deadline: deadline !== new Date() && deadline,
+          };
+          await addDoc(tasksCollection, dataTask);
+
           setLoading(false);
-          router.back();
+          router.replace("/admin/home");
         }
       } catch (error) {
         console.error(error);
@@ -343,6 +365,7 @@ export default function NewTask() {
                 }}
               >
                 <List.Accordion
+                  expanded={(users?.length ?? 0) > 0 ? undefined : false}
                   title={
                     usersSelected.length > 0
                       ? t("home.newTask.selectedNumber", {
