@@ -18,7 +18,6 @@ type Props = {
 export default function EditMember({ user, setEditVisible, reflesh }: Props) {
   const theme = useAppTheme();
   const { t } = useTranslation();
-  const { token } = useAuth();
 
   const [menuVisible, setMenuVisible] = useState(false);
   const [selectedRole, setSelectedRole] = useState(user?.role ?? "MEMBER");
@@ -48,16 +47,8 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
     const data = { role: newRole };
 
     try {
-      const res = await api.put(`/users/${user?.username}`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (res.status === 200) {
-        setSelectedRole(newRole);
-        setChanged(true);
-      }
+      setSelectedRole(newRole);
+      setChanged(true);
     } catch (error) {
       console.error("Erro ao mudar cargo:", error);
     } finally {
@@ -70,16 +61,8 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
     const data = { familyId: null };
 
     try {
-      const res = await api.put(`/users/${user?.username}`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (res.data.code === 200) {
-        reflesh();
-        setEditVisible(false);
-      }
+      reflesh();
+      setEditVisible(false);
     } catch (error) {
       console.error("Erro ao remover usuário da família:", error);
     } finally {

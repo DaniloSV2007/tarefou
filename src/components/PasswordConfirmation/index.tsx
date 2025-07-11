@@ -31,7 +31,6 @@ export default function PasswordConfirmation({
   onPasswordConfirmation,
 }: Props) {
   const theme = useAppTheme();
-  const { token } = useAuth();
   const { t } = useTranslation();
   const router = useRouter();
 

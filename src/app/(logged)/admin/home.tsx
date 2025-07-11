@@ -4,8 +4,6 @@ import { ActivityIndicator, Card, FAB, Icon } from "react-native-paper";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import React, { useCallback, useEffect, useState } from "react";
 import TopBar from "@/components/TopBar";
-import ResumeCard from "@/components/Home/ResumeCard";
-import TasksCard from "@/components/Home/TasksCard";
 import { useTranslation } from "react-i18next";
 import ContentLoader, { Circle, List, Rect } from "react-content-loader/native";
 import CustomCard from "@/components/CustomCard";
@@ -25,6 +23,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../../../../FirebaseConfig";
+import TasksCard from "@/components/Home/TasksCard";
 
 export interface UserTasksType extends UserType {
   tasks: Task[];

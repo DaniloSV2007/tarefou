@@ -32,13 +32,13 @@ export default function Logged() {
       return;
     }
     try {
-      const res = await api.get("users/" + username, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.status === 200) {
-        const roleDb = res.data.role;
-        roleDb !== role && (await AsyncStorage.setItem("userRole", roleDb));
-      }
+      // const res = await api.get("users/" + username, {
+      //   headers: { Authorization: `Bearer ${token}` },
+      // });
+      // if (res.status === 200) {
+      //   const roleDb = res.data.role;
+      //   roleDb !== role && (await AsyncStorage.setItem("userRole", roleDb));
+      // }
     } catch (error) {
       console.error(error);
     }
