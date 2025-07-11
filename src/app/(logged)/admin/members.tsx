@@ -166,7 +166,7 @@ export default function Members() {
       const family = await getDoc(familyDoc);
       const data = family.data();
       if (data) {
-        setFamilyInfo({ ...data, users });
+        setFamilyInfo({ ...data, id: familyDoc.id, users });
         findFamilyOwner(users, data.owner);
         setFamilyName(data.name);
       }

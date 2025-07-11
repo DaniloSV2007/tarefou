@@ -29,6 +29,15 @@ import { UserType } from "@/app/(logged)/admin/members";
 import { Dropdown } from "react-native-element-dropdown";
 import placeholder from "@/assets/Profile/user.png";
 import PasswordConfirmation from "@/components/PasswordConfirmation";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import { db } from "../../../../../../FirebaseConfig";
 
 export default function ChangeFamilyName() {
   const theme = useAppTheme();
@@ -37,8 +46,7 @@ export default function ChangeFamilyName() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams();
-  const familyName = params.familyName;
-  const familyId = params.familyId;
+  const usersCollection = collection(db, "users");
 
   const [text, setText] = useState<any>([]);
   const [updating, setUpdating] = useState(false);
@@ -106,12 +114,16 @@ export default function ChangeFamilyName() {
     }
   }, [familyInfo]);
 
-  const getAvatarDatabase = async (username: string): Promise<string> => {
+  const getAvatarDatabase = async (username: string) => {
     try {
-      const res = await api.get("/users/" + username, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      return res.data?.avatar || "";
+      const q = query(usersCollection, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const user = querySnapshot.docs[0];
+        const data = user.data();
+        return data?.avatar;
+      }
     } catch (error) {
       console.error(error);
       return "";
@@ -121,18 +133,12 @@ export default function ChangeFamilyName() {
   const handleChangeFamilyOwner = async () => {
     if (!text.value) return;
     try {
-      const res = await api.put(
-        "/families/" + familyInfo?.id,
-        { owner: text.value.trim() },
-        {
-          headers: {
-            Authorization: `${token}`,
-          },
-        }
-      );
-      if (res.status === 200) {
-        router.replace("/admin/members");
-      }
+      console.log;
+      if (!familyInfo?.id) return;
+      const familyDoc = doc(db, "families", familyInfo?.id);
+      await updateDoc(familyDoc, { owner: text.value.trim() });
+
+      router.replace("/admin/members");
     } catch (error) {
       console.error(error);
     } finally {
@@ -283,7 +289,7 @@ export default function ChangeFamilyName() {
               disabled={!text || !text.value}
               style={{
                 backgroundColor:
-                  text && text.value !== familyName
+                  text && text.value !== familyInfo?.name
                     ? theme.colors.primary
                     : theme.colors.surfaceDisabled,
                 paddingVertical: 8,

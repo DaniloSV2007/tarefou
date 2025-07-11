@@ -14,6 +14,13 @@ import { useRouter } from "expo-router";
 import { Portal, Dialog, Text, TextInput } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "@/services/api";
+import {
+  EmailAuthProvider,
+  getAuth,
+  reauthenticateWithCredential,
+} from "firebase/auth";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../../../FirebaseConfig";
 
 interface Props {
   visible: boolean;
@@ -33,6 +40,7 @@ export default function PasswordConfirmation({
   const theme = useAppTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const usersCollection = collection(db, "users");
 
   const [focused, setIsFocused] = useState(false);
   const [password, setPassword] = useState("");
@@ -44,12 +52,23 @@ export default function PasswordConfirmation({
     const username = await AsyncStorage.getItem("username");
     if (!username) throw new Error("Username not found");
     try {
-      const res = await api.post("/login/verify", {
-        username,
-        password,
-      });
-      if (res.status === 200) {
-        onPasswordConfirmation();
+      const auth = getAuth();
+      const user = auth.currentUser;
+      const q = query(usersCollection, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const email = querySnapshot.docs[0].data().email;
+        if (user && password) {
+          const credential = EmailAuthProvider.credential(email, password);
+          const authenticate = await reauthenticateWithCredential(
+            user,
+            credential
+          );
+          if ((await authenticate.user.getIdToken()) !== "") {
+            onPasswordConfirmation();
+            setUpdating(false);
+          }
+        }
       }
     } catch (error) {
       console.error(error);
@@ -93,7 +112,7 @@ export default function PasswordConfirmation({
             <Dialog.Actions style={{ justifyContent: "space-between" }}>
               <Pressable
                 onPress={() => setVisible(false)}
-                className="p-2 rounded-lg"
+                className="py-2 px-2 rounded-lg"
                 style={{
                   borderWidth: 1,
                   borderColor: theme.colors.onSurfaceDisabled,

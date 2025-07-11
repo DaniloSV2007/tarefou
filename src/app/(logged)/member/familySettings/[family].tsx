@@ -5,17 +5,12 @@ import { useTranslation } from "react-i18next";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import TopBar from "@/components/TopBar";
 import { UserType } from "../../admin/members";
-import {
-  ActivityIndicator,
-  Avatar,
-  Card,
-  Icon,
-  Text,
-} from "react-native-paper";
+import { Avatar, Card, Icon, Text } from "react-native-paper";
 import placeholder from "@/assets/Profile/user.png";
-import api from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
 import PasswordConfirmation from "@/components/PasswordConfirmation";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../../../../../FirebaseConfig";
 
 export type Family = {
   id: string;
@@ -29,7 +24,7 @@ export default function FamilySettings() {
   const { t } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams();
-  const { token } = useAuth();
+  const usersCollection = collection(db, "users");
 
   const [familyInfo, setFamilyInfo] = useState<Family | undefined>();
   const [clicked, setClicked] = useState(false);
@@ -60,12 +55,14 @@ export default function FamilySettings() {
 
   const getAvatarFromServer = async (username: string) => {
     try {
-      const res = await api.get("/users/" + username, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return res.data?.avatar || "";
+      const q = query(usersCollection, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const user = querySnapshot.docs[0];
+        const data = user.data();
+        return data?.avatar;
+      }
     } catch (error) {
       console.error(error);
       return "";

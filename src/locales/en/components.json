@@ -83,7 +83,8 @@
     "current": "Current",
     "new": "New",
     "done": "Done",
-    "username": "Username"
+    "username": "Username",
+    "close": "Close"
   },
   "menu": {
     "appInfo": "App Info",

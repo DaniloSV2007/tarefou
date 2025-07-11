@@ -75,7 +75,8 @@
     "current": "Atual",
     "new": "Novo",
     "done": "Feito",
-    "username": "Nome de Usuário"
+    "username": "Nome de Usuário",
+    "close": "Fechar"
   },
   "menu": {
     "appInfo": "Informações do App",

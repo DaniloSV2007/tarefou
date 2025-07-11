@@ -19,6 +19,8 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../../../../FirebaseConfig";
 
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 
@@ -29,8 +31,8 @@ export default function QRCode() {
   const router = useRouter();
   const isFocused = useIsFocused();
   const [isLoading, setIsLoading] = useState(false);
-  const { token } = useAuth();
   const insets = useSafeAreaInsets();
+  const usersCollection = collection(db, "users");
 
   const scale = useSharedValue(1);
 
@@ -81,16 +83,18 @@ export default function QRCode() {
       return null;
     }
     try {
-      const res = await api.get("/users/" + username, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const q = query(usersCollection, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
 
-      if (res.status === 200) {
-        const user = encodeURIComponent(JSON.stringify(res.data));
-        setIsLoading(false);
-        router.push("/member/user/" + user);
+      if (!querySnapshot.empty) {
+        const userDoc = querySnapshot.docs[0].data();
+        const user = encodeURIComponent(JSON.stringify(userDoc));
+        router.push({
+          pathname: "/member/user/[user]",
+          params: {
+            user: user.toString(),
+          },
+        });
       } else {
         setIsLoading(false);
       }

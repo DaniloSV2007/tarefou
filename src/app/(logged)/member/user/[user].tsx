@@ -22,6 +22,15 @@ import { useTranslation } from "react-i18next";
 import imagePlaceholder from "@/assets/Profile/user.png";
 import ImageView from "react-native-image-viewing";
 import { useAuth } from "@/context/AuthContext";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import { db } from "../../../../../FirebaseConfig";
 
 type User = {
   name: string;
@@ -40,10 +49,9 @@ export default function User() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const params = useLocalSearchParams<{ user: string }>();
-  const [userInfo, setUserInfo] = useState<User | null>(null);
   const { languagePreference } = useLanguageContext();
   const { t } = useTranslation();
-  const { token } = useAuth();
+  const usersCollection = collection(db, "users");
 
   const [error, setError] = useState("");
 
@@ -53,25 +61,32 @@ export default function User() {
   const [imageArray, setImageArray] = useState<any>([]);
   const [visible, setIsVisible] = useState(false);
 
-  const getUserFromParams = () => {
-    try {
-      const user = JSON.parse(decodeURIComponent(params.user));
-      setUserInfo(user);
-    } catch (error) {
-      console.error(error);
-    }
+  const userParam = Array.isArray(params.user) ? params.user[0] : params.user;
+
+  const memberDataRaw: any = JSON.parse(decodeURIComponent(userParam));
+
+  // Converte os campos Timestamp para Date, se necessário
+  const memberData: User = {
+    ...memberDataRaw,
+    birthday: memberDataRaw.birthday?.seconds
+      ? new Date(memberDataRaw.birthday.seconds * 1000)
+      : new Date(memberDataRaw.birthday),
+    createdAt: memberDataRaw.createdAt?.seconds
+      ? new Date(memberDataRaw.createdAt.seconds * 1000)
+      : memberDataRaw.createdAt
+        ? new Date(memberDataRaw.createdAt)
+        : undefined,
   };
 
-  useEffect(() => {
-    getUserFromParams();
-  }, []);
-
-  const age = userInfo?.birthday
-    ? new Date().getFullYear() - new Date(userInfo.birthday).getFullYear()
+  const age = memberData.birthday
+    ? new Date().getFullYear() - memberData.birthday.getFullYear()
     : "";
 
-  const formatDate = (created: string | Date) => {
+  const formatDate = (created: any | Date) => {
+    if (!created) return;
     const date = new Date(created);
+    if (isNaN(date.getTime())) return;
+
     const day = date.getDate().toString().padStart(2, "0");
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear();
@@ -80,59 +95,63 @@ export default function User() {
       : `${day}/${month}/${year}`;
   };
 
-  const createdAt = userInfo?.createdAt ? formatDate(userInfo.createdAt) : "";
+  const createdAt = memberData.createdAt
+    ? formatDate(memberData.createdAt)
+    : "";
 
   const handleError = (text: string) => {
     setError(text);
-    const snackbarhide = setTimeout(() => {
-      setError("");
-    }, 5000);
-    return () => {
-      clearTimeout(snackbarhide);
-    };
   };
 
   const getFamilyId = async () => {
-    const username = await AsyncStorage.getItem("username");
-    if (username === "" || username === null) {
-      return;
+    const familyId = await AsyncStorage.getItem("familyId");
+    if (familyId) {
+      return familyId;
     }
-    try {
-      const res = await api.get("/users/" + username, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
 
-      if (res.status === 200) {
-        return res.data.familyId;
+    const username = await AsyncStorage.getItem("username");
+    try {
+      const q = query(usersCollection, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const user = querySnapshot.docs[0];
+        const data = user.data();
+        return data.familyId;
       }
     } catch (error) {
-      console.error(error);
+      console.error("getFamilyId Error:", error);
     }
   };
 
   const handleAdd = async () => {
     const familyId = await getFamilyId();
 
-    if (!userInfo?.username && !familyId) {
+    if (!memberData.username && !familyId) {
       return;
     }
 
     const data = { familyId };
 
     try {
-      const res = await api.put("/users/" + userInfo?.username, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.status === 200 && res.data.code === 200) {
-        router.replace("/admin/members");
-      } else if (res.data.code === 400) {
-        handleError(
-          t("members.newMember.userInfo.alreadyExists", { ns: "screens" })
-        );
+      const q = query(
+        usersCollection,
+        where("username", "==", memberData.username)
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const user = querySnapshot.docs[0];
+        const userData = user.data();
+        if (userData.familyId === familyId) {
+          handleError(
+            t("members.newMember.userInfo.alreadyExists", { ns: "screens" })
+          );
+
+          return;
+        }
+        const userDoc = doc(db, "users", user.id);
+        await updateDoc(userDoc, data);
       }
     } catch (error) {
       console.error(error);
@@ -140,8 +159,8 @@ export default function User() {
   };
 
   useEffect(() => {
-    if (userInfo !== null) getAvatarImageDatabase();
-  }, [userInfo]);
+    getAvatarImageDatabase();
+  }, []);
 
   useEffect(() => {
     setImageArray([{ uri: image }]);
@@ -149,17 +168,18 @@ export default function User() {
 
   const getAvatarImageDatabase = async () => {
     try {
-      if (!userInfo?.username) throw new Error("Username not provided");
+      const q = query(
+        usersCollection,
+        where("username", "==", memberData.username)
+      );
+      const querySnapshot = await getDocs(q);
 
-      const res = await api.get("/users/" + userInfo?.username, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
-
-      if (res.status === 200 && res.data) {
-        const { avatar } = res.data;
+      if (!querySnapshot.empty) {
+        const user = querySnapshot.docs[0];
+        const data = user.data();
+        const avatar = data?.avatar;
         setImage(avatar);
+        setImageArray([{ uri: avatar }]);
       }
     } catch (error) {
       console.error(error);
@@ -212,7 +232,7 @@ export default function User() {
             </View>
 
             <Text style={[{ color: theme.colors.onBackground }, styles.name]}>
-              {userInfo?.name}
+              {memberData.name}
             </Text>
             <Text
               style={[
@@ -220,13 +240,13 @@ export default function User() {
                 styles.username,
               ]}
             >
-              @{userInfo?.username}
+              @{memberData.username}
             </Text>
             <Text style={[{ color: theme.colors.onBackground }, styles.text]}>
               {t("members.newMember.userInfo.age", { ns: "screens" })} {age}
             </Text>
             <Text style={[{ color: theme.colors.onBackground }, styles.text]}>
-              Email: {userInfo?.email}
+              Email: {memberData.email}
             </Text>
             <Text style={[{ color: theme.colors.onBackground }, styles.text]}>
               {t("members.newMember.userInfo.memberSince", { ns: "screens" })}{" "}
@@ -247,7 +267,15 @@ export default function User() {
           </Card.Actions>
         </Card>
 
-        <Snackbar onDismiss={() => setError("")} visible={error !== ""}>
+        <Snackbar
+          action={{
+            label: t("common.close", { ns: "components" }),
+            onPress: () => setError(""),
+          }}
+          onDismiss={() => setError("")}
+          visible={error !== ""}
+          duration={5000}
+        >
           {error}
         </Snackbar>
         <ImageView

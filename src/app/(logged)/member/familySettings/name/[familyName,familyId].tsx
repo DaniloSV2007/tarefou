@@ -32,6 +32,8 @@ import api from "@/services/api";
 import { Header } from "react-native/Libraries/NewAppScreen";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import PasswordConfirmation from "@/components/PasswordConfirmation";
+import { collection, doc, updateDoc } from "firebase/firestore";
+import { db } from "../../../../../../FirebaseConfig";
 
 export default function ChangeFamilyName() {
   const theme = useAppTheme();
@@ -42,6 +44,7 @@ export default function ChangeFamilyName() {
   const params = useLocalSearchParams();
   const familyName = params.familyName;
   const familyId = params.familyId;
+  const familiesCollection = collection(db, "families");
 
   const [text, setText] = useState(`${familyName}`);
   const [updating, setUpdating] = useState(false);
@@ -70,14 +73,11 @@ export default function ChangeFamilyName() {
       name: text.trim(),
     };
     try {
-      const res = await api.put("/families/" + familyId, data, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
-      if (res.status === 200) {
-        router.replace("/admin/members");
-      }
+      if (!familyId) return;
+      const familyDoc = doc(db, "families", String(familyId));
+      await updateDoc(familyDoc, data);
+
+      router.replace("/admin/members");
     } catch (error) {
       console.error(error);
     } finally {
@@ -93,7 +93,7 @@ export default function ChangeFamilyName() {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: theme.colors.background }}
       behavior={keyboardVisible ? "padding" : undefined}
       keyboardVerticalOffset={1}
     >

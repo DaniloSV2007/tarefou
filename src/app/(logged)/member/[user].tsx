@@ -41,10 +41,8 @@ type User = {
 
 export default function UserProfile() {
   const theme = useAppTheme();
-  const router = useRouter();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { token } = useAuth();
   const usersCollection = collection(db, "users");
 
   const params = useLocalSearchParams();
