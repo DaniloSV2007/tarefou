@@ -1,13 +1,19 @@
 import { useState } from "react";
 import { View } from "react-native";
 import { Dialog, Menu, Button, Text, Portal } from "react-native-paper";
-
 import { UserType } from "@/app/(logged)/admin/members";
-import api from "@/services/api";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@/context/AuthContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import { db } from "../../../../FirebaseConfig";
 
 type Props = {
   user: UserType | undefined;
@@ -18,6 +24,7 @@ type Props = {
 export default function EditMember({ user, setEditVisible, reflesh }: Props) {
   const theme = useAppTheme();
   const { t } = useTranslation();
+  const usersCollection = collection(db, "users");
 
   const [menuVisible, setMenuVisible] = useState(false);
   const [selectedRole, setSelectedRole] = useState(user?.role ?? "MEMBER");
@@ -41,14 +48,26 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
     roles.find((r) => r.value === selectedRole)?.label ?? "";
 
   const handleChangeRole = async (newRole: string) => {
-    if (newRole === selectedRole) return;
+    if (newRole === selectedRole || !user?.username) return;
 
     setLoading(true);
-    const data = { role: newRole };
 
     try {
-      setSelectedRole(newRole);
-      setChanged(true);
+      const q = query(usersCollection, where("username", "==", user?.username));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const userDocSnap = querySnapshot.docs[0];
+        const userRef = doc(db, "users", userDocSnap.id);
+        console.log(userDocSnap.id);
+
+        await updateDoc(userRef, { role: newRole });
+
+        setSelectedRole(newRole);
+        setChanged(true);
+      } else {
+        console.warn("Usuário não encontrado.");
+      }
     } catch (error) {
       console.error("Erro ao mudar cargo:", error);
     } finally {
@@ -61,8 +80,17 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
     const data = { familyId: null };
 
     try {
-      reflesh();
-      setEditVisible(false);
+      const q = query(usersCollection, where("username", "==", user?.username));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const userId = querySnapshot.docs[0].id;
+        const userDoc = doc(db, "users", userId);
+        await updateDoc(userDoc, data);
+
+        reflesh();
+        setEditVisible(false);
+      }
     } catch (error) {
       console.error("Erro ao remover usuário da família:", error);
     } finally {

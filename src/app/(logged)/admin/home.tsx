@@ -37,24 +37,26 @@ export default function Home() {
   const usersCollection = collection(db, "users");
   const tasksCollection = collection(db, "tasks");
 
-  const [username, setUsername] = useState("");
-
   const [loadingUsers, setLoadingUsers] = useState(false);
 
   const [familyInfo, setFamilyInfo] = useState<any>();
   const [familyEncoded, setFamilyEncoded] = useState<any>();
+
+  const [tasks, setTasks] = useState<Task[] | any>([]);
 
   const [usersLength, setUsersLength] = useState(0);
   const [users, setUsers] = useState<UserTasksType[]>([]);
 
   useEffect(() => {
     reflesh();
-    const getUsername = async () => {
-      const username = await AsyncStorage.getItem("username");
-      setUsername(username ?? "");
-    };
-    getUsername();
   }, []);
+
+  useEffect(() => {
+    if (users.map((user: UserTasksType) => user.tasks).length > 0) {
+      console.log("setted Tasks");
+      setTasks(users.flatMap((user: UserTasksType) => user.tasks));
+    }
+  }, [users]);
 
   useEffect(() => {
     if (
@@ -169,8 +171,6 @@ export default function Home() {
         if (querySnapshot.empty) return;
 
         const tasks = tasksQuerySnapshot.docs;
-
-        console.log(tasks);
 
         const tasksWithDefaults: Task[] = tasks.map((doc) => {
           const data = doc.data();
@@ -324,17 +324,12 @@ export default function Home() {
         }}
       >
         <View style={styles.content}>
-          {users.length > 0 && (
+          {users.length > 0 && tasks.length > 0 && (
             <CustomCard
               title={t("home.resume.title")}
               cardStyle={{ width: "90%" }}
             >
-              <CardInfo
-                tasksInfo={users.flatMap((user) =>
-                  Array.isArray(user.tasks) ? user.tasks : []
-                )}
-                reflesh={onRefresh}
-              />
+              <CardInfo tasksInfo={tasks} reflesh={onRefresh} />
             </CustomCard>
           )}
 

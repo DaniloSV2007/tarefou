@@ -256,6 +256,7 @@ export default function NewTask() {
             updatedAt: new Date(),
             title,
             description,
+            isCompleted: false,
             deadline: deadline !== new Date() && deadline,
           };
           await addDoc(tasksCollection, dataTask);

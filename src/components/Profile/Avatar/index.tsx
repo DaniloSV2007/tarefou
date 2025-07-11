@@ -264,12 +264,30 @@ export default function AvatarProfile({
       </View>
 
       <View
+        className="flex-row"
+        style={{
+          width: "85%",
+        }}
+      >
+        <Text
+          style={{
+            fontWeight: "bold",
+            color: theme.colors.onBackground,
+            fontSize: 28,
+            marginLeft: name?.split(" ").length === 1 ? 16 : undefined,
+          }}
+        >
+          {name}
+        </Text>
+      </View>
+
+      <View
         style={{
           flexDirection: "row",
           justifyContent: "space-around",
           alignItems: "center",
           width: "85%",
-          marginBottom: -18,
+          marginTop: -18,
         }}
       >
         <Text
@@ -294,23 +312,6 @@ export default function AvatarProfile({
           style={{ borderRadius: 12 }}
           onPress={() => setQrVisible(true)}
         />
-      </View>
-
-      <View
-        className="flex-row"
-        style={{
-          width: "85%",
-        }}
-      >
-        <Text
-          style={{
-            fontWeight: "bold",
-            color: theme.colors.onBackground,
-            fontSize: 24,
-          }}
-        >
-          {name}
-        </Text>
       </View>
 
       <Menu ref={profileMenuState} close={closeMenu}>

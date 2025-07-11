@@ -5,34 +5,19 @@ import {
   StyleSheet,
   ScrollView,
   RefreshControl,
-  Platform,
-  Alert,
   Linking,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import TopBar from "@/components/TopBar";
 import { useRouter } from "expo-router";
-import {
-  ActivityIndicator,
-  Appbar,
-  Badge,
-  Button,
-  Card,
-  FAB,
-  Menu,
-  Portal,
-} from "react-native-paper";
+import { ActivityIndicator, Appbar, FAB, Portal } from "react-native-paper";
 import { useTranslation } from "react-i18next";
-import ContentLoader, { Circle, Rect } from "react-content-loader/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import api from "@/services/api";
 import { useCallback, useEffect, useState } from "react";
 import MemberInfoLoading from "@/components/Members/MemberInfoLoading";
 import EditMember from "@/components/Members/EditMember";
 import { Text } from "react-native-paper";
-import MenuItem from "react-native-paper/lib/typescript/components/Menu/MenuItem";
 import * as Notifications from "expo-notifications";
-import * as Device from "expo-device";
 import { useAuth } from "@/context/AuthContext";
 import Constants from "expo-constants";
 import {
@@ -69,10 +54,8 @@ Notifications.setNotificationHandler({
 
 export default function Members() {
   const theme = useAppTheme();
-  const insets = useSafeAreaInsets();
   const router = useRouter();
   const { t } = useTranslation();
-  const { token } = useAuth();
   const usersCollection = collection(db, "users");
 
   const [username, setUsername] = useState("");
@@ -85,8 +68,6 @@ export default function Members() {
   const [editVisible, setEditVisible] = useState<boolean>(false);
 
   const [familyName, setFamilyName] = useState<string | null>(null);
-
-  const [menuVisible, setMenuVisible] = useState(false);
 
   const [familyInfo, setFamilyInfo] = useState<any>();
   const [familyEncoded, setFamilyEncoded] = useState<any>();

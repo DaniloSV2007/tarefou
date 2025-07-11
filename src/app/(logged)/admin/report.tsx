@@ -1,5 +1,3 @@
-import GeneralReportCard from "@/components/Report/GeneralReportCard";
-import ReportCard from "@/components/Report/ReportCard";
 import TopBar from "@/components/TopBar";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { RefreshControl, ScrollView, View } from "react-native";
@@ -11,9 +9,7 @@ import CustomCard from "@/components/CustomCard";
 import CardInfo from "@/components/Report/CardInfo";
 import { UserTasksType } from "./home";
 import { Task } from "../tasks/[tasks]";
-import api from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useAuth } from "@/context/AuthContext";
 import { UserType } from "./members";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../../../FirebaseConfig";
@@ -21,65 +17,72 @@ import { db } from "../../../../FirebaseConfig";
 export default function Report() {
   const theme = useAppTheme();
   const { t } = useTranslation();
-  const { token } = useAuth();
   const usersCollection = collection(db, "users");
   const tasksCollection = collection(db, "tasks");
-
-  const totalTasks = 20;
-  const completedTasks = 15;
-  const completionRate = completedTasks / totalTasks;
-
-  const weekCompletedTasks = 22;
-  const weekTotalTasks = 45;
-  const weekCompletionRate = weekCompletedTasks / weekTotalTasks;
 
   const [totalMembersInfo, setTotalMembersInfo] = useState<Task[]>([]);
   const [users, setUsers] = useState<UserTasksType[]>([]);
 
-  const [loadingUsers, setLoadingUsers] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     getUsers();
   }, []);
 
-  useEffect(() => {
-    if (
-      users.length > 0 &&
-      users.some((user) => !user.tasks || user.tasks.length === 0)
-    ) {
-      users.forEach((user) => {
-        getUsersTasks(user.username);
-      });
-    }
-  }, [users]);
-
-  const filterUsers = async (users: UserType[]) => {
-    const newUsers = users
-      .filter((user: UserType) => user.role !== "FAMILY_ADMIN")
-      .map((user: UserType) => ({ ...user, tasks: [] }));
-
-    setUsers(newUsers);
-  };
-
   const getUsers = async () => {
-    setLoadingUsers(true);
+    setRefreshing(true);
     const familyId = await getFamilyId();
 
     if (!familyId) {
-      setLoadingUsers(false);
       setRefreshing(false);
       return;
     }
     try {
       const q = query(usersCollection, where("familyId", "==", familyId));
       const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        const usersDocs = querySnapshot.docs;
-        const users = usersDocs.map((user: any) => user.data());
-        await filterUsers(users);
-        setLoadingUsers(false);
-      }
+      if (querySnapshot.empty) return;
+
+      const usersData: UserTasksType[] = querySnapshot.docs
+        .map((doc) => ({
+          ...(doc.data() as UserType),
+          tasks: [], // inicia vazio
+        }))
+        .filter((user) => user.role !== "FAMILY_ADMIN");
+
+      setUsers(usersData); // define usuários
+
+      // Agora busca as tasks de cada um
+      const updatedUsers = await Promise.all(
+        usersData.map(async (user) => {
+          const userId = querySnapshot.docs.find(
+            (doc) => doc.data().username === user.username
+          )?.id;
+
+          if (!userId) return user;
+
+          const taskQ = query(tasksCollection, where("userId", "==", userId));
+          const taskSnapshot = await getDocs(taskQ);
+
+          const tasks: Task[] = taskSnapshot.docs.map((doc) => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              title: data.title ?? "",
+              userId: data.userId ?? "",
+              description: data.description,
+              createdAt: data.createdAt?.toDate?.() ?? undefined,
+              updatedAt: data.updatedAt?.toDate?.() ?? undefined,
+              deadline: data.deadline?.toDate?.() ?? undefined,
+              isCompleted: data.isCompleted ?? false,
+            };
+          });
+
+          return { ...user, tasks };
+        })
+      );
+
+      setUsers(updatedUsers); // define novamente com as tarefas preenchidas
+      setTotalMembersInfo([...updatedUsers.flatMap((u) => u.tasks ?? [])]);
     } catch (error) {
       console.error(error);
     } finally {
@@ -102,48 +105,6 @@ export default function Report() {
         const user = querySnapshot.docs[0];
         const data = user.data();
         return data.familyId;
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const getUsersTasks = async (username: string) => {
-    if (!username) throw new Error("User not found");
-    try {
-      const q = query(usersCollection, where("username", "==", username));
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        const userId = querySnapshot.docs[0].id;
-
-        const taskQ = query(tasksCollection, where("userId", "==", userId));
-        const tasksQuerySnapshot = await getDocs(taskQ);
-        if (querySnapshot.empty) return;
-
-        const tasks = tasksQuerySnapshot.docs;
-
-        console.log(tasks);
-
-        const tasksWithDefaults: Task[] = tasks.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            title: data.title ?? "",
-            userId: data.userId ?? "",
-            description: data.description,
-            createdAt: data.createdAt ? new Date(data.createdAt) : undefined,
-            updatedAt: data.updatedAt ? new Date(data.updatedAt) : undefined,
-            deadline: data.deadline ? new Date(data.deadline) : undefined,
-            isCompleted: data.isCompleted ?? false,
-          };
-        });
-        const newUsers = users.map((user) =>
-          user.username === username
-            ? { ...user, tasks: tasksWithDefaults }
-            : user
-        );
-        setUsers(newUsers);
       }
     } catch (error) {
       console.error(error);
@@ -206,22 +167,25 @@ export default function Report() {
         }
       >
         <View style={{ alignItems: "center", gap: 16, paddingBottom: 12 }}>
-          {!refreshing && totalMembersInfo ? (
-            <CustomCard title={t("report.general.title", { ns: "screens" })}>
-              <View style={{ gap: 16 }}>
-                <CardInfo tasksInfo={totalMembersInfo} reflesh={getUsers} />
-                <CardInfo
-                  tasksInfo={totalMembersInfo}
-                  isWeek
-                  reflesh={getUsers}
-                />
-              </View>
-            </CustomCard>
+          {!refreshing ? (
+            totalMembersInfo.length > 0 && (
+              <CustomCard title={t("report.general.title", { ns: "screens" })}>
+                <View style={{ gap: 16 }}>
+                  <CardInfo tasksInfo={totalMembersInfo} reflesh={getUsers} />
+                  <CardInfo
+                    tasksInfo={totalMembersInfo}
+                    isWeek
+                    reflesh={getUsers}
+                  />
+                </View>
+              </CustomCard>
+            )
           ) : (
             <MyLoader />
           )}
 
-          {users.some((user) => user.tasks && user.tasks.length > 0) &&
+          {!refreshing ? (
+            users.some((user) => (user.tasks?.length ?? 0) > 0) &&
             users.map((user) => (
               <CustomCard
                 key={user.username}
@@ -238,7 +202,10 @@ export default function Report() {
                   reflesh={getUsers}
                 />
               </CustomCard>
-            ))}
+            ))
+          ) : (
+            <MyLoader />
+          )}
         </View>
       </ScrollView>
     </>
