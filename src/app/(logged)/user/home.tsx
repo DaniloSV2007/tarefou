@@ -14,14 +14,81 @@ import api from "@/services/api";
 import ContentLoader, { Circle, List, Rect } from "react-content-loader/native";
 import TasksCard from "@/components/Home/TasksCard";
 import { Task } from "../tasks/[tasks]";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../../../../FirebaseConfig";
 
 export default function UserHome() {
   const router = useRouter();
   const theme = useAppTheme();
-  const { token } = useAuth();
   const { t } = useTranslation();
+  const usersCollection = collection(db, "users");
+  const tasksCollection = collection(db, "tasks");
 
   const [refreshing, setRefreshing] = useState(true);
+
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  const [fullName, setFullName] = useState("");
+
+  useEffect(() => {
+    reflesh();
+  }, []);
+
+  const getTasks = async () => {
+    const username = await AsyncStorage.getItem("username");
+
+    try {
+      const q = query(usersCollection, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const userId = querySnapshot.docs[0].id;
+        const fullName = querySnapshot.docs[0].data().name;
+
+        setFullName(fullName);
+
+        const taskQ = query(tasksCollection, where("userId", "==", userId));
+        const tasksQuerySnapshot = await getDocs(taskQ);
+        if (querySnapshot.empty) return;
+
+        const tasks = tasksQuerySnapshot.docs;
+
+        const tasksWithDefaults: Task[] = tasks.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            title: data.title ?? "",
+            userId: data.userId ?? "",
+            description: data.description,
+            createdAt: data.createdAt
+              ? new Date(
+                  data.createdAt.seconds * 1000 +
+                    data.createdAt.nanoseconds / 1000000
+                )
+              : undefined,
+            updatedAt: data.updatedAt
+              ? new Date(
+                  data.updatedAt.seconds * 1000 +
+                    data.updatedAt.nanoseconds / 1000000
+                )
+              : undefined,
+            deadline: data.deadline
+              ? new Date(
+                  data.deadline.seconds * 1000 +
+                    data.deadline.nanoseconds / 1000000
+                )
+              : undefined,
+            isCompleted: data.isCompleted ?? false,
+          };
+        });
+
+        setTasks(tasksWithDefaults);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -36,68 +103,16 @@ export default function UserHome() {
     getTasks();
   };
 
-  const [username, setUsername] = useState("");
-  const [tasks, setTasks] = useState<Task[]>([]);
-
-  const [fullName, setFullName] = useState("");
-
-  useEffect(() => {
-    const getUserFullName = async () => {
-      const username = await AsyncStorage.getItem("username");
-
-      try {
-        const res = await api.get("/users/" + username, {
-          headers: { Authorization: token },
-        });
-        if (res.status === 200) {
-          setFullName(res.data.name);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getUsername();
-    reflesh();
-    getUserFullName();
-  }, []);
-
-  const getUsername = async () => {
-    const username = await AsyncStorage.getItem("username");
-    setUsername(username ?? "");
-  };
-
-  const getTasks = async () => {
-    const username = await AsyncStorage.getItem("username");
-
-    try {
-      const res = await api.get("/tasks/" + username, {
-        headers: { Authorization: token },
-      });
-      if (res.status === 200) {
-        const tasksWithParsedDeadline: Task[] = res.data.map((task: Task) => ({
-          ...task,
-          deadline: task.deadline ? new Date(task.deadline) : undefined,
-          isCompleted: task.isCompleted ?? false,
-        }));
-        setTasks(tasksWithParsedDeadline);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setRefreshing(false);
-    }
-  };
-
-  const goToTaksDetails = (task: Task) => {
-    const encodedTask = encodeURIComponent(JSON.stringify(task));
-    router.push({
-      pathname: "/tasks/[userFullName]/[task]",
-      params: {
-        userFullname: fullName,
-        task: encodedTask,
-      },
-    });
-  };
+  // const goToTaksDetails = (task: Task) => {
+  //   const encodedTask = encodeURIComponent(JSON.stringify(task));
+  //   router.push({
+  //     pathname: "/tasks/[userFullName]/[task]",
+  //     params: {
+  //       userFullname: fullName,
+  //       task: encodedTask,
+  //     },
+  //   });
+  // };
 
   const MyLoader = () => (
     <Card
@@ -175,12 +190,22 @@ export default function UserHome() {
         {tasks.length > 0 &&
         tasks.filter((task) => !task.isCompleted).length > 0 ? (
           <>
-            <TasksCard
-              name={fullName}
-              tasks={tasks}
-              isMember
-              deadlineCloseList
-            />
+            {tasks.filter((task: Task) => {
+              if (!task.deadline || task.isCompleted) return false;
+              const date = new Date();
+              const isCloseToDeadline = new Date(task.deadline);
+              isCloseToDeadline.setDate(isCloseToDeadline.getDate() - 2);
+              if (date >= isCloseToDeadline) return true;
+
+              return false;
+            }).length > 0 && (
+              <TasksCard
+                name={fullName}
+                tasks={tasks}
+                isMember
+                deadlineCloseList
+              />
+            )}
             <TasksCard name={fullName} tasks={tasks} isMember />
           </>
         ) : (

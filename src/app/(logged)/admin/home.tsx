@@ -179,12 +179,28 @@ export default function Home() {
             title: data.title ?? "",
             userId: data.userId ?? "",
             description: data.description,
-            createdAt: data.createdAt ? new Date(data.createdAt) : undefined,
-            updatedAt: data.updatedAt ? new Date(data.updatedAt) : undefined,
-            deadline: data.deadline ? new Date(data.deadline) : undefined,
+            createdAt: data.createdAt
+              ? new Date(
+                  data.createdAt.seconds * 1000 +
+                    data.createdAt.nanoseconds / 1000000
+                )
+              : undefined,
+            updatedAt: data.updatedAt
+              ? new Date(
+                  data.updatedAt.seconds * 1000 +
+                    data.updatedAt.nanoseconds / 1000000
+                )
+              : undefined,
+            deadline: data.deadline
+              ? new Date(
+                  data.deadline.seconds * 1000 +
+                    data.deadline.nanoseconds / 1000000
+                )
+              : undefined,
             isCompleted: data.isCompleted ?? false,
           };
         });
+
         const newUsers = users.map((user) =>
           user.username === username
             ? { ...user, tasks: tasksWithDefaults }

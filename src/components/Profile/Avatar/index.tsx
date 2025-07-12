@@ -266,10 +266,11 @@ export default function AvatarProfile({
       <View
         className="flex-row"
         style={{
-          width: "85%",
+          minWidth: "85%",
         }}
       >
         <Text
+          numberOfLines={1}
           style={{
             fontWeight: "bold",
             color: theme.colors.onBackground,
@@ -287,7 +288,7 @@ export default function AvatarProfile({
           justifyContent: "space-around",
           alignItems: "center",
           width: "85%",
-          marginTop: -18,
+          marginTop: -24,
         }}
       >
         <Text

@@ -13,6 +13,7 @@ import TopBar from "@/components/TopBar";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { Card, Icon, Searchbar } from "react-native-paper";
 import { useTranslation } from "react-i18next";
+import { Timestamp } from "firebase/firestore";
 
 export type Task = {
   id: string;
@@ -20,7 +21,7 @@ export type Task = {
   description?: string;
   createdAt?: Date;
   updatedAt?: Date;
-  deadline?: Date;
+  deadline?: Date | any;
   isCompleted?: boolean;
   userId: string;
 };

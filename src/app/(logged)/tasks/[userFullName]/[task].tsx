@@ -10,12 +10,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Task } from "../[tasks]";
 import api from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
+import { collection, doc, updateDoc } from "firebase/firestore";
+import { db } from "../../../../../FirebaseConfig";
 
 export default function TaskDetails() {
   const theme = useAppTheme();
   const router = useRouter();
   const { t } = useTranslation();
-  const { token } = useAuth();
+  const tasksCollection = collection(db, "tasks");
   const params = useLocalSearchParams<{
     userFullName: string;
     task: string;
@@ -62,19 +64,14 @@ export default function TaskDetails() {
 
   const changeStatus = async () => {
     const data = {
-      id: taskData?.id,
       isCompleted: true,
       updatedAt: new Date(),
     };
     try {
-      const res = await api.put("/tasks/", data, {
-        headers: {
-          Authorization: token,
-        },
-      });
-      if (res.status === 200) {
-        await loadTaskData();
-      }
+      const taskDoc = doc(tasksCollection, taskData?.id);
+      await updateDoc(taskDoc, data);
+
+      router.replace("/user/home");
     } catch (error) {
       console.error(error);
     }
@@ -129,49 +126,49 @@ export default function TaskDetails() {
       <TopBar title={taskData.title} isBackButtonEnable />
       <View className="flex-1 gap-4 items-center justify-center py-4">
         <CustomCard
-          title="Task Info"
+          title={taskData.title}
+          titleStyle={{
+            color: theme.colors.onBackground,
+            fontSize: 28,
+            fontWeight: "bold",
+          }}
           className="px-2 py-4 "
           cardStyle={{ borderRadius: 24, marginTop: -36 }}
           contentStyle={{ gap: 24 }}
         >
-          <View className="w-full">
+          <View className="gap-2 mt-6">
             <Text
-              style={{ color: theme.colors.onBackground, fontSize: 28 }}
-              className="font-bold"
+              className="text-3xl font-bold"
+              style={{ color: theme.colors.onBackground }}
             >
-              {taskData.title}
+              {t("tasks.user.taskInfo.description", { ns: "screens" })}
+            </Text>
+            <Text
+              style={{ color: theme.colors.onBackground }}
+              className="text-2xl"
+            >
+              {taskData.description}
             </Text>
           </View>
 
-          <Text
-            className="text-3xl font-bold"
-            style={{ color: theme.colors.onBackground }}
-          >
-            {t("tasks.user.taskInfo.description", { ns: "screens" })}
-          </Text>
-          <Text
-            style={{ color: theme.colors.onBackground }}
-            className="text-2xl"
-          >
-            {taskData.description}
-          </Text>
+          <View className="gap-2">
+            <Text
+              className="text-3xl font-bold"
+              style={{ color: theme.colors.onBackground }}
+            >
+              {t("tasks.user.taskInfo.status", { ns: "screens" })}
+            </Text>
+            <Text
+              className="text-2xl"
+              style={{ color: theme.colors.onBackground }}
+            >
+              {taskData.isCompleted
+                ? `${t("tasks.user.taskInfo.statusDone", { ns: "screens" })}`
+                : `${t("tasks.user.taskInfo.statusPending", { ns: "screens" })}`}
+            </Text>
+          </View>
 
-          <Text
-            className="text-3xl font-bold"
-            style={{ color: theme.colors.onBackground }}
-          >
-            {t("tasks.user.taskInfo.status", { ns: "screens" })}
-          </Text>
-          <Text
-            className="text-2xl"
-            style={{ color: theme.colors.onBackground }}
-          >
-            {taskData.isCompleted
-              ? `${t("tasks.user.taskInfo.statusDone", { ns: "screens" })}`
-              : `${t("tasks.user.taskInfo.statusPending", { ns: "screens" })}`}
-          </Text>
-
-          {role === "MEMBER" && (
+          {role === "MEMBER" && !taskData.isCompleted && (
             <Pressable
               android_ripple={{ color: theme.custom.ripple }}
               onPress={changeStatus}

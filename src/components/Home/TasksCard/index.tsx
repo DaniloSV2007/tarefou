@@ -152,9 +152,15 @@ export default function TasksCard({
                     >
                       {task.isCompleted ? (
                         <Icon source="check" size={24} />
+                      ) : new Date() >= (task.deadline ?? 0) ? (
+                        <Icon source="clock-alert" size={24} />
                       ) : (
                         <Icon source="clock" size={24} />
                       )}
+                      {/* ? "check"
+                            : new Date() >= new Date(task.deadline ?? 0)
+                              ? "clock-alert"
+                              : "clock" */}
 
                       <Text
                         style={[
@@ -210,6 +216,8 @@ export default function TasksCard({
                       >
                         {task.isCompleted ? (
                           <Icon source="check" size={24} />
+                        ) : new Date() >= (task.deadline ?? 0) ? (
+                          <Icon source="clock-alert" size={24} />
                         ) : (
                           <Icon source="clock" size={24} />
                         )}
@@ -360,10 +368,11 @@ export default function TasksCard({
                 >
                   {task.isCompleted ? (
                     <Icon source="check" size={24} />
+                  ) : new Date() >= (task.deadline ?? 0) ? (
+                    <Icon source="clock-alert" size={24} />
                   ) : (
                     <Icon source="clock" size={24} />
                   )}
-
                   <Text
                     style={[
                       styles.progressText,

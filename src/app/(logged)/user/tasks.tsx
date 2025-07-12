@@ -11,12 +11,23 @@ import { StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "@/services/api";
 import { type Task } from "../tasks/[tasks]";
+import {
+  collection,
+  getDocs,
+  query,
+  Timestamp,
+  where,
+} from "firebase/firestore";
+import { db } from "../../../../FirebaseConfig";
+import { useLanguageContext } from "@/context/LanguageContext";
 
 export default function tasks() {
   const theme = useAppTheme();
-  const { token } = useAuth();
   const { t } = useTranslation();
   const router = useRouter();
+  const { languagePreference } = useLanguageContext();
+  const usersCollection = collection(db, "users");
+  const tasksCollection = collection(db, "tasks");
 
   const [searchValue, setSearchValue] = useState("");
 
@@ -28,56 +39,58 @@ export default function tasks() {
   const [fullName, setFullName] = useState("second");
 
   useEffect(() => {
-    const getUserFullName = async () => {
-      const username = await AsyncStorage.getItem("username");
-
-      try {
-        const res = await api.get("/users/" + username, {
-          headers: { Authorization: token },
-        });
-        if (res.status === 200) {
-          setFullName(res.data.name);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getUsername();
     reflesh();
-    getUserFullName;
   }, []);
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    try {
-      reflesh();
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
-
-  const reflesh = () => {
-    getTasks();
-  };
-
-  const getUsername = async () => {
-    const username = await AsyncStorage.getItem("username");
-    setUsername(username ?? "");
-  };
 
   const getTasks = async () => {
     const username = await AsyncStorage.getItem("username");
 
     try {
-      const res = await api.get("/tasks/" + username, {
-        headers: { Authorization: token },
-      });
-      if (res.status === 200) {
-        const tasksWithParsedDeadline = res.data.map((task: Task) => ({
-          ...task,
-          deadline: task.deadline ? new Date(task.deadline) : undefined,
-        }));
-        setTasks(tasksWithParsedDeadline);
+      const q = query(usersCollection, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const userId = querySnapshot.docs[0].id;
+        const fullName = querySnapshot.docs[0].data().name;
+
+        setFullName(fullName);
+
+        const taskQ = query(tasksCollection, where("userId", "==", userId));
+        const tasksQuerySnapshot = await getDocs(taskQ);
+        if (querySnapshot.empty) return;
+
+        const tasksDocs = tasksQuerySnapshot.docs;
+
+        const tasksWithDefaults: Task[] = tasksDocs.map((doc) => {
+          const data = doc.data();
+
+          return {
+            id: doc.id,
+            title: data.title ?? "",
+            userId: data.userId ?? "",
+            description: data.description,
+            createdAt: data.createdAt
+              ? new Date(
+                  data.createdAt.seconds * 1000 +
+                    data.createdAt.nanoseconds / 1000000
+                )
+              : undefined,
+            updatedAt: data.updatedAt
+              ? new Date(
+                  data.updatedAt.seconds * 1000 +
+                    data.updatedAt.nanoseconds / 1000000
+                )
+              : undefined,
+            deadline: data.deadline
+              ? new Date(
+                  data.deadline.seconds * 1000 +
+                    data.deadline.nanoseconds / 1000000
+                )
+              : undefined,
+            isCompleted: data.isCompleted ?? false,
+          };
+        });
+
+        setTasks(tasksWithDefaults);
       }
     } catch (error) {
       console.error(error);
@@ -95,6 +108,19 @@ export default function tasks() {
         task: encodedTask,
       },
     });
+  };
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    try {
+      reflesh();
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
+
+  const reflesh = () => {
+    getTasks();
   };
 
   return (
@@ -174,7 +200,13 @@ export default function tasks() {
                       }}
                     >
                       <Icon
-                        source={task.isCompleted ? "check" : "clock"}
+                        source={
+                          task.isCompleted
+                            ? "check"
+                            : new Date() >= new Date(task.deadline ?? 0)
+                              ? "clock-alert"
+                              : "clock"
+                        }
                         size={32}
                         color={
                           task.isCompleted
@@ -301,3 +333,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
 });
+function isTimestamp(created: any): boolean {
+  throw new Error("Function not implemented.");
+}
