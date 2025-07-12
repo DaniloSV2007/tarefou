@@ -1,6 +1,16 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import { db } from "../../../FirebaseConfig";
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -19,6 +29,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { expoPushToken } = usePushNotifications();
+  const usersCollection = collection(db, "users");
 
   const loadAuthState = async () => {
     try {
@@ -43,6 +55,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     loadAuthState();
   }, []);
 
+  const saveTokenDb = async () => {
+    const username = await AsyncStorage.getItem("username");
+    const q = query(usersCollection, where("username", "==", username));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const docDb = querySnapshot.docs[0];
+      const userDoc = doc(db, "users", docDb.id);
+      await updateDoc(userDoc, {
+        pushToken: expoPushToken?.data,
+      });
+    }
+  };
+
   const login = async (newToken: string, role: string, username: string) => {
     try {
       setIsLoading(true);
@@ -51,6 +77,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         ["userRole", role],
         ["username", username],
       ]);
+      await saveTokenDb();
       setToken(newToken);
       setIsLoggedIn(true);
       setError(null);

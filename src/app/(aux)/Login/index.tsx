@@ -45,7 +45,7 @@ export default function Login() {
   const router = useRouter();
   const theme = useAppTheme();
   const { t } = useTranslation();
-  const { expoPushToken } = usePushNotifications();
+  const usersCollection = collection(db, "users");
 
   const [isLoading, setIsLoading] = useState(false);
   const [isFocusedEmail, setIsFocusedEmail] = useState(false);
@@ -57,7 +57,6 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const database = useDatabase();
-  const usersCollection = collection(db, "users");
 
   // const handleLogin = async () => {
   //   setIsLoading(true);
@@ -119,14 +118,11 @@ export default function Login() {
       if (!querySnapshot.empty) {
         const docDb = querySnapshot.docs[0];
         const data = docDb.data();
-
-        const userDoc = doc(db, "users", docDb.id);
-        await updateDoc(userDoc, { pushToken: expoPushToken?.data });
-
         await login(token, data.role, data.username);
       }
     } catch (error) {
       console.error(error);
+      setError(String(error));
     }
   };
 
