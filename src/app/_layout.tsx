@@ -28,10 +28,25 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as QuickActions from "expo-quick-actions";
 import { useQuickActionRouting } from "expo-quick-actions/router";
+import { getAuth } from "firebase/auth";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import { db } from "../../FirebaseConfig";
 
 function RootInnerLayout() {
   const { theme, isDark } = useThemeContext();
   const appTheme = useAppTheme();
+  const auth = getAuth();
+  const usersCollection = collection(db, "users");
+
+  const { expoPushToken } = usePushNotifications();
 
   useQuickActionRouting();
 
@@ -40,6 +55,12 @@ function RootInnerLayout() {
 
   const [updateAvailable, setIsupdateAvailable] =
     useState<boolean>(isUpdateAvailable);
+
+  useEffect(() => {
+    if (expoPushToken) {
+      saveToken();
+    }
+  }, [expoPushToken]);
 
   useEffect(() => {
     const updateSystemUI = async () => {
@@ -80,14 +101,21 @@ function RootInnerLayout() {
   }, []);
 
   useEffect(() => {
-    QuickActions.setItems([
-      {
-        title: "New Task",
-        icon: "new_task",
-        id: "0",
-        params: { href: "/(logged)/tasks/new/" },
-      },
-    ]);
+    if (!auth.currentUser) return;
+    const setQuickActions = async () => {
+      const role = await AsyncStorage.getItem("userRole");
+      if (role === "FAMILY_ADMIN") {
+        QuickActions.setItems([
+          {
+            title: "New Task",
+            icon: "new_task",
+            id: "0",
+            params: { href: "/(logged)/tasks/new/" },
+          },
+        ]);
+      }
+      setQuickActions();
+    };
   }, []);
 
   const checkIsNewBuild = async (): Promise<boolean> => {
@@ -100,6 +128,31 @@ function RootInnerLayout() {
     }
 
     return false;
+  };
+
+  const saveToken = async () => {
+    const username = await AsyncStorage.getItem("username");
+    const getPushToken = await AsyncStorage.getItem("pushToken");
+    if (
+      !expoPushToken ||
+      !username ||
+      String(expoPushToken) === getPushToken ||
+      !auth.currentUser
+    )
+      return;
+    console.log(expoPushToken);
+    await AsyncStorage.setItem("pushToken", String(expoPushToken));
+    try {
+      const q = query(usersCollection, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const userId = querySnapshot.docs[0].id;
+        const userDoc = doc(db, "users", userId);
+        await updateDoc(userDoc, { pushToken: String(expoPushToken) });
+      }
+    } catch (error) {
+      console.log("Error while saving push token: ", error);
+    }
   };
 
   return (

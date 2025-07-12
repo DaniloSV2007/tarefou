@@ -41,6 +41,7 @@ import {
   getAuth,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 const steps = [
   "",
@@ -57,6 +58,8 @@ export default function Register() {
   const theme = useAppTheme();
   const [page, setPage] = useState(1);
   const router = useRouter();
+  const { expoPushToken } = usePushNotifications();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -77,11 +80,6 @@ export default function Register() {
   const user = auth.currentUser;
 
   const handleLogin = async (email: string, password: string) => {
-    const data = {
-      email: email,
-      password: password,
-    };
-
     try {
       const user = await signInWithEmailAndPassword(auth, email, password);
       if (user) {
@@ -141,6 +139,7 @@ export default function Register() {
           createdAt: Timestamp.now(),
           role: "FAMILY_ADMIN",
           familyId: familyRef.id,
+          pushToken: String(expoPushToken),
         };
 
         await setDoc(doc(usersCollection, uid), data);
@@ -158,6 +157,7 @@ export default function Register() {
         createdAt: new Date().toISOString(),
         role,
         familyId: null,
+        pushToken: String(expoPushToken),
       };
       try {
         if (user) {

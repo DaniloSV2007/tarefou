@@ -30,13 +30,22 @@ import api from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../../../FirebaseConfig";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 export default function Login() {
   const { login } = useAuth();
   const router = useRouter();
   const theme = useAppTheme();
   const { t } = useTranslation();
+  const { expoPushToken } = usePushNotifications();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isFocusedEmail, setIsFocusedEmail] = useState(false);
@@ -108,8 +117,11 @@ export default function Login() {
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        const doc = querySnapshot.docs[0];
-        const data = doc.data();
+        const docDb = querySnapshot.docs[0];
+        const data = docDb.data();
+
+        const userDoc = doc(db, "users", docDb.id);
+        await updateDoc(userDoc, { pushToken: String(expoPushToken) });
 
         await login(token, data.role, data.username);
       }
