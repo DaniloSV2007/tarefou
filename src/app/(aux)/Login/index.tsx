@@ -121,7 +121,7 @@ export default function Login() {
         const data = docDb.data();
 
         const userDoc = doc(db, "users", docDb.id);
-        await updateDoc(userDoc, { pushToken: String(expoPushToken) });
+        await updateDoc(userDoc, { pushToken: expoPushToken?.data });
 
         await login(token, data.role, data.username);
       }

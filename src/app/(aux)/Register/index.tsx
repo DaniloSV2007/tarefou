@@ -139,7 +139,7 @@ export default function Register() {
           createdAt: Timestamp.now(),
           role: "FAMILY_ADMIN",
           familyId: familyRef.id,
-          pushToken: String(expoPushToken),
+          pushToken: expoPushToken?.data,
         };
 
         await setDoc(doc(usersCollection, uid), data);
@@ -157,7 +157,7 @@ export default function Register() {
         createdAt: new Date().toISOString(),
         role,
         familyId: null,
-        pushToken: String(expoPushToken),
+        pushToken: expoPushToken?.data,
       };
       try {
         if (user) {

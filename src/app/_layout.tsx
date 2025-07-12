@@ -60,7 +60,7 @@ function RootInnerLayout() {
     if (expoPushToken) {
       saveToken();
     }
-  }, [expoPushToken]);
+  }, []);
 
   useEffect(() => {
     const updateSystemUI = async () => {
@@ -136,19 +136,19 @@ function RootInnerLayout() {
     if (
       !expoPushToken ||
       !username ||
-      String(expoPushToken) === getPushToken ||
+      expoPushToken.data === getPushToken ||
       !auth.currentUser
     )
       return;
     console.log(expoPushToken);
-    await AsyncStorage.setItem("pushToken", String(expoPushToken));
+    await AsyncStorage.setItem("pushToken", expoPushToken.data);
     try {
       const q = query(usersCollection, where("username", "==", username));
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
         const userId = querySnapshot.docs[0].id;
         const userDoc = doc(db, "users", userId);
-        await updateDoc(userDoc, { pushToken: String(expoPushToken) });
+        await updateDoc(userDoc, { pushToken: expoPushToken.data });
       }
     } catch (error) {
       console.log("Error while saving push token: ", error);
