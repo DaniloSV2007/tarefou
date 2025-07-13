@@ -41,6 +41,7 @@ import {
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { createdAt } from "expo-updates";
+import { ExpoPushToken } from "expo-notifications";
 
 interface Task {
   title: string;
@@ -69,6 +70,8 @@ export default function NewTask() {
 
   const [deadline, setDeadline] = useState(new Date());
   const [deadlineString, setDeadlineString] = useState("");
+
+  const dateNow = new Date();
 
   const [focus, setFocus] = useState(false);
   const [selectText, setSelectText] = useState<any>([]);
@@ -235,9 +238,36 @@ export default function NewTask() {
     }
   };
 
+  const sendPushNotification = async (
+    pushToken: string | ExpoPushToken,
+    userName: string
+  ) => {
+    if (!pushToken || !userName) return setLoading(false);
+
+    const data = {
+      token: pushToken,
+      title: `${userName.split(" ")[0]} você tem uma nova tarefa.`,
+      body: title,
+    };
+
+    try {
+      const res = await api.post("/", data);
+      if (res.status === 200) {
+        setLoading(false);
+        router.replace("/admin/home");
+      }
+    } catch (error) {
+      console.error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const createTask = async () => {
+    if (loading) return;
+
     setLoading(true);
-    if (title === "" || description === "" || usersSelected.length <= 0) {
+    if (title === "" || usersSelected.length <= 0) {
       setLoading(false);
       return;
     }
@@ -249,6 +279,7 @@ export default function NewTask() {
         );
         const userQuerySnapshot = await getDocs(qUser);
         if (!userQuerySnapshot.empty) {
+          const userData = userQuerySnapshot.docs[0].data();
           const userId = userQuerySnapshot.docs[0].id;
           const dataTask = {
             userId,
@@ -257,12 +288,11 @@ export default function NewTask() {
             title,
             description,
             isCompleted: false,
-            deadline: deadline !== new Date() && deadline,
+            deadline: deadline !== dateNow ? deadline : null,
           };
           await addDoc(tasksCollection, dataTask);
 
-          setLoading(false);
-          router.replace("/admin/home");
+          await sendPushNotification(userData.pushToken, userData.name);
         }
       } catch (error) {
         console.error(error);
@@ -426,6 +456,7 @@ export default function NewTask() {
                 disabled={loading}
                 className="items-center py-2 rounded-lg"
                 style={{ backgroundColor: theme.colors.primary }}
+                android_ripple={{ color: theme.custom.ripple }}
                 onPress={createTask}
               >
                 {loading ? (

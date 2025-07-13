@@ -38,6 +38,8 @@ export default function TaskDetails() {
 
   const [role, setRole] = useState("");
 
+  const [changing, setChanging] = useState(false);
+
   useEffect(() => {
     const getUserRole = async () => {
       const role = await AsyncStorage.getItem("userRole");
@@ -73,12 +75,12 @@ export default function TaskDetails() {
   }, []);
 
   const sendPushNotification = async (username: string, userName: string) => {
-    if (!username || userName) return;
+    if (!username || !userName) return setChanging(false);
     let userData;
     const q = query(usersCollection, where("username", "==", username));
     const querySnapshot = await getDocs(q);
 
-    if (querySnapshot.empty) return;
+    if (querySnapshot.empty) return setChanging(false);
 
     userData = querySnapshot.docs[0].data();
 
@@ -90,12 +92,21 @@ export default function TaskDetails() {
 
     try {
       const res = await api.post("/", data);
+      if (res.status === 200) {
+        router.replace("/user/home");
+      }
     } catch (error) {
       console.error;
+    } finally {
+      setChanging(false);
     }
   };
 
   const changeStatus = async () => {
+    if (changing) return;
+
+    setChanging(true);
+
     const data = {
       isCompleted: true,
       updatedAt: new Date(),
@@ -110,8 +121,6 @@ export default function TaskDetails() {
       const familyData = (await getDoc(familyDoc)).data();
 
       await sendPushNotification(familyData?.owner, userData?.name);
-
-      router.replace("/user/home");
     } catch (error) {
       console.error(error);
     }
@@ -176,22 +185,25 @@ export default function TaskDetails() {
           cardStyle={{ borderRadius: 24, marginTop: -36 }}
           contentStyle={{ gap: 24 }}
         >
-          <View className="gap-2 mt-6">
-            <Text
-              className="text-3xl font-bold"
-              style={{ color: theme.colors.onBackground }}
-            >
-              {t("tasks.user.taskInfo.description", { ns: "screens" })}
-            </Text>
-            <Text
-              style={{ color: theme.colors.onBackground }}
-              className="text-2xl"
-            >
-              {taskData.description}
-            </Text>
-          </View>
+          {taskData.description && (
+            <View className="gap-2 mt-6">
+              <Text
+                className="text-3xl font-bold"
+                style={{ color: theme.colors.onBackground }}
+              >
+                {t("tasks.user.taskInfo.description", { ns: "screens" })}
+              </Text>
 
-          <View className="gap-2">
+              <Text
+                style={{ color: theme.colors.onBackground }}
+                className="text-2xl"
+              >
+                {taskData.description}
+              </Text>
+            </View>
+          )}
+
+          <View className={"gap-2" + !taskData.description && "mt-6"}>
             <Text
               className="text-3xl font-bold"
               style={{ color: theme.colors.onBackground }}
@@ -212,12 +224,19 @@ export default function TaskDetails() {
             <Pressable
               android_ripple={{ color: theme.custom.ripple }}
               onPress={changeStatus}
+              disabled={changing}
               className="py-3 rounded-2xl items-center"
-              style={{ backgroundColor: theme.colors.primary }}
+              style={{
+                backgroundColor: theme.colors.primary,
+              }}
             >
-              <Text style={{ color: "white" }} className="text-2xl">
-                {t("tasks.user.taskInfo.markDone", { ns: "screens" })}
-              </Text>
+              {!changing ? (
+                <Text style={{ color: "white" }} className="text-2xl">
+                  {t("tasks.user.taskInfo.markDone", { ns: "screens" })}
+                </Text>
+              ) : (
+                <ActivityIndicator color={"white"} size={32} />
+              )}
             </Pressable>
           )}
         </CustomCard>
