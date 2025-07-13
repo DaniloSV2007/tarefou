@@ -54,6 +54,7 @@ export default function User() {
   const usersCollection = collection(db, "users");
 
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [image, setImage] = useState<string | null>(null);
   const placeholder = imagePlaceholder;
@@ -127,6 +128,9 @@ export default function User() {
   const handleAdd = async () => {
     const familyId = await getFamilyId();
 
+    if (loading) return;
+    setLoading(true);
+
     if (!memberData.username && !familyId) {
       return;
     }
@@ -147,7 +151,7 @@ export default function User() {
           handleError(
             t("members.newMember.userInfo.alreadyExists", { ns: "screens" })
           );
-
+          router.replace("/admin/members");
           return;
         }
         const userDoc = doc(db, "users", user.id);
@@ -155,6 +159,8 @@ export default function User() {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -261,8 +267,14 @@ export default function User() {
             >
               {t("common.cancel", { ns: "components" })}
             </Button>
-            <Button mode="contained" onPress={handleAdd}>
-              {t("members.newMember.userInfo.add", { ns: "screens" })}
+            <Button
+              mode="contained"
+              onPress={handleAdd}
+              loading={loading}
+              disabled={loading}
+            >
+              {!loading &&
+                t("members.newMember.userInfo.add", { ns: "screens" })}
             </Button>
           </Card.Actions>
         </Card>

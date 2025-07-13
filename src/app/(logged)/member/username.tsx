@@ -24,9 +24,12 @@ export default function FindByUsername() {
   const router = useRouter();
   const { t } = useTranslation();
   const usersCollection = collection(db, "users");
+  const [loading, setLoading] = useState(false);
 
   const handlesubmit = async () => {
     setError("");
+    if (loading) return;
+    setLoading(true);
     if (username.trim() === "") {
       setError(
         t("members.newMember.findUsername.errors.inputEmpty", { ns: "screens" })
@@ -61,6 +64,8 @@ export default function FindByUsername() {
       setError(
         t("members.newMember.findUsername.errors.ops", { ns: "screens" })
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -114,8 +119,13 @@ export default function FindByUsername() {
               <View
                 style={{ width: "100%", alignItems: "flex-end", marginTop: 48 }}
               >
-                <Button mode="contained" onPress={handlesubmit}>
-                  {t("common.next", { ns: "components" })}
+                <Button
+                  mode="contained"
+                  onPress={handlesubmit}
+                  loading={loading}
+                  disabled={loading}
+                >
+                  {!loading && t("common.next", { ns: "components" })}
                 </Button>
               </View>
             </View>
