@@ -48,10 +48,16 @@ export const usePushNotifications = (): PushNotificationState => {
       }
       if (finalStatus !== "granted") {
         alert("Failed to get push token");
+        console.log("Failed to get push token");
+        return;
       }
 
-      token = await Notification.getExpoPushTokenAsync({
-        projectId: Constants.expoConfig?.extra?.eas?.projectId,
+      console.log("Getting Token...");
+
+      const projectId = Constants.expoConfig?.extra?.eas?.projectId;
+
+      const token = await Notification.getExpoPushTokenAsync({
+        projectId,
       });
 
       if (Platform.OS === "android") {
@@ -62,7 +68,7 @@ export const usePushNotifications = (): PushNotificationState => {
           lightColor: "ff231f7c",
         });
       }
-
+      console.log(token);
       return token;
     } else {
       console.warn("ERROR: Please use a physical device");

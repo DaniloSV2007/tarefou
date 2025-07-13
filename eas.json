@@ -9,7 +9,7 @@
       "distribution": "internal",
       "channel": "development",
       "env": {
-        "GOOGLE_SERVICES": "google-services.json"
+        "GOOGLE_SERVICES": "GOOGLE_SERVICES"
       }
     },
     "preview": {
@@ -20,7 +20,7 @@
       },
       "channel": "preview",
       "env": {
-        "GOOGLE_SERVICES": "google-services.json"
+        "GOOGLE_SERVICES": "GOOGLE_SERVICES"
       }
     },
     "production": {
@@ -30,7 +30,7 @@
       },
       "channel": "production",
       "env": {
-        "GOOGLE_SERVICES": "google-services.json"
+        "GOOGLE_SERVICES": "GOOGLE_SERVICES"
       }
     }
   },

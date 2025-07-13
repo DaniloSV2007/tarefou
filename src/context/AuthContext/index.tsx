@@ -55,7 +55,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     loadAuthState();
   }, []);
 
-  const saveTokenDb = async () => {
+  useEffect(() => {
+    if (expoPushToken?.data) {
+      saveTokenDb(expoPushToken.data);
+    }
+  }, [expoPushToken?.data]);
+
+  const saveTokenDb = async (token: string | undefined) => {
+    if (!token) return;
+    await AsyncStorage.setItem("pushToken", token);
     const username = await AsyncStorage.getItem("username");
     const q = query(usersCollection, where("username", "==", username));
     const querySnapshot = await getDocs(q);
@@ -64,7 +72,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const docDb = querySnapshot.docs[0];
       const userDoc = doc(db, "users", docDb.id);
       await updateDoc(userDoc, {
-        pushToken: expoPushToken?.data,
+        pushToken: token,
       });
     }
   };
@@ -77,7 +85,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         ["userRole", role],
         ["username", username],
       ]);
-      await saveTokenDb();
+      if (expoPushToken?.data) {
+        await saveTokenDb(expoPushToken.data);
+      }
       setToken(newToken);
       setIsLoggedIn(true);
       setError(null);

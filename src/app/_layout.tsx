@@ -14,14 +14,10 @@ import { useEffect, useState } from "react";
 import { Text, ActivityIndicator } from "react-native";
 import { SQLiteProvider } from "expo-sqlite";
 import { setupDB } from "@/database/setupDB";
-import { deleteDatabase } from "@/database/deleteDatabase";
-import { resetDatabase } from "@/database/resetDatabase";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import * as Updates from "expo-updates";
 import Update from "@/components/Update";
 import * as StatusBar from "expo-status-bar";
-import * as Linking from "expo-linking";
-import api from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -61,6 +57,12 @@ function RootInnerLayout() {
       saveToken();
     }
   }, []);
+
+  useEffect(() => {
+    if (expoPushToken?.data) {
+      saveToken();
+    }
+  }, [expoPushToken?.data]);
 
   useEffect(() => {
     const updateSystemUI = async () => {
@@ -132,14 +134,7 @@ function RootInnerLayout() {
 
   const saveToken = async () => {
     const username = await AsyncStorage.getItem("username");
-    const getPushToken = await AsyncStorage.getItem("pushToken");
-    if (
-      !expoPushToken ||
-      !username ||
-      expoPushToken.data === getPushToken ||
-      !auth.currentUser
-    )
-      return;
+    if (!expoPushToken?.data || !username || !auth.currentUser) return;
     console.log(expoPushToken);
     await AsyncStorage.setItem("pushToken", expoPushToken.data);
     try {
