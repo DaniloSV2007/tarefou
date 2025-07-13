@@ -65,7 +65,7 @@ export default function EmailAndPassword({
         email,
         password
       );
-      if (isAlrealdyRegister.user.uid) {
+      if (!isAlrealdyRegister.user.uid) {
         await createUserWithEmailAndPassword(auth, email, password);
         setError("");
         setPage(2);
