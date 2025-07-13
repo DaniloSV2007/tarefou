@@ -10,7 +10,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Task } from "../[tasks]";
 import api from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
-import { collection, doc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { db } from "../../../../../FirebaseConfig";
 
 export default function TaskDetails() {
@@ -18,6 +26,8 @@ export default function TaskDetails() {
   const router = useRouter();
   const { t } = useTranslation();
   const tasksCollection = collection(db, "tasks");
+  const usersCollection = collection(db, "users");
+
   const params = useLocalSearchParams<{
     userFullName: string;
     task: string;
@@ -62,6 +72,29 @@ export default function TaskDetails() {
     loadTaskData();
   }, []);
 
+  const sendPushNotification = async (username: string, userName: string) => {
+    if (!username || userName) return;
+    let userData;
+    const q = query(usersCollection, where("username", "==", username));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) return;
+
+    userData = querySnapshot.docs[0].data();
+
+    const data = {
+      token: userData.pushToken,
+      title: `${userName.split(" ")[0]} concluiu uma tarefa!`,
+      body: taskData?.title,
+    };
+
+    try {
+      const res = await api.post("/", data);
+    } catch (error) {
+      console.error;
+    }
+  };
+
   const changeStatus = async () => {
     const data = {
       isCompleted: true,
@@ -70,6 +103,13 @@ export default function TaskDetails() {
     try {
       const taskDoc = doc(tasksCollection, taskData?.id);
       await updateDoc(taskDoc, data);
+      const userDoc = doc(usersCollection, taskData?.userId);
+      const userData = (await getDoc(userDoc)).data();
+
+      const familyDoc = doc(db, "families", userData?.familyId);
+      const familyData = (await getDoc(familyDoc)).data();
+
+      await sendPushNotification(familyData?.owner, userData?.name);
 
       router.replace("/user/home");
     } catch (error) {

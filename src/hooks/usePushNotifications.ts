@@ -19,6 +19,7 @@ export const usePushNotifications = (): PushNotificationState => {
       shouldShowBanner: true,
       shouldShowList: true,
       shouldSetBadge: false,
+      shouldShowAlert: true,
     }),
   });
 
@@ -62,7 +63,7 @@ export const usePushNotifications = (): PushNotificationState => {
 
       if (Platform.OS === "android") {
         Notification.setNotificationChannelAsync("default", {
-          name: "default",
+          name: "Todas as notificações",
           importance: Notification.AndroidImportance.MAX,
           vibrationPattern: [0, 250, 250, 250],
           lightColor: "ff231f7c",

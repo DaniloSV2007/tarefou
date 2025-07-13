@@ -124,7 +124,7 @@ export default function Register() {
           throw new Error("Error creating family");
         }
 
-        const userCredential = await createUserWithEmailAndPassword(
+        const userCredential = await signInWithEmailAndPassword(
           auth,
           email,
           password

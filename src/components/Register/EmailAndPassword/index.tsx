@@ -14,6 +14,11 @@ import api from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../../../FirebaseConfig";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 interface EmailAndPasswordProps {
   setPage: (page: number) => void;
@@ -43,6 +48,7 @@ export default function EmailAndPassword({
   const router = useRouter();
   const database = useDatabase();
   const { token } = useAuth();
+  const auth = getAuth();
 
   const handleContinue = async () => {
     if (!email || !password) {
@@ -54,15 +60,18 @@ export default function EmailAndPassword({
     }
 
     try {
-      const q = query(usersCollection, where("email", "==", email.trim()));
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        setError(t("register.error.emailExists"));
-      } else {
+      const isAlrealdyRegister = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      if (isAlrealdyRegister.user.uid) {
+        await createUserWithEmailAndPassword(auth, email, password);
         setError("");
         setPage(2);
+        return;
       }
+      setError(t("register.error.emailExists"));
     } catch (error) {
       console.error("Error checking email:", error);
       setError(t("register.error.checkingEmail"));
