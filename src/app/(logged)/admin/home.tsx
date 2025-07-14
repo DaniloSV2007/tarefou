@@ -53,7 +53,6 @@ export default function Home() {
 
   useEffect(() => {
     if (users.map((user: UserTasksType) => user.tasks).length > 0) {
-      console.log("setted Tasks");
       setTasks(users.flatMap((user: UserTasksType) => user.tasks));
     }
   }, [users]);

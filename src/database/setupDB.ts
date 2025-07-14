@@ -10,8 +10,7 @@ export async function setupDB(database: SQLiteDatabase) {
       updatedAt TEXT,
       deadline TEXT,
       isCompleted INTEGER DEFAULT 0,
-      userId TEXT NOT NULL,
-      FOREIGN KEY (userId) REFERENCES User (id) ON DELETE CASCADE
+      userId TEXT NOT NULL
     );
   `);
 }

@@ -44,9 +44,9 @@ export function useDatabase() {
       ]);
 
       await statement.finalizeAsync();
-      return { success: true, taskId: data.id };
+      return { success: true };
     } catch (error) {
-      console.error("Error creating user:", error);
+      console.error("Error creating user: ", error);
       return { success: false, error };
     }
   }
@@ -58,7 +58,21 @@ export function useDatabase() {
       const result = await statement.executeAsync();
       return result;
     } catch (error) {
-      console.error("Error getting tasks:", error);
+      console.error("Error getting tasks: ", error);
+      return { success: false, error };
+    }
+  }
+
+  async function getTasksByUser(userId: string) {
+    try {
+      const db = await getDatabase();
+      const statement = await db.prepareAsync(
+        `SELECT * FROM Task WHERE userId = ?`
+      );
+      const result = await statement.executeAsync([userId]);
+      return result;
+    } catch (error) {
+      console.error("Error getting tasks: ", error);
       return { success: false, error };
     }
   }
@@ -72,7 +86,7 @@ export function useDatabase() {
       const result = await statement.executeAsync([id]);
       return result;
     } catch (error) {
-      console.error("Error getting task by id:", error);
+      console.error("Error getting task by id: ", error);
       return { success: false, error };
     }
   }
@@ -81,7 +95,7 @@ export function useDatabase() {
     try {
       const db = await getDatabase();
       const statement = await db.prepareAsync(
-        `UPDATE Task SET title = ?, description = ?, updatedAt = ?, deadline = ?, isCompleted = ? WHERE id = ?`
+        `UPDATE Task SET title = ?, description = ?, updatedAt = ?, deadline = ?, isCompleted = ? WHERE userId = ?`
       );
       await statement.executeAsync([
         data.title,
@@ -92,9 +106,9 @@ export function useDatabase() {
         id,
       ]);
       await statement.finalizeAsync();
-      return { success: true, taskId: id };
+      return { success: true };
     } catch (error) {
-      console.error("Error updating task:", error);
+      console.error("Error updating task: ", error);
       return { success: false, error };
     }
   }
@@ -105,19 +119,36 @@ export function useDatabase() {
       const statement = await db.prepareAsync(`DELETE FROM Task WHERE id = ?`);
       await statement.executeAsync([id]);
       await statement.finalizeAsync();
-      return { success: true, taskId: id };
+      return { success: true };
     } catch (error) {
-      console.error("Error deleting task:", error);
+      console.error("Error deleting task: ", error);
       return { success: false, error };
     }
   }
+
+  const deleteAllTasks = async (userId: string) => {
+    try {
+      const db = await getDatabase();
+      const statement = await db.prepareAsync(
+        "DELETE FROM Task WHERE userId = ?"
+      );
+      await statement.executeAsync([userId]);
+      await statement.finalizeAsync();
+      return { success: true };
+    } catch (error) {
+      console.error("Erro deleting tasks: ", error);
+      return { success: false };
+    }
+  };
 
   return {
     getDatabase,
     createTask,
     getTasks,
+    getTasksByUser,
     getTaskById,
     updateTask,
     deleteTask,
+    deleteAllTasks,
   };
 }

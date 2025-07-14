@@ -42,6 +42,7 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const steps = [
   "",
@@ -101,6 +102,8 @@ export default function Register() {
       if (!querySnapshot.empty) {
         const doc = querySnapshot.docs[0];
         const data = doc.data();
+
+        await AsyncStorage.setItem("userId", doc.id);
 
         await login(token, data.role, data.username);
       }

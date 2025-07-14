@@ -35,6 +35,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../../FirebaseConfig";
+import { resetDatabase } from "@/database/resetDatabase";
 
 function RootInnerLayout() {
   const { theme, isDark } = useThemeContext();

@@ -69,6 +69,7 @@ export default function Login() {
       const user = await signInWithEmailAndPassword(auth, email, password);
       if (user) {
         const token = await user.user.getIdToken();
+        await AsyncStorage.setItem("userId", user.user.uid);
         await getUserData(token);
       }
     } catch (error) {

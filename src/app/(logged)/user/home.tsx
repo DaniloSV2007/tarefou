@@ -1,26 +1,27 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
 import { RefreshControl, StyleSheet, View } from "react-native";
-import { Button, Card, Text } from "react-native-paper";
+import { Card, Text } from "react-native-paper";
 import React, { useCallback, useEffect, useState } from "react";
 import TopBar from "@/components/TopBar";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@/context/AuthContext";
 import { ScrollView } from "react-native-gesture-handler";
 import CustomCard from "@/components/CustomCard";
 import CardInfo from "@/components/Report/CardInfo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import api from "@/services/api";
-import ContentLoader, { Circle, List, Rect } from "react-content-loader/native";
+import ContentLoader, { Rect } from "react-content-loader/native";
 import TasksCard from "@/components/Home/TasksCard";
 import { Task } from "../tasks/[tasks]";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../../../FirebaseConfig";
+import NetInfo from "@react-native-community/netinfo";
+import { useDatabase } from "@/database/useDatabase";
 
 export default function UserHome() {
   const router = useRouter();
   const theme = useAppTheme();
   const { t } = useTranslation();
+  const database = useDatabase();
   const usersCollection = collection(db, "users");
   const tasksCollection = collection(db, "tasks");
 
@@ -30,9 +31,25 @@ export default function UserHome() {
 
   const [fullName, setFullName] = useState("");
 
+  const [isConnected, setIsConnected] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setIsConnected(state.isConnected ?? true);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   useEffect(() => {
     reflesh();
   }, []);
+
+  useEffect(() => {
+    if (!isConnected) {
+      getTasksLocalDb();
+    }
+  }, [isConnected]);
 
   const getTasks = async () => {
     const username = await AsyncStorage.getItem("username");
@@ -81,7 +98,44 @@ export default function UserHome() {
           };
         });
 
+        const taskIsoString: Task[] = tasks.map((doc) => {
+          const data = doc.data();
+          const createdAt = data.createdAt
+            ? new Date(
+                data.createdAt.seconds * 1000 +
+                  data.createdAt.nanoseconds / 1000000
+              )
+            : undefined;
+
+          const updatedAt = data.updatedAt
+            ? new Date(
+                data.updatedAt.seconds * 1000 +
+                  data.updatedAt.nanoseconds / 1000000
+              )
+            : undefined;
+
+          const deadline = data.deadline
+            ? new Date(
+                data.deadline.seconds * 1000 +
+                  data.deadline.nanoseconds / 1000000
+              )
+            : undefined;
+
+          return {
+            id: doc.id,
+            title: data.title ?? "",
+            userId: data.userId ?? "",
+            description: data.description,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            deadline: deadline ?? null,
+            isCompleted: data.isCompleted ?? false,
+          };
+        });
+
         setTasks(tasksWithDefaults);
+
+        await saveLocalDb(taskIsoString, userId);
       }
     } catch (error) {
       console.error(error);
@@ -100,19 +154,36 @@ export default function UserHome() {
   }, []);
 
   const reflesh = () => {
+    if (!isConnected) return;
     getTasks();
   };
 
-  // const goToTaksDetails = (task: Task) => {
-  //   const encodedTask = encodeURIComponent(JSON.stringify(task));
-  //   router.push({
-  //     pathname: "/tasks/[userFullName]/[task]",
-  //     params: {
-  //       userFullname: fullName,
-  //       task: encodedTask,
-  //     },
-  //   });
-  // };
+  const saveLocalDb = async (tasksDb: any[], userId: string) => {
+    if (tasksDb.length <= 0) return;
+    await database.deleteAllTasks(userId);
+    await AsyncStorage.setItem("userId", userId);
+    for (let i = 0; i < tasksDb.length; i++) {
+      try {
+        const res = await database.createTask(tasksDb[i]);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  const getTasksLocalDb = async () => {
+    const userId = await AsyncStorage.getItem("userId");
+    if (!userId) return;
+    try {
+      const res = await database.getTasksByUser(userId);
+      if ("rows" in res) {
+        const tasks = res.rows as Task[];
+        setTasks(tasks);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const MyLoader = () => (
     <Card
