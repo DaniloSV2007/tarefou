@@ -91,7 +91,7 @@ export default function TaskDetails() {
     };
 
     try {
-      const res = await api.post("/", data);
+      const res = await api.post("/api/notify", data);
       if (res.status === 200) {
         router.replace("/user/home");
       }

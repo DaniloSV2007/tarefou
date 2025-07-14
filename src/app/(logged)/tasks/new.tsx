@@ -251,7 +251,7 @@ export default function NewTask() {
     };
 
     try {
-      const res = await api.post("/", data);
+      const res = await api.post("/api/notify", data);
       if (res.status === 200) {
         setLoading(false);
         router.replace("/admin/home");

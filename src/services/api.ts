@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://fdb30be03bfc.ngrok-free.app",
+  baseURL: "https://tarefou-push-service.vercel.app",
 });
 
 export default api;

@@ -58,36 +58,6 @@ export default function Login() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const database = useDatabase();
 
-  // const handleLogin = async () => {
-  //   setIsLoading(true);
-  //   let data;
-  //   if (isValidEmail(email)) {
-  //     data = {
-  //       email: email,
-  //       password: password,
-  //     };
-  //   } else {
-  //     data = {
-  //       username: email,
-  //       password: password,
-  //     };
-  //   }
-
-  //   try {
-  //     const res = await api.post("/login", data);
-  //     if (res.status === 200) {
-  //       login(res.data.token, res.data.role, res.data.username);
-  //     } else {
-  //       setError("Email ou senha inválidos");
-  //       console.error("Login failed: ", res.data.error);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error logging in: ", error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
   const handleLogin = async () => {
     setIsLoading(true);
     if (!isValidEmail(email)) {
