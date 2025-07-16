@@ -1,7 +1,19 @@
+<div align="center">
+
 # Tarefou! 📱
 
 ![Badge em Desenvolvimento](http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=GREEN&style=for-the-badge)
 [![Built with React Native](https://img.shields.io/badge/Built%20with-React%20Native-%2361DAFB?style=for-the-badge&logo=react)](https://reactnative.dev/)
+
+
+
+
+  
+  Português (Brasil)&nbsp;&nbsp;|&nbsp;&nbsp;[English (US)](/README_en-US.md)
+  
+</div>
+
+
 
 Tarefou! é um aplicativo mobile que ajuda pais a desenvolverem responsabilidade em seus filhos por meio de tarefas com prazos e recompensas.
 
