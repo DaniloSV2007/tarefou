@@ -51,30 +51,22 @@ export default function EmailAndPassword({
   const auth = getAuth();
 
   const handleContinue = async () => {
-    if (!email || !password) {
+    const trimmedEmail = email.trim().toLowerCase();
+
+    if (!trimmedEmail || !password) {
       setError(t("register.error.fillAllFields"));
       return;
-    } else if (!isValidEmail(email)) {
+    } else if (!isValidEmail(trimmedEmail)) {
       setError(t("register.error.invalidEmail"));
       return;
     }
 
     try {
-      const isAlrealdyRegister = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      if (!isAlrealdyRegister.user.uid) {
-        await createUserWithEmailAndPassword(auth, email, password);
-        setError("");
-        setPage(2);
-        return;
-      }
-      setError(t("register.error.emailExists"));
+      await createUserWithEmailAndPassword(auth, trimmedEmail, password);
+      setError("");
+      setPage(2);
     } catch (error) {
-      console.error("Error checking email:", error);
-      setError(t("register.error.checkingEmail"));
+      setError(t("register.error.emailExists"));
     }
   };
 
