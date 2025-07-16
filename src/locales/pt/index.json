@@ -162,5 +162,9 @@
       "content": "A atualização foi baixada com sucesso. O app precisa ser reiniciado.",
       "restart": "Reiniciar"
     }
+  },
+  "quickActions": {
+    "newTask": "Nova tarefa",
+    "tasks": "Tarefas"
   }
 }

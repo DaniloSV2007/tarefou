@@ -1,31 +1,21 @@
 import { Pressable, RefreshControl, ScrollView, View } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "react-i18next";
 import TopBar from "@/components/TopBar";
 import { useRouter } from "expo-router";
-import CustomCard from "@/components/CustomCard";
 import { Card, Icon, Searchbar, Text } from "react-native-paper";
 import { StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "@/services/api";
 import { type Task } from "../tasks/[tasks]";
-import {
-  collection,
-  getDocs,
-  query,
-  Timestamp,
-  where,
-} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../../../FirebaseConfig";
-import { useLanguageContext } from "@/context/LanguageContext";
 
 export default function tasks() {
   const theme = useAppTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { languagePreference } = useLanguageContext();
   const usersCollection = collection(db, "users");
   const tasksCollection = collection(db, "tasks");
 
@@ -33,7 +23,6 @@ export default function tasks() {
 
   const [refreshing, setRefreshing] = useState(false);
 
-  const [username, setUsername] = useState("");
   const [tasks, setTasks] = useState<Task[]>([]);
 
   const [fullName, setFullName] = useState("second");

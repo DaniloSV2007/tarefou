@@ -160,5 +160,9 @@
       "content": "The update has been succesfully downloaded. The app needs to be restarted.",
       "restart": "Restart"
     }
+  },
+  "quickActions": {
+    "newTask": "New task",
+    "tasks": "Tasks"
   }
 }

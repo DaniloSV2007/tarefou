@@ -3,11 +3,10 @@ import { View, StyleSheet } from "react-native";
 import { Text, ProgressBar } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import { Task } from "@/app/(logged)/tasks/[tasks]";
-import { useEffect, useState } from "react";
-import tasks from "@/app/(logged)/user/tasks";
+import { useCallback, useEffect, useState } from "react";
 import React from "react";
-import api from "@/services/api";
-import { useAuth } from "@/context/AuthContext";
+import { deleteDoc, doc } from "@firebase/firestore";
+import { db } from "../../../../FirebaseConfig";
 
 interface CardInfoProps {
   tasksInfo: Task[];
@@ -23,14 +22,14 @@ export default function CardInfo({
 }: CardInfoProps) {
   const theme = useAppTheme();
   const { t } = useTranslation();
-  const { token } = useAuth();
 
   const [completedTasks, setCompletedTasks] = useState(0);
   const [totalTask, setTotalTask] = useState(0);
   const [completionRate, setCompletionRate] = useState(0);
 
   useEffect(() => {
-    getStatistics();
+    getTotalTasks();
+    getCompletedTasks();
   }, []);
 
   useEffect(() => {
@@ -39,12 +38,7 @@ export default function CardInfo({
     }
   }, [totalTask, completedTasks]);
 
-  const getStatistics = () => {
-    getTotalTasks();
-    getCompletedTasks();
-  };
-
-  const getTotalTasks = () => {
+  const getTotalTasks = useCallback(() => {
     if (tasksInfo.length > 0) {
       const allTasks = tasksInfo.filter((task) => {
         if (!task.deadline) return true;
@@ -66,7 +60,7 @@ export default function CardInfo({
       });
       setTotalTask(allTasks.length);
     }
-  };
+  }, []);
 
   const getCompletedTasks = () => {
     if (tasksInfo.length > 0) {
@@ -78,10 +72,9 @@ export default function CardInfo({
   const deleteFromDatabase = async (task: Task) => {
     try {
       if (!task) throw new Error("Task not provided");
-      await api.delete("/tasks/", {
-        data: task,
-        headers: { Authorization: token },
-      });
+      const taskDoc = doc(db, "tasks", task.id);
+      await deleteDoc(taskDoc);
+
       reflesh();
     } catch (error) {
       console.error(error);

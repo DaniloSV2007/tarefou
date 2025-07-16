@@ -1,7 +1,6 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useRouter } from "expo-router";
 import { RefreshControl, StyleSheet, View } from "react-native";
-import { Button, Card, Text } from "react-native-paper";
+import { Card, Text } from "react-native-paper";
 import React, { useCallback, useEffect, useState } from "react";
 import TopBar from "@/components/TopBar";
 import { useTranslation } from "react-i18next";
@@ -19,7 +18,6 @@ import { useDatabase } from "@/database/useDatabase";
 import uuid from "react-native-uuid";
 
 export default function UserHome() {
-  const router = useRouter();
   const theme = useAppTheme();
   const { t } = useTranslation();
   const database = useDatabase();
@@ -38,12 +36,8 @@ export default function UserHome() {
     const unsubscribe = NetInfo.addEventListener((state) => {
       setIsConnected(state.isConnected ?? true);
     });
-
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
     reflesh();
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -51,6 +45,28 @@ export default function UserHome() {
       getTasksLocalDb();
     }
   }, [isConnected]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    if (isConnected) {
+      try {
+        reflesh();
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      try {
+        getTasksLocalDb();
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }, []);
+
+  const reflesh = () => {
+    if (!isConnected) return;
+    getTasks();
+  };
 
   const getTasks = async () => {
     const username = await AsyncStorage.getItem("username");
@@ -145,28 +161,6 @@ export default function UserHome() {
     }
   };
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    if (isConnected) {
-      try {
-        reflesh();
-      } catch (error) {
-        console.error(error);
-      }
-    } else {
-      try {
-        getTasksLocalDb();
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  }, []);
-
-  const reflesh = () => {
-    if (!isConnected) return;
-    getTasks();
-  };
-
   const saveLocalDb = async (tasksDb: any[], userId: string) => {
     if (tasksDb.length <= 0) return;
 
@@ -194,28 +188,6 @@ export default function UserHome() {
       }
     } finally {
       await stmt.finalizeAsync();
-    }
-  };
-
-  const createTask = async () => {
-    const task = {
-      id: uuid.v4(),
-      title: "teste",
-      userId: uuid.v4(),
-      description: "",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      isCompleted: 0,
-    };
-    try {
-      const res = await database.createTask(task);
-      if (res.success) {
-        console.log("Criou a tarefa");
-      } else {
-        console.log("Não criou a tarefa");
-      }
-    } catch (error) {
-      console.error(error);
     }
   };
 
@@ -341,7 +313,6 @@ export default function UserHome() {
             </Text>
           </View>
         )}
-        <Button onPress={createTask}>Criar tarefa</Button>
       </ScrollView>
     </>
   );

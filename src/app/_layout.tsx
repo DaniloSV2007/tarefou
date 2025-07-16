@@ -1,17 +1,14 @@
 import "@/i18n";
 import "@/styles/global.css";
 import { AuthProvider } from "@/context/AuthContext";
-import { Slot, SplashScreen, Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import { PaperProvider } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider, useThemeContext } from "@/context/ThemeContext";
 import { LanguageProvider } from "@/context/LanguageContext";
-import { Platform, View } from "react-native";
+import { View } from "react-native";
 import * as SystemUI from "expo-system-ui";
-import * as Font from "expo-font";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { Text, ActivityIndicator } from "react-native";
 import { SQLiteProvider } from "expo-sqlite";
 import { setupDB } from "@/database/setupDB";
 import { useAppTheme } from "@/hooks/useAppTheme";
@@ -35,6 +32,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../../FirebaseConfig";
+import { t } from "i18next";
 import { resetDatabase } from "@/database/resetDatabase";
 import { deleteDatabase } from "@/database/deleteDatabase";
 
@@ -48,16 +46,18 @@ function RootInnerLayout() {
 
   useQuickActionRouting();
 
-  const { isUpdateAvailable, isDownloading, isRestarting, isUpdatePending } =
-    Updates.useUpdates();
-
+  const { isUpdateAvailable } = Updates.useUpdates();
   const [updateAvailable, setIsupdateAvailable] =
     useState<boolean>(isUpdateAvailable);
 
   useEffect(() => {
-    if (expoPushToken) {
-      saveToken();
+    if (Constants.appOwnership !== "expo") {
+      checkUpdates();
     }
+    if (auth.currentUser) {
+      setQuickActions();
+    }
+    checkIsNewBuild();
   }, []);
 
   useEffect(() => {
@@ -79,52 +79,38 @@ function RootInnerLayout() {
     updateSystemUI();
   }, [isDark]);
 
-  useEffect(() => {
-    const prepare = async () => {
-      await SplashScreen.hideAsync();
-    };
-
-    prepare();
-  }, []);
-
-  useEffect(() => {
-    const checkUpdates = async () => {
-      try {
-        const update = Updates.checkForUpdateAsync();
-        if ((await update).isAvailable) {
-          setIsupdateAvailable(true);
-        }
-      } catch (error) {
-        console.error(error);
+  const checkUpdates = async () => {
+    try {
+      const update = Updates.checkForUpdateAsync();
+      if ((await update).isAvailable) {
+        setIsupdateAvailable(true);
       }
-    };
-    if (Constants.appOwnership !== "expo") {
-      checkUpdates();
+    } catch (error) {
+      console.error(error);
     }
-    checkIsNewBuild();
-  }, []);
+  };
 
-  useEffect(() => {
-    if (!auth.currentUser) return;
-    const setQuickActions = async () => {
-      const role = await AsyncStorage.getItem("userRole");
-      if (role === "FAMILY_ADMIN") {
-        QuickActions.setItems([
-          {
-            title: "New Task",
-            icon: "new_task",
-            id: "0",
-            params: { href: "/(logged)/tasks/new/" },
-          },
-        ]);
-      }
-      setQuickActions();
-    };
-  }, []);
-
-  // useEffect(() => {
-  //   resetDatabase();
-  // }, []);
+  const setQuickActions = async () => {
+    const role = await AsyncStorage.getItem("userRole");
+    if (role === "FAMILY_ADMIN") {
+      QuickActions.setItems([
+        {
+          title: t("quickActions.newTask"),
+          icon: "new_task",
+          id: "0",
+          params: { href: "/(logged)/tasks/new/" },
+        },
+      ]);
+    } else {
+      QuickActions.setItems([
+        {
+          title: t("quickActions.tasks"),
+          id: "0",
+          params: { href: "/(logged)/user/tasks" },
+        },
+      ]);
+    }
+  };
 
   const checkIsNewBuild = async (): Promise<boolean> => {
     const currentVersion = Constants.expoConfig?.version ?? "1.0.0";
@@ -192,45 +178,6 @@ function RootInnerLayout() {
 }
 
 export default function RootLayout() {
-  const [isFontsLoaded, setIsFontsLoaded] = useState(false);
-  const [fontError, setFontError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function loadFonts() {
-      try {
-        await Font.loadAsync(MaterialCommunityIcons.font);
-        setIsFontsLoaded(true);
-        setFontError(null);
-      } catch (error) {
-        console.error("Error loading fonts:", error);
-        setFontError("Failed to load fonts");
-      }
-    }
-    loadFonts();
-  }, []);
-
-  if (fontError) {
-    return (
-      <SafeAreaProvider>
-        <PaperProvider>
-          <Text style={{ color: "red", padding: 20 }}>
-            {fontError}. Some icons might not display correctly.
-          </Text>
-        </PaperProvider>
-      </SafeAreaProvider>
-    );
-  }
-
-  if (!isFontsLoaded) {
-    return (
-      <SafeAreaProvider>
-        <PaperProvider>
-          <ActivityIndicator size="large" style={{ flex: 1 }} />
-        </PaperProvider>
-      </SafeAreaProvider>
-    );
-  }
-
   return (
     <ThemeProvider>
       <RootInnerLayout />
