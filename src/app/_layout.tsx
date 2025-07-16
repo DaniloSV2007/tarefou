@@ -36,6 +36,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../FirebaseConfig";
 import { resetDatabase } from "@/database/resetDatabase";
+import { deleteDatabase } from "@/database/deleteDatabase";
 
 function RootInnerLayout() {
   const { theme, isDark } = useThemeContext();
@@ -120,6 +121,10 @@ function RootInnerLayout() {
       setQuickActions();
     };
   }, []);
+
+  // useEffect(() => {
+  //   resetDatabase();
+  // }, []);
 
   const checkIsNewBuild = async (): Promise<boolean> => {
     const currentVersion = Constants.expoConfig?.version ?? "1.0.0";

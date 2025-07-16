@@ -1,7 +1,7 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
 import { RefreshControl, StyleSheet, View } from "react-native";
-import { Card, Text } from "react-native-paper";
+import { Button, Card, Text } from "react-native-paper";
 import React, { useCallback, useEffect, useState } from "react";
 import TopBar from "@/components/TopBar";
 import { useTranslation } from "react-i18next";
@@ -16,6 +16,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../../../FirebaseConfig";
 import NetInfo from "@react-native-community/netinfo";
 import { useDatabase } from "@/database/useDatabase";
+import uuid from "react-native-uuid";
 
 export default function UserHome() {
   const router = useRouter();
@@ -98,7 +99,7 @@ export default function UserHome() {
           };
         });
 
-        const taskIsoString: Task[] = tasks.map((doc) => {
+        const taskIsoString: any[] = tasks.map((doc) => {
           const data = doc.data();
           const createdAt = data.createdAt
             ? new Date(
@@ -122,14 +123,14 @@ export default function UserHome() {
             : undefined;
 
           return {
-            id: doc.id,
+            id: uuid.v4(),
             title: data.title ?? "",
-            userId: data.userId ?? "",
-            description: data.description,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
-            deadline: deadline ?? null,
-            isCompleted: data.isCompleted ?? false,
+            userId: data.userId,
+            description: data.description ?? "",
+            createdAt: createdAt?.toISOString(),
+            updatedAt: updatedAt?.toISOString(),
+            deadline: deadline?.toISOString() ?? null,
+            isCompleted: data.isCompleted ? 1 : 0,
           };
         });
 
@@ -146,10 +147,18 @@ export default function UserHome() {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    try {
-      reflesh();
-    } catch (error) {
-      console.error(error);
+    if (isConnected) {
+      try {
+        reflesh();
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      try {
+        getTasksLocalDb();
+      } catch (error) {
+        console.error(error);
+      }
     }
   }, []);
 
@@ -160,28 +169,71 @@ export default function UserHome() {
 
   const saveLocalDb = async (tasksDb: any[], userId: string) => {
     if (tasksDb.length <= 0) return;
-    await database.deleteAllTasks(userId);
-    await AsyncStorage.setItem("userId", userId);
-    for (let i = 0; i < tasksDb.length; i++) {
-      try {
-        const res = await database.createTask(tasksDb[i]);
-      } catch (error) {
-        console.error(error);
+
+    const db = await database.getDatabase();
+
+    const stmt = await db.prepareAsync(`
+      INSERT INTO Task (
+        id, title, description, createdAt, updatedAt,
+        deadline, isCompleted, userId
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    try {
+      for (const task of tasksDb) {
+        await stmt.executeAsync([
+          task.id,
+          task.title,
+          task.description ?? null,
+          task.createdAt,
+          task.updatedAt ?? null,
+          task.deadline ?? null,
+          task.isCompleted ?? 0,
+          userId,
+        ]);
       }
+    } finally {
+      await stmt.finalizeAsync();
+    }
+  };
+
+  const createTask = async () => {
+    const task = {
+      id: uuid.v4(),
+      title: "teste",
+      userId: uuid.v4(),
+      description: "",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      isCompleted: 0,
+    };
+    try {
+      const res = await database.createTask(task);
+      if (res.success) {
+        console.log("Criou a tarefa");
+      } else {
+        console.log("Não criou a tarefa");
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
   const getTasksLocalDb = async () => {
     const userId = await AsyncStorage.getItem("userId");
     if (!userId) return;
+
     try {
       const res = await database.getTasksByUser(userId);
-      if ("rows" in res) {
-        const tasks = res.rows as Task[];
+      if (Array.isArray(res)) {
+        const tasks = res as Task[];
         setTasks(tasks);
+        console.log(tasks);
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -289,6 +341,7 @@ export default function UserHome() {
             </Text>
           </View>
         )}
+        <Button onPress={createTask}>Criar tarefa</Button>
       </ScrollView>
     </>
   );

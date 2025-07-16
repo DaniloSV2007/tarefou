@@ -25,13 +25,12 @@ export function useDatabase() {
   }
 
   async function createTask(data: Task) {
-    try {
-      const db = await getDatabase();
-      const statement = await db.prepareAsync(
-        `INSERT INTO Task (id, title, description, createdAt, updatedAt, deadline, isCompleted, userId)
+    const db = await getDatabase();
+    const statement = await db.prepareAsync(
+      `INSERT INTO Task (id, title, description, createdAt, updatedAt, deadline, isCompleted, userId)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-      );
-
+    );
+    try {
       await statement.executeAsync([
         data.id,
         data.title,
@@ -54,9 +53,8 @@ export function useDatabase() {
   async function getTasks() {
     try {
       const db = await getDatabase();
-      const statement = await db.prepareAsync(`SELECT * FROM Task`);
-      const result = await statement.executeAsync();
-      return result;
+      const res = await db.getAllAsync("SELECT * FROM Task");
+      return res;
     } catch (error) {
       console.error("Error getting tasks: ", error);
       return { success: false, error };
@@ -66,11 +64,11 @@ export function useDatabase() {
   async function getTasksByUser(userId: string) {
     try {
       const db = await getDatabase();
-      const statement = await db.prepareAsync(
-        `SELECT * FROM Task WHERE userId = ?`
+      const res = await db.getAllAsync(
+        `SELECT * FROM Task WHERE userId = ?`,
+        userId
       );
-      const result = await statement.executeAsync([userId]);
-      return result;
+      return res;
     } catch (error) {
       console.error("Error getting tasks: ", error);
       return { success: false, error };
@@ -78,16 +76,16 @@ export function useDatabase() {
   }
 
   async function getTaskById(id: string) {
+    const db = await getDatabase();
+    const statement = await db.prepareAsync(`SELECT * FROM Task WHERE id = ?`);
     try {
-      const db = await getDatabase();
-      const statement = await db.prepareAsync(
-        `SELECT * FROM Task WHERE id = ?`
-      );
       const result = await statement.executeAsync([id]);
       return result;
     } catch (error) {
       console.error("Error getting task by id: ", error);
       return { success: false, error };
+    } finally {
+      await statement.finalizeAsync();
     }
   }
 

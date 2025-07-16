@@ -58,4 +58,10 @@ src/assets/Guilherme/
 #Components Copy
 /src/components/CustomTabBar/indexcopy.tsx
 
+# Google Service
 /.google/
+
+# Enviroment Variables
+/.env
+
+/git-filter-repo
