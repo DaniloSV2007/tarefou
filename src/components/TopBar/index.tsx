@@ -1,28 +1,41 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useRouter } from "expo-router";
-import { Children } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect, useRouter } from "expo-router";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { Appbar, Badge, useTheme } from "react-native-paper";
+import { Appbar, Badge } from "react-native-paper";
+import { db } from "../../../FirebaseConfig";
 
 interface Props {
-  title: void | string;
-  titleColor?: void | string;
-  iconButton?: void | string;
-  iconColor?: void | string;
+  title?: string;
+  titleColor?: string;
+  iconButton?: string;
+  iconColor?: string;
   buttonSize?: number;
-  onPressButton?: () => void | void;
+  onPressButton?: () => void;
   isBackButtonEnable?: boolean;
-  backButtonColor?: void | string;
-  barColor?: void | string;
-  backButtonHref?: () => void | void;
+  backButtonColor?: string;
+  barColor?: string;
+  backButtonHref?: () => void;
   bottomBorder?: boolean;
   children?: any;
   showNotification?: boolean;
+  reflesh?: () => void;
 }
 
-export default function TopBar(props: Props) {
+const TopBar = forwardRef((props: Props, ref) => {
   const router = useRouter();
   const theme = useAppTheme();
+  const notificationCollections = collection(db, "notifications");
+
+  const [notifNumber, setNotifNumber] = useState(0);
 
   const {
     title = "",
@@ -40,6 +53,36 @@ export default function TopBar(props: Props) {
   const iconColor = props.iconColor ?? theme.colors.primary;
   const backButtonColor = props.backButtonColor ?? theme.colors.onBackground;
   const barColor = props.barColor ?? theme.colors.background;
+
+  const getNotificationsNumber = async () => {
+    const userId = await AsyncStorage.getItem("userId");
+    if (!userId) return;
+
+    try {
+      const q = query(notificationCollections, where("userId", "==", userId));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const notifs = querySnapshot.docs.map((n) => n.data());
+        const notViewed = notifs.filter((n) => !n.viewed);
+        setNotifNumber(notViewed.length);
+      } else {
+        setNotifNumber(0);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar notificações:", error);
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    getNotifNum: getNotificationsNumber,
+  }));
+
+  useFocusEffect(
+    useCallback(() => {
+      getNotificationsNumber();
+    }, [])
+  );
 
   return (
     <View>
@@ -62,27 +105,29 @@ export default function TopBar(props: Props) {
             marginLeft: isBackButtonEnable ? -16 : 0,
           }}
         />
+
         {showNotification && (
           <View style={styles.iconWithBadge}>
             <Appbar.Action
               icon="bell-outline"
-              onPress={() => {}}
+              onPress={() => router.push("/notifications")}
               style={{ margin: 0 }}
             />
-            <Badge style={styles.badge} size={8}></Badge>
+            {notifNumber > 0 && <Badge size={8} style={styles.badge} />}
           </View>
         )}
 
-        {iconButton != "" && (
+        {iconButton !== "" && (
           <TouchableOpacity activeOpacity={0.7}>
             <Appbar.Action
               icon={iconButton}
               color={iconColor}
-              size={buttonSize ?? 20}
+              size={buttonSize}
               onPress={onPressButton}
             />
           </TouchableOpacity>
         )}
+
         {isBackButtonEnable && (
           <Appbar.BackAction
             onPress={backButtonHref}
@@ -90,11 +135,12 @@ export default function TopBar(props: Props) {
             color={backButtonColor}
           />
         )}
+
         {children}
       </Appbar.Header>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   iconWithBadge: {
@@ -111,3 +157,5 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
 });
+
+export default TopBar;

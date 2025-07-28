@@ -69,7 +69,7 @@ export default function Login() {
       const user = await signInWithEmailAndPassword(auth, email, password);
       if (user) {
         const token = await user.user.getIdToken();
-        await AsyncStorage.setItem("userId", user.user.uid);
+
         await getUserData(token);
       }
     } catch (error) {
@@ -88,6 +88,7 @@ export default function Login() {
 
       if (!querySnapshot.empty) {
         const docDb = querySnapshot.docs[0];
+        await AsyncStorage.setItem("userId", docDb.id);
         const data = docDb.data();
         await login(token, data.role, data.username);
       }

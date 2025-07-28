@@ -1,7 +1,7 @@
 import "@/i18n";
 import "@/styles/global.css";
 import { AuthProvider } from "@/context/AuthContext";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { PaperProvider } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider, useThemeContext } from "@/context/ThemeContext";
@@ -33,6 +33,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../FirebaseConfig";
 import { t } from "i18next";
+import * as Notifications from "expo-notifications";
 import { resetDatabase } from "@/database/resetDatabase";
 import { deleteDatabase } from "@/database/deleteDatabase";
 
@@ -40,9 +41,10 @@ function RootInnerLayout() {
   const { theme, isDark } = useThemeContext();
   const appTheme = useAppTheme();
   const auth = getAuth();
+  const router = useRouter();
   const usersCollection = collection(db, "users");
 
-  const { expoPushToken } = usePushNotifications();
+  const { expoPushToken, notification } = usePushNotifications();
 
   useQuickActionRouting();
 
@@ -58,6 +60,7 @@ function RootInnerLayout() {
       setQuickActions();
     }
     checkIsNewBuild();
+    checkInitialNotification();
   }, []);
 
   useEffect(() => {
@@ -93,6 +96,7 @@ function RootInnerLayout() {
   const setQuickActions = async () => {
     const role = await AsyncStorage.getItem("userRole");
     if (role === "FAMILY_ADMIN") {
+      console.log("Quick Actions Setted");
       QuickActions.setItems([
         {
           title: t("quickActions.newTask"),
@@ -139,6 +143,15 @@ function RootInnerLayout() {
       }
     } catch (error) {
       console.log("Error while saving push token: ", error);
+    }
+  };
+
+  const checkInitialNotification = async () => {
+    const response = await Notifications.getLastNotificationResponseAsync();
+    const href = String(response?.notification.request.content.data?.href);
+
+    if (href) {
+      router.push(href);
     }
   };
 

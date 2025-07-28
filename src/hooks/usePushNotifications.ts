@@ -6,6 +6,18 @@ import * as Notification from "expo-notifications";
 import Constants from "expo-constants";
 
 import { Platform } from "react-native";
+import { useRouter } from "expo-router";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  query,
+  serverTimestamp,
+  where,
+} from "firebase/firestore";
+import { db } from "../../FirebaseConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface PushNotificationState {
   notification?: Notification.Notification;
@@ -19,9 +31,15 @@ export const usePushNotifications = (): PushNotificationState => {
       shouldShowBanner: true,
       shouldShowList: true,
       shouldSetBadge: false,
-      shouldShowAlert: true,
     }),
   });
+
+  const router = useRouter();
+
+  const [notId, setNotId] = useState<any>();
+
+  // const usersCollection = collection(db, "users");
+  const notificationCollection = collection(db, "notifications");
 
   const [expoPushToken, setExpoPushToken] = useState<
     Notification.ExpoPushToken | undefined
@@ -77,19 +95,37 @@ export const usePushNotifications = (): PushNotificationState => {
   }
 
   useEffect(() => {
+    const checkInitialNotification = async () => {
+      const response = await Notification.getLastNotificationResponseAsync();
+
+      if (response) {
+        const href = String(response.notification.request.content.data?.href);
+
+        if (href) {
+          router.push(href);
+        }
+      }
+    };
+
+    checkInitialNotification();
+  }, []);
+
+  useEffect(() => {
     registerForPushNotificationsAsync().then((token) => {
       setExpoPushToken(token);
     });
 
     notificationListener.current = Notification.addNotificationReceivedListener(
-      (notification) => {
-        setNotification(notification);
-      }
+      (notification) => {}
     );
 
     responseListener.current =
       Notification.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
+        const href = String(response?.notification.request.content.data?.href);
+
+        if (href) {
+          router.push(href);
+        }
       });
     return () => {
       if (notificationListener.current) {

@@ -242,7 +242,10 @@ export default function UserHome() {
   if (refreshing)
     return (
       <>
-        <TopBar title={t("home.title", { ns: "translation" })} />
+        <TopBar
+          title={t("home.title", { ns: "translation" })}
+          showNotification
+        />
         <ScrollView
           style={{ paddingVertical: 16 }}
           contentContainerStyle={{ gap: 16, flex: 1, alignItems: "center" }}
@@ -263,7 +266,7 @@ export default function UserHome() {
 
   return (
     <>
-      <TopBar title={t("home.title", { ns: "translation" })} />
+      <TopBar title={t("home.title", { ns: "translation" })} showNotification />
       <ScrollView
         style={{ paddingVertical: 16 }}
         contentContainerStyle={{ gap: 16, flex: 1, alignItems: "center" }}
