@@ -1,6 +1,6 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { RefreshControl, StyleSheet, View } from "react-native";
-import { Card, Text } from "react-native-paper";
+import { Button, Card, Text } from "react-native-paper";
 import React, { useCallback, useEffect, useState } from "react";
 import TopBar from "@/components/TopBar";
 import { useTranslation } from "react-i18next";
@@ -16,6 +16,7 @@ import { db } from "../../../../FirebaseConfig";
 import NetInfo from "@react-native-community/netinfo";
 import { useDatabase } from "@/database/useDatabase";
 import uuid from "react-native-uuid";
+import { useRouter } from "expo-router";
 
 export default function UserHome() {
   const theme = useAppTheme();
@@ -23,6 +24,7 @@ export default function UserHome() {
   const database = useDatabase();
   const usersCollection = collection(db, "users");
   const tasksCollection = collection(db, "tasks");
+  const router = useRouter();
 
   const [refreshing, setRefreshing] = useState(true);
 
@@ -316,6 +318,10 @@ export default function UserHome() {
             </Text>
           </View>
         )}
+
+        <Button onPress={() => router.push("/userLink/DaniloSV07")}>
+          Teste
+        </Button>
       </ScrollView>
     </>
   );
