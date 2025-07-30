@@ -318,10 +318,6 @@ export default function UserHome() {
             </Text>
           </View>
         )}
-
-        <Button onPress={() => router.push("/userLink/DaniloSV07")}>
-          Teste
-        </Button>
       </ScrollView>
     </>
   );

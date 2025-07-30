@@ -261,7 +261,7 @@ export default function Home() {
           onPress={handleAddTask}
           color="white"
         />
-        <TopBar title={t("home.title")} />
+        <TopBar title={t("home.title")} showNotification />
         <ScrollView
           style={[
             styles.container,
@@ -320,7 +320,7 @@ export default function Home() {
         onPress={handleAddTask}
         color="white"
       />
-      <TopBar title={t("home.title")} />
+      <TopBar title={t("home.title")} showNotification />
       <ScrollView
         style={[styles.container, { backgroundColor: theme.colors.background }]}
         showsVerticalScrollIndicator={false}

@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { RefObject, useEffect, useState } from "react";
 import { Text, StyleSheet, Dimensions } from "react-native";
 import {
   Gesture,
   GestureDetector,
   Pressable,
+  ScrollView,
 } from "react-native-gesture-handler";
 import Animated, {
   useSharedValue,
@@ -30,6 +31,7 @@ export function NotificationItem({
   changeViewed,
   deleteNotif,
   data,
+  scrollGestureRef,
 }: {
   title: string;
   body?: string | undefined;
@@ -37,8 +39,8 @@ export function NotificationItem({
   createAt: string;
   changeViewed: (status: boolean) => void;
   deleteNotif: () => void;
-
   data: any;
+  scrollGestureRef: RefObject<ScrollView>;
 }) {
   const translationX = useSharedValue(0);
   const height = useSharedValue(80);
@@ -66,11 +68,13 @@ export function NotificationItem({
     });
   };
   const changeView = () => {
-    setViewedStatus((prev) => !prev);
-    changeViewed(viewedStatus);
+    const newViewedStatus = viewedStatus === true ? false : true;
+    setViewedStatus(newViewedStatus);
+    changeViewed(newViewedStatus);
   };
 
   const gesture = Gesture.Pan()
+    .minDistance(40)
     .onUpdate((event) => {
       translationX.value = event.translationX;
     })
@@ -82,7 +86,9 @@ export function NotificationItem({
       } else {
         translationX.value = withSpring(0);
       }
-    });
+    })
+    .simultaneousWithExternalGesture(scrollGestureRef)
+    .shouldCancelWhenOutside(false);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translationX.value }],
@@ -119,9 +125,9 @@ export function NotificationItem({
   };
 
   const handleNotifPress = () => {
-    if (!data) return;
     setViewedStatus(true);
     changeViewed(true);
+    if (!data) return;
     const href = data.href;
     if (!href) return;
     router.push(href);

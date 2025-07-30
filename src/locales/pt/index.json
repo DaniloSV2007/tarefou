@@ -166,5 +166,11 @@
   "quickActions": {
     "newTask": "Nova tarefa",
     "tasks": "Tarefas"
+  },
+  "notifications": {
+    "title": "Notificações",
+    "notFound": "Você não tem nenhuma notificação.",
+    "update": "Atualizar",
+    "markRead": "Marcar todas como lida"
   }
 }

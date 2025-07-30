@@ -44,7 +44,7 @@ function RootInnerLayout() {
   const router = useRouter();
   const usersCollection = collection(db, "users");
 
-  const { expoPushToken, notification } = usePushNotifications();
+  const { expoPushToken } = usePushNotifications();
 
   useQuickActionRouting();
 
@@ -60,7 +60,6 @@ function RootInnerLayout() {
       setQuickActions();
     }
     checkIsNewBuild();
-    checkInitialNotification();
   }, []);
 
   useEffect(() => {
@@ -143,15 +142,6 @@ function RootInnerLayout() {
       }
     } catch (error) {
       console.log("Error while saving push token: ", error);
-    }
-  };
-
-  const checkInitialNotification = async () => {
-    const response = await Notifications.getLastNotificationResponseAsync();
-    const href = String(response?.notification.request.content.data?.href);
-
-    if (href) {
-      router.push(href);
     }
   };
 

@@ -222,7 +222,7 @@ export default function Members() {
       >
         <TopBar
           title={t("members.title", { ns: "screens" })}
-          showNotification={Constants.appOwnership === "expo"}
+          showNotification
         />
 
         <View
@@ -298,7 +298,7 @@ export default function Members() {
     >
       <TopBar
         title={familyName ? familyName : t("members.title", { ns: "screens" })}
-        showNotification={Constants.appOwnership === "expo"}
+        showNotification
       >
         {familyInfo && familyInfo.owner === username && (
           <Appbar.Action

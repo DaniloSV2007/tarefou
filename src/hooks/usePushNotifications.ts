@@ -36,11 +36,6 @@ export const usePushNotifications = (): PushNotificationState => {
 
   const router = useRouter();
 
-  const [notId, setNotId] = useState<any>();
-
-  // const usersCollection = collection(db, "users");
-  const notificationCollection = collection(db, "notifications");
-
   const [expoPushToken, setExpoPushToken] = useState<
     Notification.ExpoPushToken | undefined
   >();
@@ -116,14 +111,21 @@ export const usePushNotifications = (): PushNotificationState => {
     });
 
     notificationListener.current = Notification.addNotificationReceivedListener(
-      (notification) => {}
+      (notification) => {
+        setNotification(notification);
+      }
     );
 
     responseListener.current =
       Notification.addNotificationResponseReceivedListener((response) => {
         const href = String(response?.notification.request.content.data?.href);
 
-        if (href) {
+        if (
+          href &&
+          typeof href === "string" &&
+          href.startsWith("/") &&
+          response.notification.request.content.data
+        ) {
           router.push(href);
         }
       });

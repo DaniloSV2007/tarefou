@@ -150,7 +150,7 @@ export default function Report() {
 
   return (
     <>
-      <TopBar title={t("report.title", { ns: "screens" })} />
+      <TopBar title={t("report.title", { ns: "screens" })} showNotification />
       <ScrollView
         style={{
           flex: 1,

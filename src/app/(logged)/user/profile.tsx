@@ -45,8 +45,6 @@ export default function Profile() {
     );
   }
 
-  if (isLoading) return <LoadingPageIndicator />;
-
   return (
     <>
       <TopBar
@@ -56,6 +54,7 @@ export default function Profile() {
         iconColor={theme.colors.onBackground}
         onPressButton={openMenu}
         barColor={theme.colors.background}
+        showNotification
       />
 
       <ProfileLogged />

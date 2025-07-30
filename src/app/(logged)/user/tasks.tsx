@@ -1,4 +1,10 @@
-import { Pressable, RefreshControl, ScrollView, View } from "react-native";
+import {
+  Keyboard,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  View,
+} from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useTranslation } from "react-i18next";
@@ -21,11 +27,17 @@ export default function tasks() {
 
   const [searchValue, setSearchValue] = useState("");
 
+  const [isFocus, setIsFocus] = useState(false);
+
   const [refreshing, setRefreshing] = useState(false);
 
   const [tasks, setTasks] = useState<Task[]>([]);
 
   const [fullName, setFullName] = useState("second");
+
+  useEffect(() => {
+    console.log(Keyboard.isVisible());
+  }, [Keyboard.isVisible()]);
 
   useEffect(() => {
     reflesh();
@@ -114,7 +126,10 @@ export default function tasks() {
 
   return (
     <>
-      <TopBar title={t("tasks.title", { ns: "translation" })} />
+      <TopBar
+        title={t("tasks.title", { ns: "translation" })}
+        showNotification
+      />
       <View
         className="flex-1"
         style={{ backgroundColor: theme.colors.background }}
@@ -144,6 +159,8 @@ export default function tasks() {
                 backgroundColor: theme.custom.cardTaskBackground,
               }}
               inputStyle={{ color: theme.colors.onBackground, fontSize: 24 }}
+              onFocus={() => setIsFocus(true)}
+              onBlur={() => setIsFocus(false)}
             />
           </View>
 
@@ -158,8 +175,12 @@ export default function tasks() {
             );
             if (filteredTasks.length === 0) {
               return (
-                <View className="items-center justify-center flex-1 ">
-                  <Text>
+                <View
+                  className={`items-center flex-1 ${
+                    !isFocus && "justify-center"
+                  }`}
+                >
+                  <Text className={`text-2xl`} style={{ marginTop: 32 }}>
                     {t("tasks.common.noTasksFound", { ns: "screens" })}
                   </Text>
                 </View>

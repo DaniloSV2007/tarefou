@@ -164,5 +164,11 @@
   "quickActions": {
     "newTask": "New task",
     "tasks": "Tasks"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "notFound": "You have no notification.",
+    "update": "Update",
+    "markRead": "Mark all as read"
   }
 }
