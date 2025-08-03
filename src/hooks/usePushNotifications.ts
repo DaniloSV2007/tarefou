@@ -5,7 +5,7 @@ import * as Notification from "expo-notifications";
 
 import Constants from "expo-constants";
 
-import { Platform } from "react-native";
+import { Alert, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import {
   addDoc,
@@ -94,10 +94,31 @@ export const usePushNotifications = (): PushNotificationState => {
       const response = await Notification.getLastNotificationResponseAsync();
 
       if (response) {
-        const href = String(response.notification.request.content.data?.href);
+        const href = String(response?.notification.request.content.data?.href);
+        const role = await AsyncStorage.getItem("userRole");
 
-        if (href) {
-          router.push(href);
+        Alert.alert("Chamou");
+
+        if (
+          href &&
+          typeof href === "string" &&
+          href.startsWith("/") &&
+          response.notification.request.content.data
+        ) {
+          setTimeout(() => {
+            router.push(href);
+          }, 500);
+          return;
+        }
+
+        if (role === "FAMILY_ADMIN") {
+          setTimeout(() => {
+            router.push("/admin/home");
+          }, 500);
+        } else {
+          setTimeout(() => {
+            router.push("/user/home");
+          }, 500);
         }
       }
     };
