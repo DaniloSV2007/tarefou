@@ -88,6 +88,9 @@ export default function TaskDetails() {
       token: userData.pushToken,
       title: `${userName.split(" ")[0]} concluiu uma tarefa!`,
       body: taskData?.title,
+      data: {
+        href: "/",
+      },
     };
 
     try {

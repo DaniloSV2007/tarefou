@@ -248,6 +248,9 @@ export default function NewTask() {
       token: pushToken,
       title: `${userName.split(" ")[0]} você tem uma nova tarefa.`,
       body: title,
+      data: {
+        href: "/",
+      },
     };
 
     try {

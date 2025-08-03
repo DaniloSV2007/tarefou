@@ -176,6 +176,7 @@ export function NotificationItem({
                     color: theme.colors.onBackground,
                     opacity: viewedStatus ? 0.5 : undefined,
                   }}
+                  numberOfLines={1}
                   className="text-xl font-bold"
                 >
                   {title}

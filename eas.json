@@ -7,6 +7,10 @@
     "development": {
       "developmentClient": false,
       "distribution": "internal",
+      "android": {
+        "autoIncrement": true,
+        "buildType": "apk"
+      },
       "channel": "development",
       "env": {
         "GOOGLE_SERVICES": "GOOGLE_SERVICES"
