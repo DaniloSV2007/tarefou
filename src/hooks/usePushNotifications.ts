@@ -97,8 +97,6 @@ export const usePushNotifications = (): PushNotificationState => {
         const href = String(response?.notification.request.content.data?.href);
         const role = await AsyncStorage.getItem("userRole");
 
-        Alert.alert("Chamou");
-
         if (
           href &&
           typeof href === "string" &&
