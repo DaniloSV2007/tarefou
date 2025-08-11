@@ -29,7 +29,7 @@ import {
   Timestamp,
   where,
 } from "firebase/firestore";
-import { db } from "../../../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 
 export interface UserType {
   name: string;

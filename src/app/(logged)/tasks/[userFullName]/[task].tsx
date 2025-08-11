@@ -4,7 +4,7 @@ import { useAppTheme } from "@/hooks/useAppTheme";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import TopBar from "@/components/TopBar";
 import { Button, Card } from "react-native-paper";
-import CustomCard from "@/components/CustomCard";
+import CustomCard from "@/components/GlobalComp/CustomCard";
 import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Task } from "../[tasks]";
@@ -19,7 +19,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { db } from "../../../../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 
 export default function TaskDetails() {
   const theme = useAppTheme();

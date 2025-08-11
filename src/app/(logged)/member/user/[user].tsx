@@ -30,7 +30,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { db } from "../../../../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 
 type User = {
   name: string;

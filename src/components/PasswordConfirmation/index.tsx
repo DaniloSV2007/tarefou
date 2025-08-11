@@ -20,7 +20,7 @@ import {
   reauthenticateWithCredential,
 } from "firebase/auth";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 
 interface Props {
   visible: boolean;

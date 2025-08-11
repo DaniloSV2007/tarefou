@@ -11,7 +11,7 @@ import {
 } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Appbar, Badge } from "react-native-paper";
-import { db } from "../../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 
 interface Props {
   title?: string;

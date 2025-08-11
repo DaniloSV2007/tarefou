@@ -6,14 +6,14 @@ import { Button, IconButton, Text } from "react-native-paper";
 import { Link, useRouter } from "expo-router";
 import { ActivityIndicator } from "react-native-paper";
 import { View } from "react-native";
-import GoogleButton from "@/components/GoogleButton";
+import GoogleButton from "@/components/GlobalComp/GoogleButton";
 import { isValidEmail } from "@/utils/isValidEmail";
 import { useTranslation } from "react-i18next";
 import { useDatabase } from "@/database/useDatabase";
 import api from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 import {
   createUserWithEmailAndPassword,
   getAuth,

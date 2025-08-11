@@ -35,7 +35,7 @@ import {
   getDocs,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../../../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 import {
   createUserWithEmailAndPassword,
   getAuth,
@@ -57,7 +57,7 @@ const steps = [
 export default function Register() {
   const { t } = useTranslation();
   const theme = useAppTheme();
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState<number>(1);
   const router = useRouter();
   const { expoPushToken } = usePushNotifications();
 
@@ -199,80 +199,55 @@ export default function Register() {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 0}
           >
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Card
-                style={[
-                  styles.card,
-                  { backgroundColor: theme.custom.cardColor },
-                ]}
-              >
-                <Card.Title
-                  title={t(steps[page] as any)}
-                  titleNumberOfLines={3}
-                  titleStyle={{
-                    fontSize: 32,
-                    fontWeight: "bold",
-                    lineHeight: 42,
-                  }}
+            <View className="flex-1 justify-center px-8 gap-4">
+              <Text className="text-4xl mb-4" style={{ fontWeight: 700 }}>
+                {t(steps[page] as any)}
+              </Text>
+              {page === 1 && (
+                <EmailAndPassword
+                  setPage={setPage}
+                  email={email}
+                  setEmail={setEmail}
+                  password={password}
+                  setPassword={setPassword}
                 />
-                <Card.Content style={styles.cardContent}>
-                  {page === 1 && (
-                    <EmailAndPassword
-                      setPage={setPage}
-                      email={email}
-                      setEmail={setEmail}
-                      password={password}
-                      setPassword={setPassword}
-                    />
-                  )}
-                  {page === 2 && (
-                    <NameAndUsername
-                      setPage={setPage}
-                      name={name}
-                      setName={setName}
-                      username={username}
-                      setUsername={setUsername}
-                      setDoneName={setDoneName}
-                    />
-                  )}
-                  {page === 3 && (
-                    <Birthday
-                      setPage={setPage}
-                      setBirthday={setBirthday}
-                      birthday={birthday}
-                      age={age}
-                      setAge={setAge}
-                    />
-                  )}
-                  {page === 4 && (
-                    <RoleSelection
-                      setPage={setPage}
-                      setRole={setRole}
-                      age={age}
-                    />
-                  )}
-                  {page === 5 && (
-                    <FamilyName
-                      setPage={setPage}
-                      familyName={familyName}
-                      setFamilyName={setFamilyName}
-                    />
-                  )}
-                  {page === 6 && (
-                    <TermsOfService
-                      setPage={setPage}
-                      onConfirm={handleRegister}
-                      isLoading={isLoading}
-                    />
-                  )}
-                </Card.Content>
-              </Card>
+              )}
+              {page === 2 && (
+                <NameAndUsername
+                  setPage={setPage}
+                  name={name}
+                  setName={setName}
+                  username={username}
+                  setUsername={setUsername}
+                  setDoneName={setDoneName}
+                />
+              )}
+              {page === 3 && (
+                <Birthday
+                  setPage={setPage}
+                  setBirthday={setBirthday}
+                  birthday={birthday}
+                  age={age}
+                  setAge={setAge}
+                />
+              )}
+              {page === 4 && (
+                <RoleSelection setPage={setPage} setRole={setRole} age={age} />
+              )}
+              {page === 5 && (
+                <FamilyName
+                  setPage={setPage}
+                  familyName={familyName}
+                  setFamilyName={setFamilyName}
+                />
+              )}
+              {page === 6 && (
+                <TermsOfService
+                  setPage={setPage}
+                  onConfirm={handleRegister}
+                  isLoading={isLoading}
+                />
+              )}
             </View>
           </KeyboardAvoidingView>
         </TouchableWithoutFeedback>

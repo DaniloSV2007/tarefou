@@ -10,7 +10,10 @@ export default function ThemeSection() {
   const { t } = useTranslation();
 
   return (
-    <Card style={[{ backgroundColor: theme.custom.cardColor }, styles.card]}>
+    <Card
+      mode="contained"
+      style={[{ backgroundColor: theme.custom.cardColor }, styles.card]}
+    >
       <Card.Title
         title={t("settings.theme.title")}
         titleStyle={{ fontSize: 28, fontWeight: "bold", marginBottom: "-4%" }}
@@ -86,11 +89,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 4,
     width: "90%",
-    borderRadius: 16,
+    borderRadius: 24,
   },
   cardContent: {
     padding: 0,
-    borderRadius: 16,
+    borderRadius: 24,
   },
   divider: {
     marginVertical: 10,
@@ -100,7 +103,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
     padding: 5,
-    borderRadius: 16,
+    borderRadius: 24,
     overflow: "hidden",
     width: "100%",
   },

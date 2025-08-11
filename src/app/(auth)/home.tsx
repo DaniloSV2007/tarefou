@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import TopBar from "@/components/TopBar";
 import { useTranslation } from "react-i18next";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import GoogleButton from "@/components/GoogleButton";
+import GoogleButton from "@/components/GlobalComp/GoogleButton";
 
 export default function Home() {
   const router = useRouter();
@@ -49,7 +49,7 @@ export default function Home() {
         <View style={styles.buttonContainer}>
           <Button
             mode="contained"
-            onPress={() => router.push("/(aux)/Login")}
+            onPress={() => router.push("/(aux)/login")}
             style={styles.button}
             labelStyle={styles.buttonLabel}
           >

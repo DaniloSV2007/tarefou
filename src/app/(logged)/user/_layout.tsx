@@ -1,4 +1,4 @@
-import CustomTabBar from "@/components/CustomTabBar";
+import CustomTabBar from "@/components/GlobalComp/CustomTabBar";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { routes } from "@/routes/userRoutes";
 import { Tabs, usePathname } from "expo-router";

@@ -9,7 +9,7 @@ import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
 import TopBar from "@/components/TopBar";
 import { useTranslation } from "react-i18next";
-import CustomCard from "@/components/CustomCard";
+import CustomCard from "@/components/GlobalComp/CustomCard";
 import {
   ActivityIndicator,
   Avatar,
@@ -27,7 +27,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserType } from "../admin/members";
 import { Family } from "../member/familySettings/[family]";
 import { useAuth } from "@/context/AuthContext";
-import { db } from "../../../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 import {
   collection,
   addDoc,

@@ -1,4 +1,4 @@
-import ProfileLogged from "@/components/ProfileLogged";
+import ProfileLogged from "@/components/Profile/ProfileLogged";
 import TopBar from "@/components/TopBar";
 import { useCallback, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -65,12 +65,6 @@ export default function Profile() {
       )}
 
       <Menu ref={profileMenuState} close={closeMenu}>
-        <MenuButton
-          close={closeMenu}
-          text={t("menu.appInfo", { ns: "components" })}
-          icon="information-outline"
-          onPress={() => router.push("/appinfo")}
-        />
         <MenuButton
           close={closeMenu}
           text={t("menu.settings", { ns: "components" })}

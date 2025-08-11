@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import TopBar from "@/components/TopBar";
 import { useTranslation } from "react-i18next";
 import ContentLoader, { Circle, List, Rect } from "react-content-loader/native";
-import CustomCard from "@/components/CustomCard";
+import CustomCard from "@/components/GlobalComp/CustomCard";
 import CardInfo from "@/components/Report/CardInfo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserType } from "./members";
@@ -22,7 +22,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { db } from "../../../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 import TasksCard from "@/components/Home/TasksCard";
 
 export interface UserTasksType extends UserType {

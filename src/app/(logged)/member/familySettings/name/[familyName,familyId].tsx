@@ -33,7 +33,7 @@ import { Header } from "react-native/Libraries/NewAppScreen";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import PasswordConfirmation from "@/components/PasswordConfirmation";
 import { collection, doc, updateDoc } from "firebase/firestore";
-import { db } from "../../../../../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 
 export default function ChangeFamilyName() {
   const theme = useAppTheme();

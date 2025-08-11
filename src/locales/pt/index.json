@@ -123,6 +123,23 @@
   },
   "settings": {
     "title": "Configurações",
+    "general": {
+      "appInfo": { "title": "Informações do App" },
+      "account": {
+        "title": "Conta",
+        "accountInfo": {
+          "title": "Informações da Conta",
+          "name": "Nome",
+          "username": "Nome de usuário",
+          "email": "Email",
+          "birthday": "Aniversário",
+          "role": "Função",
+          "roleInfo": "Só pode ser mudado pelo administrador da família"
+        },
+        "resetPassword": "Redefinir senha",
+        "deleteAccount": "Excluir conta"
+      }
+    },
     "theme": {
       "title": "Tema",
       "light": "Claro",

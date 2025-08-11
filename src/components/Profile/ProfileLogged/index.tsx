@@ -27,10 +27,10 @@ import {
   Text,
 } from "react-native-paper";
 import { useTranslation } from "react-i18next";
-import AvatarProfile from "../Profile/Avatar";
+import AvatarProfile from "../Avatar";
 import ImageView from "react-native-image-viewing";
 import QRCode from "react-native-qrcode-svg";
-import TopBar from "../TopBar";
+import TopBar from "../../TopBar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Brightness from "expo-brightness";
 import logoLight from "@/assets/Profile/splash-icon-light.png";

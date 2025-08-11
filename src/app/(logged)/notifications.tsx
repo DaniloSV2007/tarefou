@@ -19,7 +19,7 @@ import {
   ScrollView,
 } from "react-native-gesture-handler";
 import { ActivityIndicator, Button } from "react-native-paper";
-import { db } from "../../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAnimatedRef } from "react-native-reanimated";
 import { useAppTheme } from "@/hooks/useAppTheme";

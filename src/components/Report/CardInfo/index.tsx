@@ -6,7 +6,7 @@ import { Task } from "@/app/(logged)/tasks/[tasks]";
 import { useCallback, useEffect, useState } from "react";
 import React from "react";
 import { deleteDoc, doc } from "@firebase/firestore";
-import { db } from "../../../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 
 interface CardInfoProps {
   tasksInfo: Task[];

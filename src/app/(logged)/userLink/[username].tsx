@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { useLanguageContext } from "@/context/LanguageContext";
 import React from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 
 type User = {
   name: string;

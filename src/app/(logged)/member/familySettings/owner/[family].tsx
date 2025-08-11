@@ -37,7 +37,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { db } from "../../../../../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 
 export default function ChangeFamilyName() {
   const theme = useAppTheme();

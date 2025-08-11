@@ -31,7 +31,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { db } from "../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 import { t } from "i18next";
 import * as Notifications from "expo-notifications";
 import { resetDatabase } from "@/database/resetDatabase";

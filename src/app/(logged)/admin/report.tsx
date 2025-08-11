@@ -5,14 +5,14 @@ import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
 import { Card } from "react-native-paper";
 import ContentLoader, { Circle, List, Rect } from "react-content-loader/native";
-import CustomCard from "@/components/CustomCard";
+import CustomCard from "@/components/GlobalComp/CustomCard";
 import CardInfo from "@/components/Report/CardInfo";
 import { UserTasksType } from "./home";
 import { Task } from "../tasks/[tasks]";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserType } from "./members";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 
 export default function Report() {
   const theme = useAppTheme();

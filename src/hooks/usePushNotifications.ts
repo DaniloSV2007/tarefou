@@ -16,7 +16,7 @@ import {
   serverTimestamp,
   where,
 } from "firebase/firestore";
-import { db } from "../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface PushNotificationState {

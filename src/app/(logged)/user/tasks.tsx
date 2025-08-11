@@ -16,7 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "@/services/api";
 import { type Task } from "../tasks/[tasks]";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 
 export default function tasks() {
   const theme = useAppTheme();

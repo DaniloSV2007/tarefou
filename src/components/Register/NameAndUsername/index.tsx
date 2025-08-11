@@ -8,7 +8,7 @@ import { useDatabase } from "@/database/useDatabase";
 import api from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 interface NameAndUsernameProps {
   setPage: (page: number) => void;
   name: string;

@@ -121,6 +121,23 @@
   },
   "settings": {
     "title": "Settings",
+    "general": {
+      "appInfo": { "title": "App Info" },
+      "account": {
+        "title": "Account",
+        "accountInfo": {
+          "title": "Account info",
+          "name": "Name",
+          "username": "Username",
+          "email": "Email",
+          "birthday": "Birthday",
+          "role": "Role",
+          "roleInfo": "It can only be changed by the family administrator."
+        },
+        "resetPassword": "Reset password",
+        "deleteAccount": "Delete account"
+      }
+    },
     "theme": {
       "title": "Theme",
       "light": "Light",

@@ -20,7 +20,7 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../../../FirebaseConfig";
+import { db } from "@/services/FirebaseConfig";
 
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 

@@ -1,5 +1,5 @@
 import { Tabs, usePathname } from "expo-router";
-import CustomTabBar from "@/components/CustomTabBar";
+import CustomTabBar from "@/components/GlobalComp/CustomTabBar";
 import { routes } from "@/routes/adminRoutes";
 import { View } from "react-native";
 import { useAppTheme } from "@/hooks/useAppTheme";
