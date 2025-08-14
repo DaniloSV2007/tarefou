@@ -31,6 +31,7 @@ export default function GoogleButton({ onPress }: GoogleButtonProps) {
         android_ripple={{
           color: theme.custom.ripple,
         }}
+        onPress={onPress}
       >
         <Image
           source={{

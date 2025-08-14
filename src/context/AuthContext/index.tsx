@@ -11,6 +11,8 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
+import { getIdTokenResult, getAuth as auth } from "firebase/auth";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -35,9 +37,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const loadAuthState = async () => {
     try {
       const storedToken = await AsyncStorage.getItem("userToken");
-      if (storedToken) {
+      const token = await auth().currentUser?.getIdToken();
+      if (storedToken === token) {
+        console.log(storedToken, token, storedToken === token);
         setToken(storedToken);
-        setIsLoggedIn(true);
+        setIsLoggedIn(false);
       } else {
         setToken(null);
         setIsLoggedIn(false);
@@ -111,6 +115,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setToken(null);
       setIsLoggedIn(false);
       setError(null);
+      await GoogleSignin.signOut();
       router.replace("/home");
     } catch (error) {
       console.error("Error during logout:", error);

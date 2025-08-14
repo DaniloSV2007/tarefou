@@ -41,7 +41,6 @@ function RootInnerLayout() {
   const { theme, isDark } = useThemeContext();
   const appTheme = useAppTheme();
   const auth = getAuth();
-  const router = useRouter();
   const usersCollection = collection(db, "users");
 
   const { expoPushToken } = usePushNotifications();

@@ -9,7 +9,7 @@ import { useState } from "react";
 interface TermsOfServiceProps {
   onConfirm?: () => void;
   isLoading?: boolean;
-  setPage: (page: number) => void;
+  setPage: (page: any) => void;
 }
 
 export default function TermsOfService({

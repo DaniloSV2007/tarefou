@@ -1,7 +1,7 @@
 export default {
   name: "Tarefou!",
   slug: "checklistapp",
-  version: "1.1.5",
+  version: "1.1.6",
   scheme: "tarefou",
   icon: "./assets/adaptive-icon.png",
   orientation: "portrait",

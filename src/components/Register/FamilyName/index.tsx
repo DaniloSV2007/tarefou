@@ -5,7 +5,7 @@ import { Button, Text } from "react-native-paper";
 import { useAppTheme } from "@/hooks/useAppTheme";
 
 interface FamilyNameProps {
-  setPage: (page: number) => void;
+  setPage: (page: any) => void;
   familyName: string;
   setFamilyName: (familyName: string) => void;
 }
@@ -54,11 +54,11 @@ export default function FamilyName({
           ]}
           labelStyle={[styles.buttonText, { color: theme.colors.onBackground }]}
           children={t("common.back", { ns: "components" })}
-          onPress={() => setPage(4)}
+          onPress={() => setPage((prev: number) => prev - 1)}
         />
         <Button
           mode="contained"
-          onPress={() => setPage(6)}
+          onPress={() => setPage((prev: number) => prev + 1)}
           style={[
             styles.button,
             {

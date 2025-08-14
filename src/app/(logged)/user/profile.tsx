@@ -71,14 +71,13 @@ export default function Profile() {
           icon="cog"
           onPress={() => router.push("/settings")}
         />
-        {isLoggedIn && (
-          <MenuButton
-            close={closeMenu}
-            text={t("menu.logout", { ns: "components" })}
-            icon="logout"
-            onPress={() => setIsConfirmation(true)}
-          />
-        )}
+
+        <MenuButton
+          close={closeMenu}
+          text={t("menu.logout", { ns: "components" })}
+          icon="logout"
+          onPress={() => setIsConfirmation(true)}
+        />
       </Menu>
       {isConfirmation && (
         <ConfirmLogout

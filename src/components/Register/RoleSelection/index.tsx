@@ -5,7 +5,7 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Icon, Text } from "react-native-paper";
 
 interface RoleSelectionProps {
-  setPage: (page: number) => void;
+  setPage: (page: any) => void;
   setRole: (role: string) => void;
   age: number;
 }
@@ -21,9 +21,9 @@ export default function RoleSelection({
   const handleRoleSelection = (role: string) => {
     setRole(role);
     if (role === "MEMBER") {
-      setPage(6);
+      setPage((prev: number) => prev + 2);
     } else {
-      setPage(5);
+      setPage((prev: number) => prev + 1);
     }
   };
 
@@ -78,7 +78,7 @@ export default function RoleSelection({
               { color: theme.colors.onBackground },
             ]}
             children={t("common.back", { ns: "components" })}
-            onPress={() => setPage(3)}
+            onPress={() => setPage((prev: number) => prev - 1)}
           />
         </View>
       </View>

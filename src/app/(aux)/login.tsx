@@ -18,7 +18,7 @@ import {
 } from "react-native-paper";
 import { Link, useRouter } from "expo-router";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import TopBar from "@/components/TopBar";
 import GoogleButton from "@/components/GlobalComp/GoogleButton";
@@ -26,10 +26,14 @@ import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDatabase } from "@/database/useDatabase";
 import { isValidEmail } from "@/utils/isValidEmail";
-import api from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "@/services/FirebaseConfig";
+import {
+  getAuth,
+  signInWithCredential,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+} from "firebase/auth";
+import { db } from "@/services/FirebaseConfig";
 import {
   collection,
   getDocs,
@@ -37,8 +41,14 @@ import {
   where,
   doc,
   updateDoc,
+  addDoc,
 } from "firebase/firestore";
-import { usePushNotifications } from "@/hooks/usePushNotifications";
+import {
+  GoogleSignin,
+  SignInResponse,
+} from "@react-native-google-signin/google-signin";
+import { WEB_CLIENT_ID } from "@env";
+import { create } from "zustand";
 
 export default function Login() {
   const { login } = useAuth();
@@ -57,6 +67,26 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const database = useDatabase();
+  const auth = getAuth();
+
+  useEffect(() => {
+    async function init() {
+      console.log("Initialized");
+      const has = await GoogleSignin.hasPlayServices();
+      if (has) {
+        GoogleSignin.configure({
+          offlineAccess: true,
+          webClientId: WEB_CLIENT_ID,
+          scopes: [
+            "profile",
+            "email",
+            "https://www.googleapis.com/auth/user.birthday.read",
+          ],
+        });
+      }
+    }
+    init();
+  }, []);
 
   const handleLogin = async () => {
     setIsLoading(true);
@@ -106,6 +136,80 @@ export default function Login() {
       console.error("Error loading login state:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const onPressGoogleButton = async () => {
+    try {
+      console.log("Pressed Google Button");
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
+
+      const user = await GoogleSignin.signIn();
+      console.log(user.data?.user);
+
+      if (user) {
+        const credentials = GoogleAuthProvider.credential(user.data?.idToken);
+        if (credentials) {
+          const userAuth = await signInWithCredential(auth, credentials);
+
+          const tokens = await GoogleSignin.getTokens();
+
+          getDataUserGoogle(tokens.accessToken, user.data?.user);
+        }
+      }
+    } catch (e) {
+      console.error("Error Login with Google: ", e);
+      await GoogleSignin.signOut();
+    }
+  };
+
+  const getDataUserGoogle = async (
+    token: string,
+    user:
+      | {
+          id: string;
+          name: string | null;
+          email: string;
+          photo: string | null;
+          familyName: string | null;
+          givenName: string | null;
+        }
+      | undefined
+  ) => {
+    if (!token || !user) return;
+
+    try {
+      const res = await fetch(
+        "https://people.googleapis.com/v1/people/me?personFields=birthdays",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const resData = await res.json();
+      console.log(resData.birthdays);
+      const { day, year, month } = resData.birthdays[0].date;
+      const birthday = new Date(year, month - 1, day);
+      const q = query(usersCollection, where("email", "==", user.email));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const docDb = querySnapshot.docs[0];
+        await AsyncStorage.setItem("userId", docDb.id);
+        const data = docDb.data();
+        await login(token, data.role, data.username);
+      } else {
+        const data = {
+          name: user.name,
+          email: user.email,
+          birthday,
+          avatar: user.photo,
+        };
+        await addDoc(usersCollection, data);
+        router.push("/(aux)/google");
+      }
+    } catch (error) {
+      console.error(error);
+      setError(String(error));
     }
   };
 
@@ -251,7 +355,7 @@ export default function Login() {
                 )}
               </Pressable>
 
-              <GoogleButton onPress={() => {}} />
+              <GoogleButton onPress={onPressGoogleButton} />
             </View>
           </KeyboardAvoidingView>
         </TouchableWithoutFeedback>

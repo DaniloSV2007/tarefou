@@ -18,6 +18,8 @@ import {
 } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuth } from "@/context/AuthContext";
+import { getAuth } from "firebase/auth";
 
 export interface PushNotificationState {
   notification?: Notification.Notification;
@@ -35,6 +37,7 @@ export const usePushNotifications = (): PushNotificationState => {
   });
 
   const router = useRouter();
+  const auth = getAuth();
 
   const [expoPushToken, setExpoPushToken] = useState<
     Notification.ExpoPushToken | undefined
@@ -107,16 +110,6 @@ export const usePushNotifications = (): PushNotificationState => {
             router.push(href);
           }, 500);
           return;
-        }
-
-        if (role === "FAMILY_ADMIN") {
-          setTimeout(() => {
-            router.push("/admin/home");
-          }, 500);
-        } else {
-          setTimeout(() => {
-            router.push("/user/home");
-          }, 500);
         }
       }
     };

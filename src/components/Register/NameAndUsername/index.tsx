@@ -10,9 +10,9 @@ import { useAuth } from "@/context/AuthContext";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
 interface NameAndUsernameProps {
-  setPage: (page: number) => void;
-  name: string;
-  setName: (name: string) => void;
+  setPage: (number: any) => void;
+  name?: string;
+  setName?: (name: string) => void;
   username: string;
   setUsername: (username: string) => void;
   setDoneName: (doneName: boolean) => void;
@@ -40,7 +40,7 @@ export default function NameAndUsername({
   const usernameInput = useRef<TextInput>(null);
 
   useEffect(() => {
-    if (name.length > 0 && name.length < 3) {
+    if (name && name.length > 0 && name.length < 3) {
       setError(t("register.error.nameLength"));
     } else if (username.length > 0 && username.length < 3) {
       setError(t("register.error.usernameLength"));
@@ -50,7 +50,9 @@ export default function NameAndUsername({
   }, [name, username, t]);
 
   const nameHandler = (text: string) => {
-    setName(text);
+    if (setName) {
+      setName(text);
+    }
   };
 
   useEffect(() => {
@@ -89,29 +91,31 @@ export default function NameAndUsername({
 
   return (
     <>
-      <TextInput
-        style={[
-          styles.input,
-          {
-            backgroundColor: theme.custom.cardTaskBackground,
-            color: theme.colors.onBackground,
-            borderColor: isFocusedName
-              ? theme.colors.onBackground
-              : theme.custom.inputFocusBorder,
-            borderWidth: isFocusedName ? 2 : 1,
-          },
-        ]}
-        cursorColor={theme.colors.onBackground}
-        placeholder={t("register.nameAndUsername.inputName")}
-        placeholderTextColor={theme.colors.onSurfaceDisabled}
-        onFocus={() => setIsFocusedName(true)}
-        onBlur={() => setIsFocusedName(false)}
-        value={name}
-        onChangeText={nameHandler}
-        ref={nameInput}
-        returnKeyType="next"
-        onSubmitEditing={() => usernameInput.current?.focus()}
-      />
+      {name && (
+        <TextInput
+          style={[
+            styles.input,
+            {
+              backgroundColor: theme.custom.cardTaskBackground,
+              color: theme.colors.onBackground,
+              borderColor: isFocusedName
+                ? theme.colors.onBackground
+                : theme.custom.inputFocusBorder,
+              borderWidth: isFocusedName ? 2 : 1,
+            },
+          ]}
+          cursorColor={theme.colors.onBackground}
+          placeholder={t("register.nameAndUsername.inputName")}
+          placeholderTextColor={theme.colors.onSurfaceDisabled}
+          onFocus={() => setIsFocusedName(true)}
+          onBlur={() => setIsFocusedName(false)}
+          value={name}
+          onChangeText={nameHandler}
+          ref={nameInput}
+          returnKeyType="next"
+          onSubmitEditing={() => usernameInput.current?.focus()}
+        />
+      )}
       <View>
         <Text
           style={{
@@ -149,12 +153,12 @@ export default function NameAndUsername({
           returnKeyType="done"
           onSubmitEditing={() => {
             if (
-              name.length < 3 ||
+              (name && name.length < 3) ||
               username.length < 3 ||
               error !== "" ||
               success === ""
             ) {
-              setPage(3);
+              setPage((prev: number) => prev + 1);
             }
           }}
         />
@@ -175,7 +179,7 @@ export default function NameAndUsername({
       >
         <Button
           mode="contained"
-          onPress={() => setPage(1)}
+          onPress={() => setPage((prev: number) => prev - 1)}
           style={[
             styles.backButton,
             { backgroundColor: theme.custom.cardTaskBackground },
@@ -188,13 +192,13 @@ export default function NameAndUsername({
         <Button
           mode="contained"
           onPress={() => {
-            setPage(3);
+            setPage((prev: number) => prev + 1);
           }}
           style={[
             styles.button,
             {
               backgroundColor:
-                name.length < 3 ||
+                (name && name.length < 3) ||
                 username.length < 3 ||
                 error !== "" ||
                 success === ""
@@ -206,7 +210,7 @@ export default function NameAndUsername({
             styles.buttonText,
             {
               color:
-                name.length < 3 ||
+                (name && name.length < 3) ||
                 username.length < 3 ||
                 error !== "" ||
                 success === ""
@@ -215,7 +219,7 @@ export default function NameAndUsername({
             },
           ]}
           disabled={
-            name.length < 3 ||
+            (name && name.length < 3) ||
             username.length < 3 ||
             error !== "" ||
             success === ""

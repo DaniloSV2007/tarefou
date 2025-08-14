@@ -1,13 +1,15 @@
 import { useRouter } from "expo-router";
 import { StyleSheet, View, Image, Pressable } from "react-native";
 import { Button, Icon, Text } from "react-native-paper";
-import React from "react";
+import React, { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import TopBar from "@/components/TopBar";
 import { useTranslation } from "react-i18next";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import GoogleButton from "@/components/GlobalComp/GoogleButton";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { WEB_CLIENT_ID } from "@env";
 
 export default function Home() {
   const router = useRouter();
@@ -15,6 +17,25 @@ export default function Home() {
   const { login } = useAuth();
   const insets = useSafeAreaInsets();
   const { i18n, t } = useTranslation();
+
+  useEffect(() => {
+    async function init() {
+      console.log("Initialized");
+      const has = await GoogleSignin.hasPlayServices();
+      if (has) {
+        GoogleSignin.configure({
+          offlineAccess: true,
+          webClientId: WEB_CLIENT_ID,
+          scopes: [
+            "profile",
+            "email",
+            "https://www.googleapis.com/auth/user.birthday.read",
+          ],
+        });
+      }
+    }
+    init();
+  }, []);
   return (
     <View
       style={[
