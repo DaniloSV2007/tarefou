@@ -11,8 +11,9 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
-import { getIdTokenResult, getAuth as auth } from "firebase/auth";
+import { getIdTokenResult, getAuth as auth, getAuth } from "firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { googleConfigured } from "@/app/_layout";
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -33,15 +34,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const { expoPushToken } = usePushNotifications();
   const usersCollection = collection(db, "users");
+  const auth = getAuth();
 
   const loadAuthState = async () => {
     try {
       const storedToken = await AsyncStorage.getItem("userToken");
-      const token = await auth().currentUser?.getIdToken();
+      const token = await auth.currentUser?.getIdToken();
+
+      console.log(token);
+      console.log(storedToken);
       if (storedToken === token) {
         console.log(storedToken, token, storedToken === token);
         setToken(storedToken);
-        setIsLoggedIn(false);
+        setIsLoggedIn(true);
       } else {
         setToken(null);
         setIsLoggedIn(false);
@@ -115,7 +120,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setToken(null);
       setIsLoggedIn(false);
       setError(null);
-      await GoogleSignin.signOut();
+      if (googleConfigured) {
+        await GoogleSignin.signOut();
+      }
       router.replace("/home");
     } catch (error) {
       console.error("Error during logout:", error);

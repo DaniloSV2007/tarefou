@@ -36,6 +36,10 @@ import { t } from "i18next";
 import * as Notifications from "expo-notifications";
 import { resetDatabase } from "@/database/resetDatabase";
 import { deleteDatabase } from "@/database/deleteDatabase";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { WEB_CLIENT_ID } from "@env";
+
+let googleConfigured = false;
 
 function RootInnerLayout() {
   const { theme, isDark } = useThemeContext();
@@ -68,6 +72,25 @@ function RootInnerLayout() {
   }, [expoPushToken?.data]);
 
   useEffect(() => {
+    async function init() {
+      const has = await GoogleSignin.hasPlayServices();
+      if (has) {
+        GoogleSignin.configure({
+          offlineAccess: true,
+          webClientId: WEB_CLIENT_ID,
+          scopes: [
+            "profile",
+            "email",
+            "https://www.googleapis.com/auth/user.birthday.read",
+          ],
+        });
+        googleConfigured = true;
+      }
+    }
+    init();
+  }, []);
+
+  useEffect(() => {
     const updateSystemUI = async () => {
       try {
         await SystemUI.setBackgroundColorAsync(isDark ? "#000" : "#fff");
@@ -94,7 +117,6 @@ function RootInnerLayout() {
   const setQuickActions = async () => {
     const role = await AsyncStorage.getItem("userRole");
     if (role === "FAMILY_ADMIN") {
-      console.log("Quick Actions Setted");
       QuickActions.setItems([
         {
           title: t("quickActions.newTask"),
@@ -129,7 +151,6 @@ function RootInnerLayout() {
   const saveToken = async () => {
     const username = await AsyncStorage.getItem("username");
     if (!expoPushToken?.data || !username || !auth.currentUser) return;
-    console.log(expoPushToken);
     await AsyncStorage.setItem("pushToken", expoPushToken.data);
     try {
       const q = query(usersCollection, where("username", "==", username));
@@ -186,3 +207,5 @@ export default function RootLayout() {
     </ThemeProvider>
   );
 }
+
+export { googleConfigured };

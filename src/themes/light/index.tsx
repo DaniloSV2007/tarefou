@@ -1,9 +1,5 @@
 import { MD3LightTheme as DefaultTheme } from "react-native-paper";
 
-type CustomColors = {
-  cardColor: string;
-};
-
 export const lightTheme = {
   ...DefaultTheme,
   custom: {

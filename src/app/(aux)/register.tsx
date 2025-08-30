@@ -34,6 +34,7 @@ import {
   where,
   getDocs,
   updateDoc,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
 import {
@@ -88,7 +89,7 @@ export default function Register() {
         getUserData(token);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Falha ao logar: ", error);
     }
   };
 
@@ -96,19 +97,24 @@ export default function Register() {
     if (!token) return;
 
     try {
-      const q = query(usersCollection, where("email", "==", email.trim()));
+      const uid = auth.currentUser?.uid as string;
+
+      const privateUserData = collection(usersCollection, uid, "private");
+      const q = query(privateUserData, where("email", "==", email.trim()));
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        const doc = querySnapshot.docs[0];
-        const data = doc.data();
+        const docDb = querySnapshot.docs[0];
 
-        await AsyncStorage.setItem("userId", doc.id);
+        const parentDoc = doc(usersCollection, uid);
+        const parentData = (await getDoc(parentDoc)).data();
 
-        await login(token, data.role, data.username);
+        await AsyncStorage.setItem("userId", docDb.id);
+
+        await login(token, parentData?.role, parentData?.username);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Falha ao pegar os dados para logar: ", error);
     }
   };
 
@@ -134,41 +140,60 @@ export default function Register() {
         );
         const uid = userCredential.user.uid;
 
+        const privateUserData = collection(usersCollection, uid, "private");
+
         const data = {
           name,
           username,
-          email,
           birthday: Timestamp.fromDate(new Date(birthday)),
           createdAt: Timestamp.now(),
           role: "FAMILY_ADMIN",
           familyId: familyRef.id,
+        };
+
+        const privateData = {
           pushToken: expoPushToken?.data,
+          email,
         };
 
         await setDoc(doc(usersCollection, uid), data);
+        await setDoc(doc(privateUserData, "data"), privateData);
 
-        handleLogin(data.email, password);
+        handleLogin(privateData.email, password);
       } catch (error) {
         console.error(error);
       }
     } else {
+      const uid = auth.currentUser?.uid;
+
+      const privateUserData = collection(
+        usersCollection,
+        uid as string,
+        "private"
+      );
+
       const data = {
         name,
         username,
-        email,
         birthday: Timestamp.fromDate(new Date(birthday)),
         createdAt: new Date().toISOString(),
         role,
         familyId: null,
+      };
+
+      const privateData = {
+        email,
         pushToken: expoPushToken?.data,
       };
       try {
         if (user) {
-          await addDoc(usersCollection, data);
-          await handleLogin(data.email, password);
+          await setDoc(doc(usersCollection, uid), data);
+          await setDoc(doc(privateUserData, "data"), privateData);
+
+          await handleLogin(privateData.email, password);
         }
       } catch (error) {
-        console.error(error);
+        console.error("Falha ao criar o usuário: ", error);
       }
     }
   };

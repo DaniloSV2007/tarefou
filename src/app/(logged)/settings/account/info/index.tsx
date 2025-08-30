@@ -28,27 +28,53 @@ export default function AccountInfo() {
   const { t } = useTranslation();
   const router = useRouter();
   const usersCollection = collection(db, "users");
+  const auth = getAuth();
   const { languagePreference } = useLanguageContext();
 
   const [userData, setUserData] = useState<User | undefined>();
   const [birthday, setBirthday] = useState<string | undefined>();
 
+  const [userDataString, setUserDataString] = useState("");
+
+  const provider = auth.currentUser?.providerData[0].providerId;
+
+  console.log(provider);
+
   useEffect(() => {
     getUserData();
   }, []);
 
+  useEffect(() => {
+    if (userData) {
+      const data = encodeURIComponent(JSON.stringify(userData));
+      setUserDataString(data);
+    }
+  }, [userData]);
+
   const getUserData = async () => {
-    const userId = await AsyncStorage.getItem("userId");
+    const userId = auth.currentUser?.uid as string;
     if (!userId) {
       console.error("No userId found");
       return;
     }
     try {
-      const userDoc = doc(usersCollection, userId);
-      const docRes = await getDoc(userDoc);
-      if (docRes.exists()) {
-        const data = docRes.data();
-        const bthday = formatDate(data.birthday);
+      const userRef = doc(usersCollection, userId);
+      const privateDataDoc = doc(usersCollection, userId, "private", "data");
+
+      const privateData = await getDoc(privateDataDoc);
+      const user = await getDoc(userRef);
+
+      if (user.exists() && privateData.exists()) {
+        const userData = user.data();
+        const userPrivateData = privateData.data();
+
+        const data = {
+          ...userData,
+          ...userPrivateData,
+        };
+
+        const bthday = formatDate(userData.birthday);
+
         setUserData(data as User);
         setBirthday(bthday);
       }
@@ -104,6 +130,16 @@ export default function AccountInfo() {
           <InfoButon
             title={t("settings.general.account.accountInfo.name")}
             subtitle={userData?.name}
+            onPress={() =>
+              provider === "password"
+                ? router.push({
+                    pathname: "/(logged)/settings/account/info/name/[user]",
+                    params: {
+                      user: userDataString,
+                    },
+                  })
+                : {}
+            }
             chevronIcon
           />
           <InfoButon
@@ -130,8 +166,6 @@ export default function AccountInfo() {
             }
             infoText={t("settings.general.account.accountInfo.roleInfo")}
           />
-
-          <Button onPress={handleVerification}>Verificar</Button>
         </View>
       </View>
     </>

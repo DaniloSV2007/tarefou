@@ -21,7 +21,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { db } from "@/services/FirebaseConfig";
+import { auth, db } from "@/services/FirebaseConfig";
 
 export default function AvatarProfile({
   setImageProp,
@@ -138,6 +138,11 @@ export default function AvatarProfile({
 
   const getAvatarImage = async () => {
     const imageUri = await AsyncStorage.getItem("image");
+    const authPhoto = auth.currentUser?.photoURL;
+    if (!imageUri && authPhoto) {
+      AsyncStorage.setItem("image", authPhoto);
+      setImage(authPhoto);
+    }
     if (!imageUri) {
       AsyncStorage.setItem("image", "null");
       getAvatarImageDatabase();
@@ -172,7 +177,7 @@ export default function AvatarProfile({
     }
   };
 
-  const changeAvatar = async (mode: Number) => {
+  const changeAvatar = async (mode: number) => {
     if (mode === 1) {
       try {
         const result = await ImagePicker.launchCameraAsync({

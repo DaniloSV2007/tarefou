@@ -25,12 +25,13 @@ import { useAuth } from "@/context/AuthContext";
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   query,
   updateDoc,
   where,
 } from "firebase/firestore";
-import { db } from "@/services/FirebaseConfig";
+import { auth, db } from "@/services/FirebaseConfig";
 
 type User = {
   name: string;
@@ -117,8 +118,13 @@ export default function User() {
 
       if (!querySnapshot.empty) {
         const user = querySnapshot.docs[0];
-        const data = user.data();
-        return data.familyId;
+        const userRef = user.ref;
+
+        const userPrivateRef = doc(userRef, "private", "data");
+        const userPrivate = await getDoc(userPrivateRef);
+        const userPrivateData = userPrivate.data();
+
+        return userPrivateData?.familyId;
       }
     } catch (error) {
       console.error("getFamilyId Error:", error);
@@ -127,6 +133,8 @@ export default function User() {
 
   const handleAdd = async () => {
     const familyId = await getFamilyId();
+
+    console.log(auth.currentUser?.uid);
 
     if (loading) return;
     setLoading(true);
@@ -146,19 +154,30 @@ export default function User() {
 
       if (!querySnapshot.empty) {
         const user = querySnapshot.docs[0];
-        const userData = user.data();
-        if (userData.familyId === familyId) {
+        const userRef = user.ref;
+
+        console.log("User Ref: ", userRef);
+
+        const userPrivateRef = doc(userRef, "private", "data");
+        const userPrivate = await getDoc(userPrivateRef);
+        const userPrivateData = userPrivate.data();
+
+        console.log("User Private Data: ", userPrivateData);
+
+        if (userPrivateData?.familyId === familyId) {
           handleError(
             t("members.newMember.userInfo.alreadyExists", { ns: "screens" })
           );
           router.replace("/admin/members");
           return;
         }
-        const userDoc = doc(db, "users", user.id);
-        await updateDoc(userDoc, data);
+
+        await updateDoc(userPrivateRef, data);
+
+        router.replace("/admin/members");
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error while adding user to famiy: ", error);
     } finally {
       setLoading(false);
     }

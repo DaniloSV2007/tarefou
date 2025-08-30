@@ -24,6 +24,9 @@ import {
 } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
 import TasksCard from "@/components/Home/TasksCard";
+import getUsersInfo from "@/utils/getUsersInfo";
+import getFamilyId from "@/utils/getFamilyId";
+import { formatDiagnosticsWithColorAndContext } from "typescript";
 
 export interface UserTasksType extends UserType {
   tasks?: Task[];
@@ -98,40 +101,17 @@ export default function Home() {
       return;
     }
     try {
-      const q = query(usersCollection, where("familyId", "==", familyId));
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        const usersDocs = querySnapshot.docs;
-        const users = usersDocs.map((user: any) => user.data());
+      const users = await getUsersInfo(familyId);
+      if (users) {
         await filterUsers(users);
-        getFamilyInfo(familyId);
+        getFamilyInfo(familyInfo);
         setLoadingUsers(false);
       }
     } catch (error) {
       console.error(error);
     } finally {
       setRefreshing(false);
-    }
-  };
-
-  const getFamilyId = async () => {
-    const familyId = await AsyncStorage.getItem("familyId");
-    if (familyId) {
-      return familyId;
-    }
-
-    const username = await AsyncStorage.getItem("username");
-    try {
-      const q = query(usersCollection, where("username", "==", username));
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        const user = querySnapshot.docs[0];
-        const data = user.data();
-        return data.familyId;
-      }
-    } catch (error) {
-      console.error("getFamilyId Error:", error);
+      setLoadingUsers(false);
     }
   };
 

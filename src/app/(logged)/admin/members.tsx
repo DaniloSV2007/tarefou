@@ -18,8 +18,6 @@ import MemberInfoLoading from "@/components/Members/MemberInfoLoading";
 import EditMember from "@/components/Members/EditMember";
 import { Text } from "react-native-paper";
 import * as Notifications from "expo-notifications";
-import { useAuth } from "@/context/AuthContext";
-import Constants from "expo-constants";
 import {
   collection,
   doc,
@@ -30,6 +28,8 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
+import getFamilyId from "@/utils/getFamilyId";
+import getUsersInfo from "@/utils/getUsersInfo";
 
 export interface UserType {
   name: string;
@@ -87,7 +87,7 @@ export default function Members() {
         ...familyInfo,
         users: familyInfo.users.map((user: UserType) => ({
           ...user,
-          avatar: "", // ou null
+          avatar: "",
         })),
       };
 
@@ -122,39 +122,15 @@ export default function Members() {
       return;
     }
     try {
-      const q = query(usersCollection, where("familyId", "==", familyId));
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        const usersDocs = querySnapshot.docs;
-        const users = usersDocs.map((user: any) => user.data());
+      const users = await getUsersInfo(familyId);
+      if (users) {
         getFamilyInfo(familyId, users);
-        setLoadingUsers(false);
       }
     } catch (error) {
       console.error(error);
     } finally {
       setRefreshing(false);
-    }
-  };
-
-  const getFamilyId = async () => {
-    const familyId = await AsyncStorage.getItem("familyId");
-    if (familyId) {
-      return familyId;
-    }
-
-    const username = await AsyncStorage.getItem("username");
-    try {
-      const q = query(usersCollection, where("username", "==", username));
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        const user = querySnapshot.docs[0];
-        const data = user.data();
-        return data.familyId;
-      }
-    } catch (error) {
-      console.error(error);
+      setLoadingUsers(false);
     }
   };
 

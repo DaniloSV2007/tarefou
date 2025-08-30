@@ -65,3 +65,5 @@ src/assets/Guilherme/
 /.env
 
 /git-filter-repo
+
+.eslintignore

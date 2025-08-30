@@ -34,6 +34,7 @@ import {
   where,
   getDocs,
   updateDoc,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
 import {
@@ -112,20 +113,24 @@ export default function GoogleRegister() {
   const getUserData = async (token: string) => {
     if (!token) return;
 
+    const uid = auth.currentUser?.uid as string;
+    const privateUserData = collection(usersCollection, uid, "private");
+
     try {
       const q = query(
-        usersCollection,
+        privateUserData,
         where("email", "==", userGoogle?.user.email)
       );
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        const doc = querySnapshot.docs[0];
-        const data = doc.data();
+        const parentRef = doc(usersCollection, uid);
+        const parentDoc = await getDoc(parentRef);
+        const data = parentDoc.data();
 
-        await AsyncStorage.setItem("userId", doc.id);
+        await AsyncStorage.setItem("userId", parentDoc.id);
 
-        await login(token, data.role, data.username);
+        await login(token, data?.role, data?.username);
       }
     } catch (error) {
       console.error(error);
@@ -134,13 +139,16 @@ export default function GoogleRegister() {
 
   const handleRegister = async () => {
     const token = await user?.getIdToken();
+    const uid = auth.currentUser?.uid as string;
+    const privateUserData = collection(usersCollection, uid, "private");
+
     const q = query(
-      usersCollection,
+      privateUserData,
       where("email", "==", userGoogle?.user.email)
     );
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) return;
-    const userId = querySnapshot.docs[0].id;
+
     if (role === "FAMILY_ADMIN") {
       const familyData = {
         name: familyName
@@ -148,7 +156,6 @@ export default function GoogleRegister() {
           : t("register.familyName.value", {
               name: userGoogle?.user.name?.split(" ")[0],
             }),
-        createdAt: Timestamp.now(),
         owner: username,
       };
       try {
@@ -159,14 +166,18 @@ export default function GoogleRegister() {
 
         const data = {
           username,
-          createdAt: Timestamp.now(),
           role: "FAMILY_ADMIN",
           familyId: familyRef.id,
+        };
+        const privateData = {
           pushToken: expoPushToken?.data,
         };
-        const userDoc = doc(usersCollection, userId);
+
+        const userDoc = doc(usersCollection, uid);
 
         await updateDoc(userDoc, data);
+        await updateDoc(doc(privateUserData, "data"), privateData);
+
         if (token) {
           await getUserData(token);
         }
@@ -176,16 +187,19 @@ export default function GoogleRegister() {
     } else {
       const data = {
         username,
-        createdAt: new Date().toISOString(),
         role,
         familyId: null,
+      };
+      const privateData = {
         pushToken: expoPushToken?.data,
       };
       try {
         if (user) {
-          const userDoc = doc(usersCollection, userId);
+          const userDoc = doc(usersCollection, uid);
 
           await updateDoc(userDoc, data);
+          await updateDoc(doc(privateUserData, "data"), privateData);
+
           if (token) {
             await getUserData(token);
           }

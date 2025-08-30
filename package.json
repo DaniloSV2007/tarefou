@@ -6,9 +6,14 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "build:ios": "npx eas build --profile preview --platform ios",
+    "eslint": "npx eslint . --ext .js,.jsx,.ts,.tsx",
+    "eslint:fix": "npx eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "build:ios-dev": "npx eas build --profile development --platform ios",
+    "build:ios-prev": "npx eas build --profile preview --platform ios",
+    "build:ios-release": "npx eas build --profile production --platform ios",
     "build:android-prev": "npx eas build --profile preview --platform android",
-    "build:android-dev": "npx eas build --profile development --platform android"
+    "build:android-dev": "npx eas build --profile development --platform android",
+    "build:android-release": "npx eas build --profile production --platform android"
   },
   "dependencies": {
     "@gorhom/bottom-sheet": "^5.1.6",
@@ -24,6 +29,7 @@
     "expo-brightness": "~13.1.4",
     "expo-camera": "~16.1.10",
     "expo-constants": "~17.1.6",
+    "expo-crypto": "~14.1.5",
     "expo-dev-client": "~5.2.4",
     "expo-device": "~7.1.4",
     "expo-image-picker": "~16.1.4",
@@ -60,18 +66,32 @@
     "react-native-screens": "~4.11.1",
     "react-native-svg": "^15.11.2",
     "react-native-uuid": "^2.0.3",
-    "zustand": "^5.0.5",
-    "expo-crypto": "~14.1.5"
+    "zustand": "^5.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@eslint/js": "^9.34.0",
     "@react-native-community/cli": "latest",
     "@types/react": "~19.0.10",
     "@types/react-i18next": "^8.1.0",
     "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-expo": "^0.1.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-native": "^5.0.0",
+    "globals": "^16.3.0",
+    "jiti": "^2.5.1",
+    "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwindcss": "^3.4.17",
-    "typescript": "~5.8.3"
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.41.0"
   },
   "private": true
 }

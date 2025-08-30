@@ -42,6 +42,8 @@ import {
   doc,
   updateDoc,
   addDoc,
+  getDoc,
+  setDoc,
 } from "firebase/firestore";
 import {
   GoogleSignin,
@@ -71,7 +73,6 @@ export default function Login() {
 
   useEffect(() => {
     async function init() {
-      console.log("Initialized");
       const has = await GoogleSignin.hasPlayServices();
       if (has) {
         GoogleSignin.configure({
@@ -113,14 +114,25 @@ export default function Login() {
     if (!token) return;
 
     try {
-      const q = query(usersCollection, where("email", "==", email.trim()));
+      const uid = auth.currentUser?.uid as string;
+
+      const privateUserData = collection(usersCollection, uid, "private");
+      const q = query(privateUserData, where("email", "==", email.trim()));
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
         const docDb = querySnapshot.docs[0];
+
+        const parentDoc = doc(usersCollection, uid);
+        const parentData = (await getDoc(parentDoc)).data();
+
+        console.log(docDb.id);
         await AsyncStorage.setItem("userId", docDb.id);
-        const data = docDb.data();
-        await login(token, data.role, data.username);
+
+        await login(token, parentData?.role, parentData?.username);
+      } else {
+        await auth.currentUser?.delete();
+        setError("Usuário foi cadastrado incorretamente. Tente recadastrar.");
       }
     } catch (error) {
       console.error(error);
@@ -128,35 +140,24 @@ export default function Login() {
     }
   };
 
-  const loadLoginState = async () => {
-    try {
-      const state = await AsyncStorage.getItem("isLoggedIn");
-      setIsLoggedIn(state === "true");
-    } catch (error) {
-      console.error("Error loading login state:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const onPressGoogleButton = async () => {
     try {
-      console.log("Pressed Google Button");
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
       });
 
       const user = await GoogleSignin.signIn();
-      console.log(user.data?.user);
 
       if (user) {
         const credentials = GoogleAuthProvider.credential(user.data?.idToken);
         if (credentials) {
           const userAuth = await signInWithCredential(auth, credentials);
 
-          const tokens = await GoogleSignin.getTokens();
+          const token = await userAuth.user.getIdToken();
 
-          getDataUserGoogle(tokens.accessToken, user.data?.user);
+          const specialToken = (await GoogleSignin.getTokens()).accessToken;
+
+          getDataUserGoogle(token, specialToken, user.data?.user);
         }
       }
     } catch (e) {
@@ -167,6 +168,7 @@ export default function Login() {
 
   const getDataUserGoogle = async (
     token: string,
+    specialToken: string,
     user:
       | {
           id: string;
@@ -181,34 +183,46 @@ export default function Login() {
     if (!token || !user) return;
 
     try {
+      const uid = auth.currentUser?.uid as string;
+
+      const privateUserData = collection(usersCollection, uid, "private");
       const res = await fetch(
         "https://people.googleapis.com/v1/people/me?personFields=birthdays",
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${specialToken}` } }
       );
       const resData = await res.json();
-      console.log(resData.birthdays);
+
       const { day, year, month } = resData.birthdays[0].date;
       const birthday = new Date(year, month - 1, day);
-      const q = query(usersCollection, where("email", "==", user.email));
+
+      const q = query(privateUserData, where("email", "==", user.email));
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        const docDb = querySnapshot.docs[0];
-        await AsyncStorage.setItem("userId", docDb.id);
-        const data = docDb.data();
-        await login(token, data.role, data.username);
+        const parentRef = doc(usersCollection, uid);
+        const parentDoc = await getDoc(parentRef);
+        const data = parentDoc.data();
+
+        console.log("New User Id: ", parentDoc.id);
+        await AsyncStorage.setItem("userId", parentDoc.id);
+        await login(token, data?.role, data?.username);
       } else {
         const data = {
           name: user.name,
-          email: user.email,
           birthday,
           avatar: user.photo,
+          createdAt: new Date(),
         };
-        await addDoc(usersCollection, data);
+
+        await setDoc(doc(usersCollection, uid), data);
+
+        await setDoc(doc(privateUserData, "data"), {
+          email: GoogleSignin.getCurrentUser()?.user.email,
+        });
         router.push("/(aux)/google");
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error while retriving user data: ", error);
       setError(String(error));
     }
   };

@@ -14,8 +14,12 @@ export default function Logged() {
   const getRole = async () => {
     const role = await AsyncStorage.getItem("userRole");
     if (!role) {
-      logout();
-      return;
+      const timer = setTimeout(() => {
+        logout();
+      }, 200);
+      return () => {
+        clearTimeout(timer);
+      };
     }
     getRoleDatabase(role);
     if (role === "MEMBER") {
@@ -28,8 +32,12 @@ export default function Logged() {
   const getRoleDatabase = async (role: string) => {
     const username = await AsyncStorage.getItem("username");
     if (!username) {
-      logout();
-      return;
+      const timer = setTimeout(() => {
+        logout();
+      }, 200);
+      return () => {
+        clearTimeout(timer);
+      };
     }
     try {
       // const res = await api.get("users/" + username, {
