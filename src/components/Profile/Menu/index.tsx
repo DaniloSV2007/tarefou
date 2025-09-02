@@ -1,31 +1,15 @@
-import { useAuth } from "@/context/AuthContext";
+
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useRouter } from "expo-router";
 import {
-  useEffect,
-  useRef,
-  useState,
   forwardRef,
   useMemo,
   useCallback,
 } from "react";
-import {
-  Animated,
-  Dimensions,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+
 import {
   Divider,
-  Icon,
-  Portal,
-  Text,
-  TouchableRipple,
 } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ConfirmLogout from "./ConfirmLogout";
-import { useTranslation } from "react-i18next";
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
@@ -41,20 +25,19 @@ export interface MenuProps {
 }
 
 const Menu = forwardRef<Ref, MenuProps>(function ProfileMenu(
-  { close, children },
+  {  children },
   ref
 ) {
-  const router = useRouter();
+
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
 
-  const { t } = useTranslation();
 
   const childrenCount = React.Children.toArray(children).filter(Boolean).length;
   const multCount = childrenCount * 5;
   const snapPoints = useMemo(() => [`${8 + multCount}%`], [childrenCount]);
 
-  const renderBackdrop = useCallback(
+  const renderBackdrop = useCallback( // eslint-disable-next-line
     (props: any) => (
       <BottomSheetBackdrop
         appearsOnIndex={1}

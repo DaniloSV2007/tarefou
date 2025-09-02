@@ -4,13 +4,11 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   View,
-  TextInput,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  Alert,
 } from "react-native";
-import { ActivityIndicator, Button, Card, Text } from "react-native-paper";
+import {  Text } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useEffect, useState } from "react";
@@ -23,7 +21,6 @@ import { useTranslation } from "react-i18next";
 import RoleSelection from "@/components/Register/RoleSelection";
 import FamilyName from "@/components/Register/FamilyName";
 import TermsOfService from "@/components/Register/TermsOfService";
-import { useDatabase } from "@/database/useDatabase";
 import {
   addDoc,
   collection,
@@ -33,12 +30,10 @@ import {
   query,
   where,
   getDocs,
-  updateDoc,
   getDoc,
 } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
 import {
-  createUserWithEmailAndPassword,
   getAuth,
   signInWithEmailAndPassword,
 } from "firebase/auth";
@@ -70,10 +65,9 @@ export default function Register() {
   const [age, setAge] = useState(0);
   const [role, setRole] = useState("");
   const [familyName, setFamilyName] = useState("");
-  const [doneName, setDoneName] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const database = useDatabase();
+
   const { login } = useAuth();
   const usersCollection = collection(db, "users");
   const familiesCollection = collection(db, "families");
@@ -119,6 +113,9 @@ export default function Register() {
   };
 
   const handleRegister = async () => {
+    if(isLoading) return
+    setIsLoading(true)
+
     if (role === "FAMILY_ADMIN") {
       const familyData = {
         name: familyName
@@ -162,6 +159,8 @@ export default function Register() {
         handleLogin(privateData.email, password);
       } catch (error) {
         console.error(error);
+      }finally{
+        setIsLoading(false)
       }
     } else {
       const uid = auth.currentUser?.uid;
@@ -194,12 +193,14 @@ export default function Register() {
         }
       } catch (error) {
         console.error("Falha ao criar o usuário: ", error);
+      }finally{
+        setIsLoading(false)
       }
     }
   };
 
   useEffect(() => {
-    if (name !== "" && doneName) {
+    if (name !== "") {
       setFamilyName(
         t("register.familyName.value", { name: name.split(" ")[0] })
       );
@@ -226,7 +227,7 @@ export default function Register() {
           >
             <View className="flex-1 justify-center px-8 gap-4">
               <Text className="text-4xl mb-4" style={{ fontWeight: 700 }}>
-                {t(steps[page] as any)}
+                {t(steps[page] as unknown as [])}
               </Text>
               {page === 1 && (
                 <EmailAndPassword
@@ -244,7 +245,6 @@ export default function Register() {
                   setName={setName}
                   username={username}
                   setUsername={setUsername}
-                  setDoneName={setDoneName}
                 />
               )}
               {page === 3 && (

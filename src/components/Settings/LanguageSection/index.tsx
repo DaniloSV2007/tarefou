@@ -4,7 +4,7 @@ import { useAppTheme } from "@/hooks/useAppTheme";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Card, Divider, Icon, RadioButton, Text } from "react-native-paper";
 import { useTranslation } from "react-i18next";
-import { useTranslations } from "@/hooks/useTranslations";
+// import { useTranslations } from "@/hooks/useTranslations";
 import BrazilFlag from "@/assets/flags/br.png";
 import UsaFlag from "@/assets/flags/usa.png";
 
@@ -12,8 +12,8 @@ export default function LanguageSection() {
   const { toggleLanguage, languagePreference } = useLanguageContext();
   const theme = useAppTheme();
   const { t } = useTranslation();
-  const { tc, getCurrentLanguage } = useTranslations();
-  const currentLang = getCurrentLanguage();
+  // const { tc, getCurrentLanguage } = useTranslations();
+  // const currentLang = getCurrentLanguage();
 
   return (
     <Card

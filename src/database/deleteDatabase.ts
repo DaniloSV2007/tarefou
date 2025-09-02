@@ -1,5 +1,4 @@
 import * as FileSystem from "expo-file-system";
-import * as SQLite from "expo-sqlite";
 
 export const deleteDatabase = async () => {
   const dbName = "family-tasks.db";

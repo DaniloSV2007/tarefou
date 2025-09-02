@@ -41,10 +41,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const handleLanguageChange = async () => {
     try {
       let targetLanguage = "en";
-
+      const locales = Localization.getLocales();
       switch (languagePreference) {
         case 0:
-          const locales = Localization.getLocales();
           targetLanguage = locales[0]?.languageCode || "en";
           if (!["en", "pt"].includes(targetLanguage)) {
             targetLanguage = "en";

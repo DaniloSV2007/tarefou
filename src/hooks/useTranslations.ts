@@ -2,9 +2,9 @@ import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
 import { resources } from "@/i18n";
 
-type TranslationKeys = keyof typeof resources.en.translation;
-type ComponentKeys = keyof typeof resources.en.components;
-type ScreenKeys = keyof typeof resources.en.screens;
+// type TranslationKeys = keyof typeof resources.en.translation;
+// type ComponentKeys = keyof typeof resources.en.components;
+// type ScreenKeys = keyof typeof resources.en.screens;
 
 type Join<K, P> = K extends string | number
   ? P extends string | number
@@ -26,7 +26,7 @@ type ScreenNestedKeys = Paths<typeof resources.en.screens>;
 
 export const useTranslations = () => {
   const { t } = useTranslation();
-
+  /* eslint-disable */
   const translate = {
     t: (key: TranslationNestedKeys, options?: any) => t(key, options),
 
@@ -34,7 +34,7 @@ export const useTranslations = () => {
       t(`components:${key}`, options),
 
     ts: (key: ScreenNestedKeys, options?: any) => t(`screens:${key}`, options),
-
+/* eslint-enable */
     changeLanguage: (lang: "en" | "pt") => {
       return i18n.changeLanguage(lang);
     },

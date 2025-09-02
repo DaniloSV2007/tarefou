@@ -1,33 +1,14 @@
-import ProfileMenu from "@/components/Profile/Menu";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useRouter } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {  useEffect,  useState } from "react";
 import React from "react";
 import {
-  Animated,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  ScrollView,
-  StatusBar,
   StyleSheet,
-  Touchable,
-  TouchableOpacity,
   View,
 } from "react-native";
 import {
-  Appbar,
-  Avatar,
-  Button,
-  Card,
-  Divider,
-  FAB,
-  Icon,
   Portal,
-  ProgressBar,
-  Text,
 } from "react-native-paper";
-import { useTranslation } from "react-i18next";
-import AvatarProfile from "../Avatar";
+import AvatarProfile, { ImageURI } from "../Avatar";
 import ImageView from "react-native-image-viewing";
 import QRCode from "react-native-qrcode-svg";
 import TopBar from "../../TopBar";
@@ -36,19 +17,17 @@ import * as Brightness from "expo-brightness";
 import logoLight from "@/assets/Profile/splash-icon-light.png";
 import logoDark from "@/assets/Profile/splash-icon-dark.png";
 import { useThemeContext } from "@/context/ThemeContext";
-import * as SystemUI from "expo-system-ui";
+import { ImageSource } from "react-native-image-viewing/dist/@types";
 
 export default function ProfileLogged() {
-  const { t } = useTranslation();
 
-  const [image, setImage] = useState([]);
+  const [image, setImage] = useState<ImageURI>();
   const [visible, setIsVisible] = useState(false);
 
   const [qrVisible, setQrVisible] = useState(false);
 
   const theme = useAppTheme();
   const { isDark } = useThemeContext();
-  const router = useRouter();
 
   const QrCode = () => {
     const [username, setUsername] = useState<string | null>(null);
@@ -57,7 +36,7 @@ export default function ProfileLogged() {
       AsyncStorage.getItem("username").then(setUsername);
     }, []);
 
-    if (!username) return null; // ou um loading spinner, etc.
+    if (!username) return null; 
 
     return (
       <QRCode
@@ -72,20 +51,6 @@ export default function ProfileLogged() {
     );
   };
 
-  function maxBrightness() {
-    useEffect(() => {
-      if (!qrVisible) {
-        (async () => {
-          const { granted } = await Brightness.requestPermissionsAsync();
-          if (granted) {
-            await Brightness.setBrightnessAsync(1);
-          }
-        })();
-      }
-    }, [qrVisible]);
-
-    return null;
-  }
 
   useEffect(() => {
     if (qrVisible) {
@@ -114,7 +79,7 @@ export default function ProfileLogged() {
         ]}
       >
         <AvatarProfile
-          setImageProp={setImage}
+          setImageProp={(image: ImageURI[]) => setImage(image[0])}
           setIsVisible={setIsVisible}
           setQrVisible={setQrVisible}
         />
@@ -158,7 +123,7 @@ export default function ProfileLogged() {
         )}
 
         <ImageView
-          images={image}
+          images={image as unknown as ImageSource[]}
           imageIndex={0}
           visible={visible}
           onRequestClose={() => setIsVisible(false)}

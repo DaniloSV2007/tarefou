@@ -2,22 +2,17 @@ import React from "react";
 import { Pressable, StyleSheet, TextInput } from "react-native";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useState } from "react";
-import { Button, IconButton, Text } from "react-native-paper";
+import {  IconButton, Text } from "react-native-paper";
 import { Link, useRouter } from "expo-router";
 import { ActivityIndicator } from "react-native-paper";
 import { View } from "react-native";
 import GoogleButton from "@/components/GlobalComp/GoogleButton";
 import { isValidEmail } from "@/utils/isValidEmail";
 import { useTranslation } from "react-i18next";
-import { useDatabase } from "@/database/useDatabase";
-import api from "@/services/api";
-import { useAuth } from "@/context/AuthContext";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "@/services/FirebaseConfig";
+
 import {
   createUserWithEmailAndPassword,
   getAuth,
-  signInWithEmailAndPassword,
 } from "firebase/auth";
 
 interface EmailAndPasswordProps {
@@ -39,19 +34,17 @@ export default function EmailAndPassword({
   const { t } = useTranslation();
   const [isFocusedEmail, setIsFocusedEmail] = useState(false);
   const [isFocusedPassword, setIsFocusedPassword] = useState(false);
-  const usersCollection = collection(db, "users");
 
   const [error, setError] = useState("");
   const [linkColor, setLinkColor] = useState(theme.colors.onBackground);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const database = useDatabase();
-  const { token } = useAuth();
   const auth = getAuth();
 
   const handleContinue = async () => {
     const trimmedEmail = email.trim().toLowerCase();
+    setIsLoading(true)
 
     if (!trimmedEmail || !password) {
       setError(t("register.error.fillAllFields"));
@@ -66,8 +59,9 @@ export default function EmailAndPassword({
       setError("");
       setPage(2);
     } catch (error) {
+      console.error("Erro while registering user: ", error)
       setError(t("register.error.emailExists"));
-    }
+    }finally {setIsLoading(false)}
   };
 
   const passwordHandler = (text: string) => {

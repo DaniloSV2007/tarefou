@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
-import { StyleSheet, View, Image, Pressable } from "react-native";
-import { Button, Icon, Text } from "react-native-paper";
-import React, { useEffect } from "react";
+import { StyleSheet, View } from "react-native";
+import { Button,  Text } from "react-native-paper";
+import React from "react";
 import TopBar from "@/components/TopBar";
 import { useTranslation } from "react-i18next";
 import { useAppTheme } from "@/hooks/useAppTheme";

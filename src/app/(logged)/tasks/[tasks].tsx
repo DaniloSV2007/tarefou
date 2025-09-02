@@ -21,7 +21,7 @@ export type Task = {
   description?: string;
   createdAt?: Date;
   updatedAt?: Date;
-  deadline?: Date | any;
+  deadline?:  Timestamp;
   isCompleted?: boolean;
   userId: string;
 };

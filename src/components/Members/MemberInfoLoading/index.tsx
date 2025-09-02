@@ -3,9 +3,7 @@ import ContentLoader, { Circle, Rect } from "react-content-loader/native";
 import { StyleSheet } from "react-native";
 import { Card } from "react-native-paper";
 
-type Props = {
-  key: any;
-};
+
 
 export default function MemberInfoLoading() {
   const theme = useAppTheme();

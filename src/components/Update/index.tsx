@@ -1,14 +1,6 @@
-import {
-  ActivityIndicator,
-  Button,
-  Dialog,
-  Portal,
-  ProgressBar,
-  Text,
-} from "react-native-paper";
+import { Button, Dialog, Portal, ProgressBar, Text } from "react-native-paper";
 import * as Updates from "expo-updates";
 import { useEffect, useState } from "react";
-import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";

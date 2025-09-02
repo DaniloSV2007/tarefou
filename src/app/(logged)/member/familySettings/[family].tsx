@@ -7,7 +7,6 @@ import TopBar from "@/components/TopBar";
 import { UserType } from "../../admin/members";
 import { Avatar, Card, Icon, Text } from "react-native-paper";
 import placeholder from "@/assets/Profile/user.png";
-import { useAuth } from "@/context/AuthContext";
 import PasswordConfirmation from "@/components/PasswordConfirmation";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";

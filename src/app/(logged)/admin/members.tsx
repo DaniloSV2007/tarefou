@@ -7,7 +7,6 @@ import {
   RefreshControl,
   Linking,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import TopBar from "@/components/TopBar";
 import { useRouter } from "expo-router";
 import { ActivityIndicator, Appbar, FAB, Portal } from "react-native-paper";
@@ -19,26 +18,23 @@ import EditMember from "@/components/Members/EditMember";
 import { Text } from "react-native-paper";
 import * as Notifications from "expo-notifications";
 import {
-  collection,
   doc,
   getDoc,
-  getDocs,
-  query,
   Timestamp,
-  where,
 } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
 import getFamilyId from "@/utils/getFamilyId";
 import getUsersInfo from "@/utils/getUsersInfo";
+import { Family } from "../member/familySettings/[family]";
 
 export interface UserType {
   name: string;
   username: string;
-  birthday: Date | Timestamp;
+  birthday:  Timestamp;
   email: string;
   role: string;
   avatar: string;
-  createdAt?: Date | Timestamp;
+  createdAt?:  Timestamp;
   familyId?: string;
 }
 
@@ -56,7 +52,6 @@ export default function Members() {
   const theme = useAppTheme();
   const router = useRouter();
   const { t } = useTranslation();
-  const usersCollection = collection(db, "users");
 
   const [username, setUsername] = useState("");
 
@@ -69,8 +64,8 @@ export default function Members() {
 
   const [familyName, setFamilyName] = useState<string | null>(null);
 
-  const [familyInfo, setFamilyInfo] = useState<any>();
-  const [familyEncoded, setFamilyEncoded] = useState<any>();
+  const [familyInfo, setFamilyInfo] = useState<Family>();
+  const [familyEncoded, setFamilyEncoded] = useState<string>();
 
   useEffect(() => {
     reflesh();
@@ -95,7 +90,7 @@ export default function Members() {
     }
   }, [familyInfo]);
 
-  const findFamilyOwner = async (usersDb: any[], owner: string) => {
+  const findFamilyOwner = async (usersDb: UserType[], owner: string) => {
     if (!owner) return;
 
     const ownerIndex = usersDb.findIndex(
@@ -124,7 +119,7 @@ export default function Members() {
     try {
       const users = await getUsersInfo(familyId);
       if (users) {
-        getFamilyInfo(familyId, users);
+        getFamilyInfo(familyId, users as UserType[]);
       }
     } catch (error) {
       console.error(error);
@@ -134,7 +129,7 @@ export default function Members() {
     }
   };
 
-  const getFamilyInfo = async (familyId: string, users: any[]) => {
+  const getFamilyInfo = async (familyId: string, users: UserType[]) => {
     if (!familyId) return;
 
     try {
@@ -142,7 +137,7 @@ export default function Members() {
       const family = await getDoc(familyDoc);
       const data = family.data();
       if (data) {
-        setFamilyInfo({ ...data, id: familyDoc.id, users });
+        setFamilyInfo({ ...data, id: familyDoc.id, users } as unknown as Family);
         findFamilyOwner(users, data.owner);
         setFamilyName(data.name);
       }
@@ -168,10 +163,10 @@ export default function Members() {
 
   const [state, setState] = useState({ open: false });
 
-  const onStateChange = ({ open }: any) => setState({ open });
+  const onStateChange = ({ open }: { open: boolean }) => setState({ open });
 
   const { open } = state;
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
   const shareWhatsapp = async () => {
     const username = await AsyncStorage.getItem("username");
     if (!username) return;

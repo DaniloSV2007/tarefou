@@ -1,10 +1,9 @@
 import ThemeSection from "@/components/Settings/ThemeSection";
 import LanguageSection from "@/components/Settings/LanguageSection";
 import TopBar from "@/components/TopBar";
-import { useAuth } from "@/context/AuthContext";
 import { useThemeContext } from "@/context/ThemeContext";
 import { StyleSheet, View } from "react-native";
-import { Button, Text, useTheme } from "react-native-paper";
+import {  useTheme } from "react-native-paper";
 import React, { useEffect } from "react";
 import * as SystemUI from "expo-system-ui";
 import { useTranslation } from "react-i18next";

@@ -6,22 +6,16 @@ import {
   Avatar,
   Button,
   Card,
-  Portal,
   Snackbar,
   Text,
 } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import placeholder from "@/assets/Profile/user.png";
 import { useLanguageContext } from "@/context/LanguageContext";
-import { createdAt } from "expo-updates";
-import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import api from "@/services/api";
 import { useTranslation } from "react-i18next";
 import imagePlaceholder from "@/assets/Profile/user.png";
 import ImageView from "react-native-image-viewing";
-import { useAuth } from "@/context/AuthContext";
 import {
   collection,
   doc,
@@ -32,18 +26,9 @@ import {
   where,
 } from "firebase/firestore";
 import { auth, db } from "@/services/FirebaseConfig";
+import { ImageSource } from "react-native-image-viewing/dist/@types";
+import { User, UserRaw } from "../[user]";
 
-type User = {
-  name: string;
-  username: string;
-  birthday: Date;
-  email: string;
-  passwordHash: string;
-  role: string;
-  avatar?: string;
-  createdAt?: Date;
-  familyId?: string;
-};
 
 export default function User() {
   const theme = useAppTheme();
@@ -60,33 +45,29 @@ export default function User() {
   const [image, setImage] = useState<string | null>(null);
   const placeholder = imagePlaceholder;
 
-  const [imageArray, setImageArray] = useState<any>([]);
+  const [imageArray, setImageArray] = useState<ImageSource[]>([]);
   const [visible, setIsVisible] = useState(false);
 
   const userParam = Array.isArray(params.user) ? params.user[0] : params.user;
 
-  const memberDataRaw: any = JSON.parse(decodeURIComponent(userParam));
+  const memberDataRaw: UserRaw = JSON.parse(decodeURIComponent(userParam));
 
   // Converte os campos Timestamp para Date, se necessário
   const memberData: User = {
     ...memberDataRaw,
-    birthday: memberDataRaw.birthday?.seconds
-      ? new Date(memberDataRaw.birthday.seconds * 1000)
-      : new Date(memberDataRaw.birthday),
-    createdAt: memberDataRaw.createdAt?.seconds
-      ? new Date(memberDataRaw.createdAt.seconds * 1000)
-      : memberDataRaw.createdAt
-        ? new Date(memberDataRaw.createdAt)
-        : undefined,
+    birthday: new Date(memberDataRaw.birthday.seconds * 100),
+    createdAt: new Date(memberDataRaw.createdAt?.seconds * 1000)
   };
 
   const age = memberData.birthday
     ? new Date().getFullYear() - memberData.birthday.getFullYear()
     : "";
 
-  const formatDate = (created: any | Date) => {
+  const formatDate = (created: Date) => {
     if (!created) return;
+
     const date = new Date(created);
+
     if (isNaN(date.getTime())) return;
 
     const day = date.getDate().toString().padStart(2, "0");
@@ -188,7 +169,7 @@ export default function User() {
   }, []);
 
   useEffect(() => {
-    setImageArray([{ uri: image }]);
+    setImageArray([{ uri: image as string }]);
   }, [image]);
 
   const getAvatarImageDatabase = async () => {
@@ -229,7 +210,7 @@ export default function User() {
         <Card
           style={[styles.card, { backgroundColor: theme.custom.cardColor }]}
         >
-          <Card.Content style={[styles.content, ,]}>
+          <Card.Content style={[styles.content, ]}>
             <View style={styles.avatar}>
               {image ? (
                 <Pressable onPress={() => setIsVisible(true)}>

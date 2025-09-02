@@ -25,32 +25,22 @@ import DateTimePicker, {
 import api from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserType } from "../admin/members";
-import { Family } from "../member/familySettings/[family]";
-import { useAuth } from "@/context/AuthContext";
 import { db } from "@/services/FirebaseConfig";
 import {
   collection,
   addDoc,
   getDocs,
-  updateDoc,
-  deleteDoc,
   doc,
   query,
   where,
   getDoc,
+  DocumentData,
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
-import { createdAt } from "expo-updates";
 import { ExpoPushToken } from "expo-notifications";
+import { Family } from "../admin/home";
 
-interface Task {
-  title: string;
-  description?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-  deadline?: Date;
-  isCompleted?: boolean;
-  userId: string;
+interface UserSelection extends UserType {
+  selected?: boolean
 }
 
 export default function NewTask() {
@@ -73,14 +63,11 @@ export default function NewTask() {
 
   const dateNow = new Date();
 
-  const [focus, setFocus] = useState(false);
-  const [selectText, setSelectText] = useState<any>([]);
-
-  const [familyInfo, setFamilyInfo] = useState<any>();
+  const [familyInfo, setFamilyInfo] = useState<Family>();
   const [users, setUsers] = useState<UserType[] | undefined>();
   const [avatarsFetched, setAvatarsFetched] = useState(false);
 
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<UserSelection[]>([]);
   const [usersSelected, setUsersSelected] = useState<UserType[]>([]);
 
   const [loading, setLoading] = useState(false);
@@ -120,7 +107,7 @@ export default function NewTask() {
 
   useEffect(() => {
     if (data.length > 0) {
-      const usersSelected = data.filter((user: any) => user.selected);
+      const usersSelected = data.filter((user: UserSelection ) => user.selected);
       if (usersSelected) {
         setUsersSelected(usersSelected);
       }
@@ -136,7 +123,7 @@ export default function NewTask() {
             return { ...user, avatar };
           })
         );
-        setFamilyInfo({ ...familyInfo, users: updatedUsers });
+        setFamilyInfo({ ...familyInfo, users: updatedUsers } as Family);
         setData(
           updatedUsers.map((user: UserType) => ({
             ...user,
@@ -177,7 +164,7 @@ export default function NewTask() {
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
         const usersDocs = querySnapshot.docs;
-        const users = usersDocs.map((user: any) => user.data());
+        const users = usersDocs.map((user: DocumentData) => user.data());
         await filterUsers(users);
         getFamilyInfo(familyId);
       }
@@ -214,7 +201,7 @@ export default function NewTask() {
       const familyDoc = doc(db, "families", familyId);
       const family = await getDoc(familyDoc);
 
-      setFamilyInfo(family.data);
+      setFamilyInfo(family.data as unknown as Family);
     } catch (error) {
       console.error(error);
     }
@@ -260,7 +247,7 @@ export default function NewTask() {
         router.replace("/admin/home");
       }
     } catch (error) {
-      console.error;
+      console.error("Error while sending push notification: ", error);
     } finally {
       setLoading(false);
     }

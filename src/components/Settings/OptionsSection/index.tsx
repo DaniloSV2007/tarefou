@@ -1,13 +1,10 @@
-import { Pressable, Text, View } from "react-native";
 import React from "react";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useAuth } from "@/context/AuthContext";
-import { useTranslation } from "react-i18next";
-import TopBar from "@/components/TopBar";
-import { useRouter } from "expo-router";
-import { collection } from "firebase/firestore";
-import { db } from "@/services/FirebaseConfig";
-import { Card, Divider, Icon } from "react-native-paper";
+// import { useTranslation } from "react-i18next";
+// import { useRouter } from "expo-router";
+// import { collection } from "firebase/firestore";
+// import { db } from "@/services/FirebaseConfig";
+import { Card, Divider } from "react-native-paper";
 
 interface OptionsSectionProps {
   children: React.ReactNode;
@@ -15,9 +12,9 @@ interface OptionsSectionProps {
 
 export default function OptionsSection({ children }: OptionsSectionProps) {
   const theme = useAppTheme();
-  const { t } = useTranslation();
-  const router = useRouter();
-  const usersCollection = collection(db, "users");
+  // const { t } = useTranslation();
+  // const router = useRouter();
+  // const usersCollection = collection(db, "users");
 
   const childrenArray = React.Children.toArray(children);
 

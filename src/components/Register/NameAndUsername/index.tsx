@@ -4,18 +4,14 @@ import { useState, useEffect, useRef } from "react";
 import React from "react";
 import { Button, Text } from "react-native-paper";
 import { useTranslation } from "react-i18next";
-import { useDatabase } from "@/database/useDatabase";
-import api from "@/services/api";
-import { useAuth } from "@/context/AuthContext";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
-interface NameAndUsernameProps {
+interface NameAndUsernameProps { // eslint-disable-next-line
   setPage: (number: any) => void;
   name?: string;
   setName?: (name: string) => void;
   username: string;
   setUsername: (username: string) => void;
-  setDoneName: (doneName: boolean) => void;
 }
 
 export default function NameAndUsername({
@@ -24,16 +20,13 @@ export default function NameAndUsername({
   setName,
   username,
   setUsername,
-  setDoneName,
 }: NameAndUsernameProps) {
   const theme = useAppTheme();
   const [isFocusedName, setIsFocusedName] = useState(false);
   const [isFocusedUsername, setIsFocusedUsername] = useState(false);
   const [error, setError] = useState("");
   const { t } = useTranslation();
-  const database = useDatabase();
   const [success, setSuccess] = useState("");
-  const { token } = useAuth();
   const usersCollection = collection(db, "users");
 
   const nameInput = useRef<TextInput>(null);

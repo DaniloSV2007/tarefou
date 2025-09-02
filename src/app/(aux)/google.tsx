@@ -4,31 +4,26 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   View,
-  TextInput,
+  
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  Alert,
+  
 } from "react-native";
-import { ActivityIndicator, Button, Card, Text } from "react-native-paper";
+import {  Text } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { use, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import React from "react";
 import TopBar from "@/components/TopBar";
-import EmailAndPassword from "@/components/Register/EmailAndPassword";
 import NameAndUsername from "@/components/Register/NameAndUsername";
-import Birthday from "@/components/Register/Birthday";
 import { useTranslation } from "react-i18next";
 import RoleSelection from "@/components/Register/RoleSelection";
 import FamilyName from "@/components/Register/FamilyName";
 import TermsOfService from "@/components/Register/TermsOfService";
-import { useDatabase } from "@/database/useDatabase";
 import {
   addDoc,
   collection,
-  setDoc,
-  Timestamp,
   doc,
   query,
   where,
@@ -38,9 +33,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
 import {
-  createUserWithEmailAndPassword,
   getAuth,
-  signInWithEmailAndPassword,
 } from "firebase/auth";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -65,7 +58,6 @@ export default function GoogleRegister() {
   const [age, setAge] = useState(0);
   const [role, setRole] = useState("");
   const [familyName, setFamilyName] = useState("");
-  const [doneName, setDoneName] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const { login } = useAuth();
@@ -138,9 +130,12 @@ export default function GoogleRegister() {
   };
 
   const handleRegister = async () => {
+    if(isLoading) return
+    setIsLoading(true)
     const token = await user?.getIdToken();
     const uid = auth.currentUser?.uid as string;
     const privateUserData = collection(usersCollection, uid, "private");
+    
 
     const q = query(
       privateUserData,
@@ -183,6 +178,8 @@ export default function GoogleRegister() {
         }
       } catch (error) {
         console.error(error);
+      }finally{
+        setIsLoading(false)
       }
     } else {
       const data = {
@@ -206,6 +203,8 @@ export default function GoogleRegister() {
         }
       } catch (error) {
         console.error(error);
+      }finally{
+        setIsLoading(false)
       }
     }
   };
@@ -230,7 +229,7 @@ export default function GoogleRegister() {
           >
             <View className="flex-1 justify-center px-8 gap-4">
               <Text className="text-4xl mb-4" style={{ fontWeight: 700 }}>
-                {t(steps[page] as any)}
+                {t(steps[page] as unknown as [])}
               </Text>
 
               {page === 1 && (
@@ -238,7 +237,6 @@ export default function GoogleRegister() {
                   setPage={setPage}
                   username={username}
                   setUsername={setUsername}
-                  setDoneName={setDoneName}
                 />
               )}
               {page === 2 && (

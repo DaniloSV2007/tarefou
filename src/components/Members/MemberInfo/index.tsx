@@ -2,9 +2,7 @@ import { useLanguageContext } from "@/context/LanguageContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
 import {
-  Image,
   Pressable,
-  StyleSheet,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -21,6 +19,8 @@ import { useEffect, useState } from "react";
 import ImageView from "react-native-image-viewing";
 import React from "react";
 import { UserType } from "@/app/(logged)/admin/members";
+import { Timestamp } from "firebase/firestore";
+import { ImageSource } from "react-native-image-viewing/dist/@types";
 
 interface Props {
   user: UserType;
@@ -38,15 +38,17 @@ type User = {
   createdAt?: Date;
 };
 
-function isTimestamp(obj: any): obj is { toDate: () => Date } {
-  return obj && typeof obj.toDate === "function";
+function isTimestamp(obj: Timestamp | Date | undefined): obj is Timestamp {
+  return (
+    obj !== undefined &&
+    typeof (obj as Timestamp).toDate === "function"
+  );
 }
 
 export default function MemberInfo({
   user,
   setUserInfo,
   setEditVisible,
-  ...rest
 }: Props) {
   const theme = useAppTheme();
   const router = useRouter();
@@ -54,6 +56,8 @@ export default function MemberInfo({
   const { languagePreference } = useLanguageContext();
 
   const userWithoutAvatar: UserType = { ...user, avatar: "" };
+
+  
 
   // Converte os campos Timestamp para Date, se necessário
   const memberData: User = {
@@ -66,10 +70,16 @@ export default function MemberInfo({
       : userWithoutAvatar.createdAt,
   };
 
-  const [imageArray, setImageArray] = useState<any>([{ uri: user.avatar }]);
+  const [imageArray, setImageArray] = useState<{uri:string | null}[]>();
+
+
   const [visible, setIsVisible] = useState(false);
 
-  const formatDate = (created: any | Date) => {
+  useEffect(()=>{
+    if(!imageArray) setImageArray([{ uri: user.avatar  }])
+  },[])
+
+  const formatDate = (created:  Date) => {
     if (!created) return;
     const date = new Date(created);
     if (isNaN(date.getTime())) return;
@@ -158,7 +168,7 @@ export default function MemberInfo({
               {t("memberCard.placeholder", { ns: "components" })}
             </Text>
             <ImageView
-              images={imageArray}
+              images={imageArray as unknown as ImageSource[]}
               imageIndex={0}
               visible={visible}
               onRequestClose={() => setIsVisible(false)}
@@ -197,4 +207,3 @@ export default function MemberInfo({
     </Card>
   );
 }
-const styles = StyleSheet.create({});

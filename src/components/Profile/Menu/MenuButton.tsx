@@ -1,10 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import React from "react";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useAuth } from "@/context/AuthContext";
-import { useTranslation } from "react-i18next";
-import TopBar from "@/components/TopBar";
-import { useRouter } from "expo-router";
 import { Divider, Icon, Text, TouchableRipple } from "react-native-paper";
 import { MenuProps } from ".";
 
@@ -21,9 +17,6 @@ export default function MenuButton({
   onPress,
 }: MenuProps & MenuButtonProps) {
   const theme = useAppTheme();
-  const { token } = useAuth();
-  const { t } = useTranslation();
-  const router = useRouter();
 
   return (
     <>

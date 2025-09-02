@@ -1,17 +1,17 @@
 import CustomTabBar from "@/components/GlobalComp/CustomTabBar";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { routes } from "@/routes/userRoutes";
-import { Tabs, usePathname } from "expo-router";
+import { Tabs } from "expo-router";
 import { View } from "react-native";
 
 export default function UserLayout() {
-  const pathname = usePathname();
+
   const theme = useAppTheme();
 
   return (
     <View style={{ backgroundColor: theme.colors.background, flex: 1 }}>
       <Tabs
-        tabBar={(props) => <CustomTabBar routesProps={routes} />}
+        tabBar={() => <CustomTabBar routesProps={routes} />}
         screenOptions={{
           headerShown: false,
           sceneStyle: {

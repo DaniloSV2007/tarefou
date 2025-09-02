@@ -17,7 +17,6 @@ interface CardInfoProps {
 export default function CardInfo({
   tasksInfo,
   isWeek = false,
-  isMember = false,
   reflesh,
 }: CardInfoProps) {
   const theme = useAppTheme();

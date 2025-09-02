@@ -1,15 +1,12 @@
-import { useThemeContext } from "@/context/ThemeContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import {
-  TouchableOpacity,
   Text,
   StyleSheet,
   View,
   Image,
   Pressable,
 } from "react-native";
-import { Button, TouchableRipple } from "react-native-paper";
-import React, { useEffect } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 
 interface GoogleButtonProps {
@@ -18,7 +15,6 @@ interface GoogleButtonProps {
 
 export default function GoogleButton({ onPress }: GoogleButtonProps) {
   const theme = useAppTheme();
-  const { isDark } = useThemeContext();
   const { t } = useTranslation();
 
   return (

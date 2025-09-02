@@ -2,8 +2,7 @@ import Menu from "@/components/Profile/Menu";
 import ProfileLogged from "@/components/Profile/ProfileLogged";
 import TopBar from "@/components/TopBar";
 import { useCallback, useRef, useState } from "react";
-import { StyleSheet, View } from "react-native";
-import { ActivityIndicator, Button } from "react-native-paper";
+import {  Button } from "react-native-paper";
 import { useAuth } from "@/context/AuthContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import React from "react";
@@ -15,7 +14,7 @@ import ConfirmLogout from "@/components/Profile/Menu/ConfirmLogout";
 import Constants from "expo-constants";
 
 export default function Profile() {
-  const { isLoggedIn, isLoading, logout } = useAuth();
+  const {  logout } = useAuth();
   const theme = useAppTheme();
   const { t } = useTranslation();
   const router = useRouter();
@@ -32,19 +31,6 @@ export default function Profile() {
     profileMenuState.current?.close();
   }, []);
 
-  function LoadingPageIndicator() {
-    return (
-      <View
-        style={[
-          styles.container,
-          { justifyContent: "center", alignItems: "center" },
-        ]}
-      >
-        <ActivityIndicator size={44} />
-      </View>
-    );
-  }
-
   return (
     <>
       <TopBar
@@ -57,7 +43,6 @@ export default function Profile() {
         buttonSize={28}
         showNotification
       />
-      {}
       <ProfileLogged />
 
       {Constants.appOwnership === "expo" && (
@@ -91,16 +76,3 @@ export default function Profile() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 10,
-    backgroundColor: "black",
-  },
-  contentContainer: {
-    flex: 1,
-    padding: 36,
-    alignItems: "center",
-  },
-});

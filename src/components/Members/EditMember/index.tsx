@@ -6,7 +6,6 @@ import { useAppTheme } from "@/hooks/useAppTheme";
 import { useTranslation } from "react-i18next";
 import {
   collection,
-  deleteDoc,
   doc,
   getDocs,
   query,

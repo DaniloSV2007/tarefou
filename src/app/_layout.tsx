@@ -1,7 +1,7 @@
 import "@/i18n";
 import "@/styles/global.css";
 import { AuthProvider } from "@/context/AuthContext";
-import { Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import { PaperProvider } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider, useThemeContext } from "@/context/ThemeContext";
@@ -33,9 +33,11 @@ import {
 } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
 import { t } from "i18next";
+/* eslint-disable */
 import * as Notifications from "expo-notifications";
 import { resetDatabase } from "@/database/resetDatabase";
 import { deleteDatabase } from "@/database/deleteDatabase";
+/* eslint-enable */
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { WEB_CLIENT_ID } from "@env";
 

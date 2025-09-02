@@ -4,7 +4,7 @@ import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Icon, Text } from "react-native-paper";
 
-interface RoleSelectionProps {
+interface RoleSelectionProps { // eslint-disable-next-line
   setPage: (page: any) => void;
   setRole: (role: string) => void;
   age: number;

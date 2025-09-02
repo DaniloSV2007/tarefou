@@ -2,10 +2,9 @@ import { useAppTheme } from "@/hooks/useAppTheme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useRouter } from "expo-router";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import {
+import React, {
   forwardRef,
   useCallback,
-  useEffect,
   useImperativeHandle,
   useState,
 } from "react";
@@ -25,7 +24,7 @@ interface Props {
   barColor?: string;
   backButtonHref?: () => void;
   bottomBorder?: boolean;
-  children?: any;
+  children?: React.ReactNode;
   showNotification?: boolean;
   reflesh?: () => void;
 }

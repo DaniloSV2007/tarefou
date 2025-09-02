@@ -1,7 +1,7 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { Link, useRouter } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
-import { Card, Checkbox, Divider, Icon, Text } from "react-native-paper";
+import { Card,  Divider, Icon, Text } from "react-native-paper";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Task } from "@/app/(logged)/tasks/[tasks]";

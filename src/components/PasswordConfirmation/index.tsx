@@ -8,12 +8,9 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "react-i18next";
-import { useRouter } from "expo-router";
 import { Portal, Dialog, Text, TextInput } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import api from "@/services/api";
 import {
   EmailAuthProvider,
   getAuth,
@@ -39,7 +36,6 @@ export default function PasswordConfirmation({
 }: Props) {
   const theme = useAppTheme();
   const { t } = useTranslation();
-  const router = useRouter();
   const usersCollection = collection(db, "users");
 
   const [focused, setIsFocused] = useState(false);

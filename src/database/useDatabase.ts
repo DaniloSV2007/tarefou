@@ -1,6 +1,5 @@
 import * as SQLite from "expo-sqlite";
 import "react-native-get-random-values";
-import uuid from "react-native-uuid";
 import { type SQLiteDatabase } from "expo-sqlite";
 
 type Task = {
@@ -28,7 +27,7 @@ export function useDatabase() {
     const db = await getDatabase();
     const statement = await db.prepareAsync(
       `INSERT INTO Task (id, title, description, createdAt, updatedAt, deadline, isCompleted, userId)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     );
     try {
       await statement.executeAsync([
@@ -66,7 +65,7 @@ export function useDatabase() {
       const db = await getDatabase();
       const res = await db.getAllAsync(
         `SELECT * FROM Task WHERE userId = ?`,
-        userId
+        userId,
       );
       return res;
     } catch (error) {
@@ -93,7 +92,7 @@ export function useDatabase() {
     try {
       const db = await getDatabase();
       const statement = await db.prepareAsync(
-        `UPDATE Task SET title = ?, description = ?, updatedAt = ?, deadline = ?, isCompleted = ? WHERE userId = ?`
+        `UPDATE Task SET title = ?, description = ?, updatedAt = ?, deadline = ?, isCompleted = ? WHERE userId = ?`,
       );
       await statement.executeAsync([
         data.title,
@@ -128,7 +127,7 @@ export function useDatabase() {
     try {
       const db = await getDatabase();
       const statement = await db.prepareAsync(
-        "DELETE FROM Task WHERE userId = ?"
+        "DELETE FROM Task WHERE userId = ?",
       );
       await statement.executeAsync([userId]);
       await statement.finalizeAsync();

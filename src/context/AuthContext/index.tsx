@@ -11,7 +11,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
-import { getIdTokenResult, getAuth as auth, getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { googleConfigured } from "@/app/_layout";
 
@@ -36,32 +36,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const usersCollection = collection(db, "users");
   const auth = getAuth();
 
-  const loadAuthState = async () => {
-    try {
-      const storedToken = await AsyncStorage.getItem("userToken");
-      const token = await auth.currentUser?.getIdToken();
-
-      console.log(token);
-      console.log(storedToken);
-      if (storedToken === token) {
-        console.log(storedToken, token, storedToken === token);
-        setToken(storedToken);
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
         setIsLoggedIn(true);
       } else {
-        setToken(null);
-        setIsLoggedIn(false);
+        setIsLoggedIn(false)
       }
-      setError(null);
-    } catch (error) {
-      console.error("Error loading auth state:", error);
-      setError("Failed to load authentication state");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadAuthState();
+      router.replace("/")
+    });
+  
+    return unsubscribe;
   }, []);
 
   useEffect(() => {
@@ -124,6 +110,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         await GoogleSignin.signOut();
       }
       router.replace("/home");
+      auth.signOut()
     } catch (error) {
       console.error("Error during logout:", error);
       setError("Failed to logout");

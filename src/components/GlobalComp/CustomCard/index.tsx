@@ -11,7 +11,7 @@ import { Card } from "react-native-paper";
 
 interface CardButton {
   title: string;
-  children: any;
+  children: React.ReactNode;
   cardStyle?: StyleProp<ViewStyle>;
   contentStyle?: StyleProp<ViewStyle>;
   titleStyle?: StyleProp<TextStyle>;

@@ -1,4 +1,4 @@
-import { NotificationItem } from "@/components/Notifications/NotificationItem";
+import { NotifDataType, NotificationItem } from "@/components/Notifications/NotificationItem";
 import TopBar from "@/components/TopBar";
 import {
   collection,
@@ -11,39 +11,37 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { t } from "i18next";
 import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import { RefreshControl, Text, View } from "react-native";
 import {
   GestureHandlerRootView,
   ScrollView,
 } from "react-native-gesture-handler";
-import { ActivityIndicator, Button } from "react-native-paper";
+import {  Button } from "react-native-paper";
 import { db } from "@/services/FirebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAnimatedRef } from "react-native-reanimated";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useTranslation } from "react-i18next";
-import { useRouter } from "expo-router";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
+
+
 
 interface notification {
   notificationId: string;
   title: string;
   body?: string;
   createdAt: Timestamp;
-  data?: {};
+  data?: NotifDataType;
   viewed: boolean;
 }
 
 export default function Notifications() {
   const theme = useAppTheme();
   const { t } = useTranslation();
-  const router = useRouter();
-  const usersCollection = collection(db, "users");
   const { notification } = usePushNotifications();
 
-  const refNotif = useRef<any>(null);
+  const refNotif = useRef<{ getNotifNum: () => void } | null>(null);
 
   const getNotif = () => {
     refNotif.current?.getNotifNum();
@@ -97,12 +95,9 @@ export default function Notifications() {
       console.error(error);
     } finally {
       setRefreshing(false);
-      const timer = setTimeout(() => {
+      setTimeout(() => {
         setLoading(false);
       }, 1);
-      return () => {
-        clearTimeout(timer);
-      };
     }
   };
 
@@ -171,12 +166,9 @@ export default function Notifications() {
     } catch (error) {
       console.error(error);
     } finally {
-      const timer = setTimeout(() => {
+      setTimeout(() => {
         setLoading(false);
       }, 1);
-      return () => {
-        clearTimeout(timer);
-      };
     }
   };
 

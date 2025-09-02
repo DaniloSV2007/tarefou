@@ -11,8 +11,6 @@ import {
 } from "react-native";
 import {
   ActivityIndicator,
-  Button,
-  Card,
   IconButton,
   Text,
 } from "react-native-paper";
@@ -24,7 +22,6 @@ import TopBar from "@/components/TopBar";
 import GoogleButton from "@/components/GlobalComp/GoogleButton";
 import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useDatabase } from "@/database/useDatabase";
 import { isValidEmail } from "@/utils/isValidEmail";
 import { useAuth } from "@/context/AuthContext";
 import {
@@ -40,17 +37,13 @@ import {
   query,
   where,
   doc,
-  updateDoc,
-  addDoc,
   getDoc,
   setDoc,
 } from "firebase/firestore";
 import {
   GoogleSignin,
-  SignInResponse,
 } from "@react-native-google-signin/google-signin";
 import { WEB_CLIENT_ID } from "@env";
-import { create } from "zustand";
 
 export default function Login() {
   const { login } = useAuth();
@@ -67,8 +60,6 @@ export default function Login() {
   const [error, setError] = useState("");
   const [linkColor, setLinkColor] = useState(theme.colors.onBackground);
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const database = useDatabase();
   const auth = getAuth();
 
   useEffect(() => {

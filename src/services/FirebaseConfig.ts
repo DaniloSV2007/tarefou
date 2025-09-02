@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck eslint-disable
 import { initializeApp } from "firebase/app";
 import { getReactNativePersistence, initializeAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
@@ -7,7 +7,6 @@ import {
   FIREBASE_API_KEY,
   FIREBASE_AUTH_DOMAIL,
   FIREBASE_PROJECT_ID,
-  FIREBASE_MEASUREMENT_ID,
   FIREBASE_APP_ID,
   FIREBASE_MESSAGING_SENDER_ID,
   FIREBASE_STORAGE_BUCKET,
@@ -23,7 +22,9 @@ const firebaseConfig = {
 };
 
 export const app = initializeApp(firebaseConfig);
+
 export const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(AsyncStorage),
 });
+
 export const db = getFirestore(app);

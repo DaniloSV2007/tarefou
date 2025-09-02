@@ -1,7 +1,7 @@
 import TopBar from "@/components/TopBar";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { View, StyleSheet, Image, Pressable } from "react-native";
+import { useLocalSearchParams } from "expo-router";
+import { View, StyleSheet, Pressable } from "react-native";
 import { Avatar, Card, Text } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -9,18 +9,11 @@ import ImageView from "react-native-image-viewing";
 import { useEffect, useState } from "react";
 import { useLanguageContext } from "@/context/LanguageContext";
 import React from "react";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, Timestamp, where } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
+import { UserType } from "../admin/members";
+import { ImageSource } from "react-native-image-viewing/dist/@types";
 
-type User = {
-  name: string;
-  username: string;
-  birthday: Date;
-  email: string;
-  role: string;
-  avatar?: string | null;
-  createdAt?: Date;
-};
 
 export default function UserLink() {
   const theme = useAppTheme();
@@ -34,7 +27,7 @@ export default function UserLink() {
 
   const { languagePreference } = useLanguageContext();
 
-  const [memberData, setMemberData] = useState<any>();
+  const [memberData, setMemberData] = useState<UserType>();
 
   const [age, setAge] = useState(0);
 
@@ -69,7 +62,7 @@ export default function UserLink() {
       if (!querySnapshot.empty) {
         const user = querySnapshot.docs[0].data();
 
-        setMemberData(user);
+        setMemberData(user as UserType);
       } else {
         console.log("error");
       }
@@ -79,12 +72,12 @@ export default function UserLink() {
   };
 
   const [image, setImage] = useState<string | undefined>();
-  const [imageArray, setImageArray] = useState<any>([
+  const [imageArray, setImageArray] = useState<ImageSource[]>([
     { uri: memberData?.avatar ?? undefined },
   ]);
   const [visible, setIsVisible] = useState(false);
 
-  const formatDate = (created: any | Date) => {
+  const formatDate = (created: Timestamp) => {
     if (!created) return;
     const date = new Date(
       created.seconds * 1000 + created.nanoseconds / 1000000
@@ -109,7 +102,7 @@ export default function UserLink() {
     try {
       const q = query(
         usersCollection,
-        where("username", "==", memberData.username)
+        where("username", "==", memberData?.username)
       );
       const querySnapshot = await getDocs(q);
 

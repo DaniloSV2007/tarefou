@@ -5,9 +5,23 @@ import { useState, useEffect, useRef } from "react";
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 
-interface TabBarProps {
-  routesProps: any[];
+type AppRoutes = {
+  key: string,
+  title: string,
+  icon:string,
+  path:string
 }
+
+type TabBarRenderProps = {
+  route: AppRoutes,
+  focused: boolean
+}
+
+interface TabBarProps {
+  routesProps: AppRoutes[];
+}
+
+
 
 export default function CustomTabBar({ routesProps }: TabBarProps) {
   const theme = useTheme();
@@ -30,7 +44,7 @@ export default function CustomTabBar({ routesProps }: TabBarProps) {
     }
   }, [pathname]);
 
-  const renderIcon = ({ route, focused }: any) => (
+  const renderIcon = ({ route, focused }: TabBarRenderProps) => (
     <View
       style={{
         alignItems: "center",
@@ -45,9 +59,10 @@ export default function CustomTabBar({ routesProps }: TabBarProps) {
       />
     </View>
   );
-
-  const renderLabel = ({ route, focused }: any) => (
-    <Text
+  
+  const renderLabel = ({ route, focused }: TabBarRenderProps) => {
+    const currentRoute = "routes."+route.key
+    return(<Text
       style={{
         fontSize: 12,
         fontWeight: focused ? "bold" : "normal",
@@ -55,15 +70,17 @@ export default function CustomTabBar({ routesProps }: TabBarProps) {
         textAlign: "center",
         marginTop: -16,
       }}
-    >
-      {t(`routes.${route.key}`)}
-    </Text>
-  );
+    > 
+    {t(currentRoute as unknown as [])}
+    </Text>)}
+  ;
 
   return (
     <BottomNavigation.Bar
       navigationState={{ index, routes }}
-      onTabPress={({ route }: any) => {
+      onTabPress={({ route }: {
+        route:AppRoutes
+      }) => {
         const newIndex = routes.findIndex((r) => r.key === route.key);
         if (newIndex !== -1 && newIndex !== index) {
           setIndex(newIndex);

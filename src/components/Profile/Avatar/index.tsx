@@ -2,13 +2,12 @@ import { useAppTheme } from "@/hooks/useAppTheme";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View, StyleSheet, Alert, Pressable } from "react-native";
-import { Text, FAB, Avatar, Portal, IconButton } from "react-native-paper";
+import { Text, FAB, Avatar,  IconButton } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import imagePlaceholder from "@/assets/Profile/user.png";
 import * as SystemUI from "expo-system-ui";
 import { useThemeContext } from "@/context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import api from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
 import Menu from "../Menu";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
@@ -23,11 +22,19 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "@/services/FirebaseConfig";
 
+export type ImageURI ={
+  uri: string | null,
+}
+
 export default function AvatarProfile({
   setImageProp,
   setIsVisible,
   setQrVisible,
-}: any) {
+}: {
+  setImageProp: (image:ImageURI[]) => void;
+  setIsVisible: (state:boolean) => void;
+  setQrVisible: (state:boolean) => void
+} ) {
   const theme = useAppTheme();
   const { t } = useTranslation();
   const { isDark } = useThemeContext();
@@ -37,10 +44,6 @@ export default function AvatarProfile({
   //Profile Picture
   const [image, setImage] = useState<string | null>(null);
   const placeholder = imagePlaceholder;
-
-  //Menu State
-  const [isSelectionOpen, setIsSelectionOpen] = useState(false);
-  const [menuAnimation, setMenuAnimation] = useState(false);
 
   //User Info
   const [name, setName] = useState<string | null>(null);
@@ -65,13 +68,7 @@ export default function AvatarProfile({
     SystemUI.setBackgroundColorAsync(isDark ? "#000" : "#fff");
   }, [isDark]);
 
-  useEffect(() => {
-    if (isSelectionOpen) {
-      SystemUI.setBackgroundColorAsync(theme.custom.cardColor);
-    } else {
-      SystemUI.setBackgroundColorAsync(theme.colors.background);
-    }
-  }, [isSelectionOpen, isDark]);
+
 
   useEffect(() => {
     if (image !== null) {

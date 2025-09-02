@@ -5,21 +5,8 @@ import * as Notification from "expo-notifications";
 
 import Constants from "expo-constants";
 
-import { Alert, Platform } from "react-native";
+import { Platform } from "react-native";
 import { useRouter } from "expo-router";
-import {
-  addDoc,
-  collection,
-  doc,
-  getDocs,
-  query,
-  serverTimestamp,
-  where,
-} from "firebase/firestore";
-import { db } from "@/services/FirebaseConfig";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useAuth } from "@/context/AuthContext";
-import { getAuth } from "firebase/auth";
 
 export interface PushNotificationState {
   notification?: Notification.Notification;
@@ -37,7 +24,6 @@ export const usePushNotifications = (): PushNotificationState => {
   });
 
   const router = useRouter();
-  const auth = getAuth();
 
   const [expoPushToken, setExpoPushToken] = useState<
     Notification.ExpoPushToken | undefined
@@ -48,7 +34,7 @@ export const usePushNotifications = (): PushNotificationState => {
   >();
 
   const notificationListener = useRef<Notification.EventSubscription | null>(
-    null
+    null,
   );
   const responseListener = useRef<Notification.EventSubscription | null>(null);
 
@@ -98,7 +84,6 @@ export const usePushNotifications = (): PushNotificationState => {
 
       if (response) {
         const href = String(response?.notification.request.content.data?.href);
-        const role = await AsyncStorage.getItem("userRole");
 
         if (
           href &&
@@ -125,7 +110,7 @@ export const usePushNotifications = (): PushNotificationState => {
     notificationListener.current = Notification.addNotificationReceivedListener(
       (notification) => {
         setNotification(notification);
-      }
+      },
     );
 
     responseListener.current =

@@ -1,35 +1,34 @@
 import { useAuth } from "@/context/AuthContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import api from "@/services/api";
+import { db } from "@/services/FirebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useEffect } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 export default function Logged() {
-  const { logout, token } = useAuth();
+  const { logout } = useAuth();
   const router = useRouter();
   const theme = useAppTheme();
-
+  const usersCollection = collection(db, "users");
+  
   const getRole = async () => {
-    const role = await AsyncStorage.getItem("userRole");
+    let role = await AsyncStorage.getItem("userRole");
     if (!role) {
-      const timer = setTimeout(() => {
-        logout();
-      }, 200);
-      return () => {
-        clearTimeout(timer);
-      };
+        role = await getRoleDatabase();
+        await AsyncStorage.setItem("userRole", role as string);
     }
-    getRoleDatabase(role);
+    
     if (role === "MEMBER") {
       router.replace("/user/home");
     } else {
       router.replace("/admin/home");
     }
-  };
+  }
+  
 
-  const getRoleDatabase = async (role: string) => {
+  const getRoleDatabase = async () => {
     const username = await AsyncStorage.getItem("username");
     if (!username) {
       const timer = setTimeout(() => {
@@ -39,14 +38,14 @@ export default function Logged() {
         clearTimeout(timer);
       };
     }
-    try {
-      // const res = await api.get("users/" + username, {
-      //   headers: { Authorization: `Bearer ${token}` },
-      // });
-      // if (res.status === 200) {
-      //   const roleDb = res.data.role;
-      //   roleDb !== role && (await AsyncStorage.setItem("userRole", roleDb));
-      // }
+    try{
+      const q = query(usersCollection, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const user = querySnapshot.docs[0];
+        const userData = user.data();
+        return userData.role;
+      }
     } catch (error) {
       console.error(error);
     }

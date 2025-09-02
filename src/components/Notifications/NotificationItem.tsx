@@ -1,4 +1,4 @@
-import React, { RefObject, useEffect, useState } from "react";
+import React, { RefObject,  useState } from "react";
 import { Text, StyleSheet, Dimensions } from "react-native";
 import {
   Gesture,
@@ -23,6 +23,11 @@ const { width } = Dimensions.get("window");
 const SWIPE_THRESHOLD_LEFT = -width * 0.15;
 const SWIPE_THRESHOLD_RIGHT = width * 0.15;
 
+export type NotifDataType = {
+  href?: string | null,
+  notificationId: string
+}
+
 export function NotificationItem({
   title,
   body,
@@ -39,7 +44,7 @@ export function NotificationItem({
   createAt: string;
   changeViewed: (status: boolean) => void;
   deleteNotif: () => void;
-  data: any;
+  data: NotifDataType;
   scrollGestureRef: RefObject<ScrollView>;
 }) {
   const translationX = useSharedValue(0);

@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
 import React, { useState } from "react";
 import { StyleSheet, View, TextInput } from "react-native";
-import { Button, Text } from "react-native-paper";
+import { Button } from "react-native-paper";
 import { useAppTheme } from "@/hooks/useAppTheme";
 
-interface FamilyNameProps {
+interface FamilyNameProps { // eslint-disable-next-line
   setPage: (page: any) => void;
   familyName: string;
   setFamilyName: (familyName: string) => void;

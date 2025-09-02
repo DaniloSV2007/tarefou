@@ -1,14 +1,14 @@
 import { useTranslation } from "react-i18next";
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { Button, Icon, Text } from "react-native-paper";
+import { Button,  Text } from "react-native-paper";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { Checkbox, ActivityIndicator } from "react-native-paper";
 import { useState } from "react";
 
 interface TermsOfServiceProps {
   onConfirm?: () => void;
-  isLoading?: boolean;
+  isLoading?: boolean; // eslint-disable-next-line
   setPage: (page: any) => void;
 }
 
@@ -42,7 +42,7 @@ export default function TermsOfService({
             setPage(1);
           }}
         >
-          {t("components:common.cancel")}
+          {t("common.cancel", {ns:'components'})}
         </Button>
         <Button
           style={
@@ -62,7 +62,7 @@ export default function TermsOfService({
           {isLoading ? (
             <ActivityIndicator color="white" size={20} />
           ) : (
-            t("components:common.confirm")
+            t("common.confirm",{ns:'components'})
           )}
         </Button>
       </View>

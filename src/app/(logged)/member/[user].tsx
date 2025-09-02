@@ -1,14 +1,10 @@
 import TopBar from "@/components/TopBar";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { View, StyleSheet, Image, Pressable } from "react-native";
+import { useLocalSearchParams } from "expo-router";
+import { View, StyleSheet,  Pressable } from "react-native";
 import {
   Avatar,
   Card,
-  Divider,
-  FAB,
-  Icon,
-  ProgressBar,
   Text,
 } from "react-native-paper";
 import { useTranslation } from "react-i18next";
@@ -16,27 +12,35 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ImageView from "react-native-image-viewing";
 import { useEffect, useState } from "react";
 import { useLanguageContext } from "@/context/LanguageContext";
-import api from "@/services/api";
-import { useAuth } from "@/context/AuthContext";
 import React from "react";
 import {
   collection,
-  doc,
-  getDoc,
   getDocs,
   query,
+  Timestamp,
   where,
 } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
+import { ImageSource } from "react-native-image-viewing/dist/@types";
 
-type User = {
+export type User = {
   name: string;
   username: string;
   birthday: Date;
   email: string;
   role: string;
   avatar?: string | null;
-  createdAt?: Date;
+  createdAt: Date;
+};
+
+export type UserRaw = {
+  name: string;
+  username: string;
+  birthday: Timestamp;
+  email: string;
+  role: string;
+  avatar?: string | null;
+  createdAt: Timestamp;
 };
 
 export default function UserProfile() {
@@ -50,24 +54,18 @@ export default function UserProfile() {
 
   const userParam = Array.isArray(params.user) ? params.user[0] : params.user;
 
-  const memberDataRaw: any = JSON.parse(decodeURIComponent(userParam));
+  const memberDataRaw: UserRaw = JSON.parse(decodeURIComponent(userParam));
 
   // Converte os campos Timestamp para Date, se necessário
   const memberData: User = {
     ...memberDataRaw,
-    birthday: memberDataRaw.birthday?.seconds
-      ? new Date(memberDataRaw.birthday.seconds * 1000)
-      : new Date(memberDataRaw.birthday),
-    createdAt: memberDataRaw.createdAt?.seconds
-      ? new Date(memberDataRaw.createdAt.seconds * 1000)
-      : memberDataRaw.createdAt
-        ? new Date(memberDataRaw.createdAt)
-        : undefined,
+    birthday: new Date(memberDataRaw.birthday.seconds * 1000),
+    createdAt: new Date(memberDataRaw.createdAt.seconds * 1000)
   };
 
   const [image, setImage] = useState<string | undefined>();
-  const [imageArray, setImageArray] = useState<any>([
-    { uri: memberData.avatar },
+  const [imageArray, setImageArray] = useState<{uri:string | null}[]>([
+    { uri: memberData.avatar ?? null },
   ]);
   const [visible, setIsVisible] = useState(false);
 
@@ -75,9 +73,11 @@ export default function UserProfile() {
     ? new Date().getFullYear() - memberData.birthday.getFullYear()
     : "";
 
-  const formatDate = (created: any | Date) => {
+  const formatDate = (created: Date ) => {
     if (!created) return;
+
     const date = new Date(created);
+
     if (isNaN(date.getTime())) return;
 
     const day = date.getDate().toString().padStart(2, "0");
@@ -198,7 +198,7 @@ export default function UserProfile() {
           </Card>
 
           <ImageView
-            images={imageArray}
+            images={imageArray as unknown as ImageSource[]}
             imageIndex={0}
             visible={visible}
             onRequestClose={() => setIsVisible(false)}

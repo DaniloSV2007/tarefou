@@ -1,28 +1,24 @@
-import { useRouter } from "expo-router";
 import { StyleSheet, View } from "react-native";
 import {
-  ActivityIndicator,
   Button,
   Divider,
   Snackbar,
   Text,
-  TouchableRipple,
   useTheme,
 } from "react-native-paper";
 import Constants from "expo-constants";
 import TopBar from "@/components/TopBar";
 import { useTranslation } from "react-i18next";
-import React, { useEffect, useState, version } from "react";
+import React, { useEffect, useState } from "react";
 import * as Updates from "expo-updates";
 import Update from "@/components/Update";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function AppInfo() {
-  const router = useRouter();
   const theme = useTheme();
   const { t } = useTranslation();
 
-  const { isUpdateAvailable, isDownloading, isRestarting, isUpdatePending } =
+  const { isUpdateAvailable } =
     Updates.useUpdates();
 
   const [isChecking, setIsChecking] = useState(false);
@@ -52,7 +48,7 @@ export default function AppInfo() {
   };
 
   useEffect(() => {
-    let hideSnackbar: any;
+    let hideSnackbar: number;
     if (updatedVisible) {
       hideSnackbar = setTimeout(() => {
         setUpdatedVisible(false);

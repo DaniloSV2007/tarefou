@@ -1,17 +1,14 @@
 import { View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "react-i18next";
 import TopBar from "@/components/TopBar";
 import { useRouter } from "expo-router";
 import { collection, doc, getDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
 import InfoButon from "@/components/Settings/Account/AccountInfo/InfoButton";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLanguageContext } from "@/context/LanguageContext";
-import { Button } from "react-native-paper";
-import { getAuth, sendEmailVerification } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
 type User = {
   name: string;
@@ -95,25 +92,6 @@ export default function AccountInfo() {
     return languagePreference === 1
       ? `${month}/${day}/${year}`
       : `${day}/${month}/${year}`;
-  };
-
-  const handleVerification = async () => {
-    try {
-      const auth = getAuth();
-      const user = auth.currentUser;
-
-      if (!user) {
-        console.warn("Nenhum usuário logado!");
-        return;
-      }
-
-      await sendEmailVerification(user);
-
-      console.log("E-mail de verificação enviado para:", user.email);
-      alert("Verifique sua caixa de entrada!");
-    } catch (error) {
-      console.error("Erro ao enviar e-mail de verificação:", error);
-    }
   };
 
   return (

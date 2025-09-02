@@ -1,29 +1,22 @@
 import {
   Keyboard,
-  Platform,
   Pressable,
-  ScrollView,
   TouchableWithoutFeedback,
   View,
-  KeyboardAvoidingView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "react-i18next";
 import TopBar from "@/components/TopBar";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   ActivityIndicator,
   Avatar,
-  Dialog,
   Icon,
-  Portal,
   Text,
   TextInput,
 } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import api from "@/services/api";
 import { Family } from "../[family]";
 import { UserType } from "@/app/(logged)/admin/members";
 import { Dropdown } from "react-native-element-dropdown";
@@ -39,15 +32,22 @@ import {
 } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
 
+type Data = {
+  label: string,
+  value: string,
+  avatar: string,
+  role: string
+}
+
 export default function ChangeFamilyName() {
   const theme = useAppTheme();
-  const { token } = useAuth();
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams();
   const usersCollection = collection(db, "users");
 
+  // eslint-disable-next-line
   const [text, setText] = useState<any>([]);
   const [updating, setUpdating] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -55,8 +55,7 @@ export default function ChangeFamilyName() {
   const [avatarsFetched, setAvatarsFetched] = useState(false);
 
   const [familyInfo, setFamilyInfo] = useState<Family | undefined>();
-  const [users, setUsers] = useState<UserType[] | undefined>();
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<Data[]>([]);
 
   const familyParams = Array.isArray(params.family)
     ? params.family[0]
@@ -69,7 +68,6 @@ export default function ChangeFamilyName() {
       const nonOwnerUsers = familyDecoded.users.filter(
         (user: UserType) => user.username !== familyDecoded.owner
       );
-      setUsers(nonOwnerUsers);
       setData(
         nonOwnerUsers.map((user: UserType) => ({
           label: user.name,
@@ -102,7 +100,6 @@ export default function ChangeFamilyName() {
       const nonOwnerUsers = familyInfo.users.filter(
         (user: UserType) => user.username !== familyInfo.owner
       );
-      setUsers(nonOwnerUsers);
       setData(
         nonOwnerUsers.map((user: UserType) => ({
           label: user.name,
@@ -133,7 +130,6 @@ export default function ChangeFamilyName() {
   const handleChangeFamilyOwner = async () => {
     if (!text.value) return;
     try {
-      console.log;
       if (!familyInfo?.id) return;
       const familyDoc = doc(db, "families", familyInfo?.id);
       await updateDoc(familyDoc, { owner: text.value.trim() });
@@ -142,8 +138,7 @@ export default function ChangeFamilyName() {
     } catch (error) {
       console.error(error);
     } finally {
-      const timer = setTimeout(() => setUpdating(false), 2000);
-      return () => clearTimeout(timer);
+      setTimeout(() => setUpdating(false), 2000);
     }
   };
 

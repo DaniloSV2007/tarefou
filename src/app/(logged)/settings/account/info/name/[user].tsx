@@ -1,58 +1,38 @@
 import {
   Keyboard,
-  Platform,
   Pressable,
-  ScrollView,
-  StyleSheet,
   TouchableWithoutFeedback,
   View,
   KeyboardAvoidingView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "react-i18next";
 import TopBar from "@/components/TopBar";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   ActivityIndicator,
-  Button,
-  Card,
-  Dialog,
-  Portal,
   Text,
   TextInput,
 } from "react-native-paper";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import api from "@/services/api";
-import { Header } from "react-native/Libraries/NewAppScreen";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import PasswordConfirmation from "@/components/PasswordConfirmation";
-import { collection, doc, updateDoc } from "firebase/firestore";
+import {  doc, updateDoc } from "firebase/firestore";
 import { auth, db } from "@/services/FirebaseConfig";
+import { UserType } from "@/app/(logged)/admin/members";
 
 export default function ChangeName() {
   const theme = useAppTheme();
-  const { token } = useAuth();
   const { t } = useTranslation();
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams();
 
-  const familiesCollection = collection(db, "families");
 
-  const [userData, setUserData] = useState<any>();
+  const [userData, setUserData] = useState<UserType>();
 
   const [text, setText] = useState("");
   const [updating, setUpdating] = useState(false);
 
   const [visible, setVisible] = useState(false);
-
-  const [password, setPassword] = useState("");
 
   const [keyboardVisible, setKeyboardVisible] = useState(false);
 
@@ -98,13 +78,9 @@ export default function ChangeName() {
     } catch (error) {
       console.error(error);
     } finally {
-      const timer = setTimeout(() => {
+      setTimeout(() => {
         setUpdating(false);
       }, 2000);
-
-      return () => {
-        clearTimeout(timer);
-      };
     }
   };
 
@@ -215,26 +191,3 @@ export default function ChangeName() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  inner: {
-    flex: 1,
-    justifyContent: "space-around",
-  },
-  header: {
-    fontSize: 36,
-    marginBottom: 48,
-  },
-  textInput: {
-    height: 40,
-    borderColor: "#000000",
-    borderBottomWidth: 1,
-    marginBottom: 36,
-  },
-  btnContainer: {
-    backgroundColor: "white",
-    marginTop: 12,
-  },
-});

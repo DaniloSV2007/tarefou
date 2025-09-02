@@ -1,21 +1,12 @@
-import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import {
-  ActivityIndicator,
   Button,
-  Card,
-  Checkbox,
-  Dialog,
-  Portal,
-  Surface,
 } from "react-native-paper";
 import React, { useState } from "react";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useThemeContext } from "@/context/ThemeContext";
-import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 
 interface BirthdayProps {
@@ -29,21 +20,13 @@ interface BirthdayProps {
 export default function Birthday({
   setPage,
   setBirthday,
-  birthday,
-  age,
   setAge,
 }: BirthdayProps) {
   const theme = useAppTheme();
   const [date, setDate] = useState(new Date());
-  const [mode, setMode] = useState<"date" | "time" | "datetime">("date");
   const [show, setShow] = useState(false);
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isConfirmation, setIsConfirmation] = useState(false);
-  const [isTermsChecked, setIsTermsChecked] = useState(false);
-  const { isDark } = useThemeContext();
-  const { login } = useAuth();
-  const router = useRouter();
+
   const { t, i18n } = useTranslation();
 
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
@@ -79,7 +62,6 @@ export default function Birthday({
     setBirthday(date.toISOString().split("T")[0]);
     setAge(new Date().getFullYear() - date.getFullYear());
     setPage(4);
-    setIsConfirmation(true);
   };
 
   const minimumAgeDate = new Date();

@@ -1,17 +1,15 @@
-import { Link, useRouter } from "expo-router";
+import {  useRouter } from "expo-router";
 import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
-import { ActivityIndicator, Card, FAB, Icon } from "react-native-paper";
+import { ActivityIndicator, Card, FAB } from "react-native-paper";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import React, { useCallback, useEffect, useState } from "react";
 import TopBar from "@/components/TopBar";
 import { useTranslation } from "react-i18next";
-import ContentLoader, { Circle, List, Rect } from "react-content-loader/native";
+import ContentLoader, {  Rect } from "react-content-loader/native";
 import CustomCard from "@/components/GlobalComp/CustomCard";
 import CardInfo from "@/components/Report/CardInfo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserType } from "./members";
-import api from "@/services/api";
-import { useAuth } from "@/context/AuthContext";
 import { Task } from "../tasks/[tasks]";
 import { Text } from "react-native-paper";
 import {
@@ -26,26 +24,30 @@ import { db } from "@/services/FirebaseConfig";
 import TasksCard from "@/components/Home/TasksCard";
 import getUsersInfo from "@/utils/getUsersInfo";
 import getFamilyId from "@/utils/getFamilyId";
-import { formatDiagnosticsWithColorAndContext } from "typescript";
 
 export interface UserTasksType extends UserType {
-  tasks?: Task[];
+  tasks?: Task[] | undefined;
+}
+
+export interface Family {
+  id: string;
+  name: string;
+  owner: string;
+  users: UserType[];
 }
 
 export default function Home() {
   const router = useRouter();
   const theme = useAppTheme();
   const { t } = useTranslation();
-  const { token } = useAuth();
   const usersCollection = collection(db, "users");
   const tasksCollection = collection(db, "tasks");
 
   const [loadingUsers, setLoadingUsers] = useState(false);
 
-  const [familyInfo, setFamilyInfo] = useState<any>();
-  const [familyEncoded, setFamilyEncoded] = useState<any>();
+  const [familyInfo, setFamilyInfo] = useState<Family | undefined>();
 
-  const [tasks, setTasks] = useState<Task[] | any>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   const [usersLength, setUsersLength] = useState(0);
   const [users, setUsers] = useState<UserTasksType[]>([]);
@@ -56,29 +58,18 @@ export default function Home() {
 
   useEffect(() => {
     if (users.map((user: UserTasksType) => user.tasks).length > 0) {
-      setTasks(users.flatMap((user: UserTasksType) => user.tasks));
+      setTasks(users.flatMap((user: UserTasksType) => user.tasks ?? []));
     }
-  }, [users]);
-
-  useEffect(() => {
     if (
       users.length > 0 &&
       users.some((user) => !user.tasks || user.tasks.length === 0)
     ) {
-      const familyInfoNoAvatars = {
-        ...familyInfo,
-        users: users.map((user: UserType) => ({
-          ...user,
-          avatar: "",
-        })),
-      };
       users.map((user) => {
         getUsersTasks(user.username);
       });
-
-      setFamilyEncoded(encodeURIComponent(JSON.stringify(familyInfoNoAvatars)));
     }
   }, [users]);
+
 
   const filterUsers = async (users: UserType[]) => {
     const newUsers = users
@@ -103,8 +94,8 @@ export default function Home() {
     try {
       const users = await getUsersInfo(familyId);
       if (users) {
-        await filterUsers(users);
-        getFamilyInfo(familyInfo);
+        await filterUsers(users as UserType[]);
+        getFamilyInfo(familyInfo?.id);
         setLoadingUsers(false);
       }
     } catch (error) {
@@ -115,14 +106,14 @@ export default function Home() {
     }
   };
 
-  const getFamilyInfo = async (familyId: string) => {
+  const getFamilyInfo = async (familyId: string | undefined) => {
     if (!familyId) return;
 
     try {
       const familyDoc = doc(db, "families", familyId);
       const family = await getDoc(familyDoc);
 
-      setFamilyInfo(family.data);
+      setFamilyInfo(family.data as unknown as Family);
     } catch (error) {
       console.error(error);
     }

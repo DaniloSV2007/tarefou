@@ -3,13 +3,12 @@ import React, { useState, useEffect } from "react";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import TopBar from "@/components/TopBar";
-import { Button, Card } from "react-native-paper";
+import { Button } from "react-native-paper";
 import CustomCard from "@/components/GlobalComp/CustomCard";
 import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Task } from "../[tasks]";
 import api from "@/services/api";
-import { useAuth } from "@/context/AuthContext";
 import {
   collection,
   doc,
@@ -76,13 +75,13 @@ export default function TaskDetails() {
 
   const sendPushNotification = async (username: string, userName: string) => {
     if (!username || !userName) return setChanging(false);
-    let userData;
+    
     const q = query(usersCollection, where("username", "==", username));
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) return setChanging(false);
 
-    userData = querySnapshot.docs[0].data();
+    const userData = querySnapshot.docs[0].data();
 
     const data = {
       token: userData.pushToken,
@@ -99,7 +98,7 @@ export default function TaskDetails() {
         router.replace("/user/home");
       }
     } catch (error) {
-      console.error;
+      console.error("Error while sending push notificatio: ", error);
     } finally {
       setChanging(false);
     }
