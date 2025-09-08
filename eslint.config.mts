@@ -44,6 +44,7 @@ export default ts.config(js.configs.recommended, ...ts.configs.recommended, {
     "react/prop-types": "off", // se usa TS, não precisa
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": ["warn"],
+    "@typescript-eslint/ban-ts-comment": "off",
   },
 
   settings: {

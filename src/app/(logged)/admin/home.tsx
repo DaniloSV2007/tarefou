@@ -83,8 +83,8 @@ export default function Home() {
     try {
       const usersData = await getUsersInfo(familyId);
       if (usersData) {
-        const filteredUsers = usersData
-          .filter((user: any) => user.role !== "FAMILY_ADMIN")
+        const filteredUsers = usersData //@ts-ignore
+          .filter((user: any) => user.role !== "FAMILY_ADMIN") //@ts-ignore
           .map((user: any) => ({ ...(user as UserType), tasks: [] }));
 
         await AsyncStorage.setItem(

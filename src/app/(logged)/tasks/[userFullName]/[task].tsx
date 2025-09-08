@@ -19,6 +19,7 @@ import {
   Timestamp,
   updateDoc,
   where,
+  addDoc,
 } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
 
@@ -126,6 +127,56 @@ export default function TaskDetails() {
       const familyData = (await getDoc(familyDoc)).data();
 
       await sendPushNotification(familyData?.owner, userData?.name);
+      // Handle repetition: create next occurrence if applicable
+      const repeat: any = (taskData as any)?.repeat;
+      const baseDate = getDeadlineDate() || new Date();
+      const step = Math.max(1, repeat?.interval ?? 1);
+      const nextDate = (() => {
+        const d = new Date(baseDate.getTime());
+        switch (repeat?.frequency) {
+          case "DAILY":
+            d.setDate(d.getDate() + step);
+            break;
+          case "WEEKLY":
+            d.setDate(d.getDate() + 7 * step);
+            break;
+          case "MONTHLY":
+            d.setMonth(d.getMonth() + step);
+            break;
+          default:
+            return undefined;
+        }
+        return d;
+      })();
+
+      if (repeat?.frequency && nextDate) {
+        let shouldCreate = true;
+        const createdCount = repeat.createdCount ?? 0;
+        if (repeat.endType === "COUNT" && typeof repeat.endCount === "number") {
+          if (createdCount >= repeat.endCount - 1) shouldCreate = false;
+        }
+        if (repeat.endType === "DATE" && repeat.endDate) {
+          const end = new Date(repeat.endDate);
+          if (nextDate > end) shouldCreate = false;
+        }
+
+        if (shouldCreate) {
+          await addDoc(tasksCollection, {
+            userId: taskData?.userId,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            title: taskData?.title,
+            description: taskData?.description ?? null,
+            isCompleted: false,
+            deadline: nextDate,
+            repeat: {
+              ...repeat,
+              createdCount: createdCount + 1,
+              startDate: nextDate,
+            },
+          });
+        }
+      }
     } catch (error) {
       console.error(error);
     }
@@ -325,7 +376,7 @@ export default function TaskDetails() {
               onPress={handleDelete}
               disabled={deleting}
               className="py-3 rounded-2xl items-center"
-              style={{ backgroundColor: theme.colors.error }}
+              style={{ backgroundColor: "red" }}
             >
               {!deleting ? (
                 <Text style={{ color: "white" }} className="text-2xl">

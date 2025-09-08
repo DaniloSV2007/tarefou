@@ -24,6 +24,15 @@ export type Task = {
   deadline?: Timestamp;
   isCompleted?: boolean;
   userId: string;
+  repeat?: {
+    frequency: "DAILY" | "WEEKLY" | "MONTHLY";
+    interval: number; // every N units
+    endType: "NEVER" | "DATE" | "COUNT";
+    endDate?: Date; // when endType === 'DATE'
+    endCount?: number; // when endType === 'COUNT'
+    createdCount?: number; // how many extra occurrences created
+    startDate?: Date; // base reference for next occurrence
+  };
 };
 
 interface User {
@@ -209,33 +218,35 @@ export default function AllTasks() {
                               </Text>
                             </View>
 
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                              }}
-                            >
-                              <Text
-                                style={[
-                                  { color: theme.colors.onSurface },
-                                  styles.textBold,
-                                ]}
+                            {task.description != "" && (
+                              <View
+                                style={{
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                }}
                               >
-                                {t("tasks.admin.allTasks.description", {
-                                  ns: "screens",
-                                })}{" "}
-                              </Text>
-                              <Text
-                                style={[
-                                  styles.descriptionText,
-                                  { color: theme.colors.onSurface },
-                                ]}
-                                numberOfLines={1}
-                                ellipsizeMode="tail"
-                              >
-                                {task.description}
-                              </Text>
-                            </View>
+                                <Text
+                                  style={[
+                                    { color: theme.colors.onSurface },
+                                    styles.textBold,
+                                  ]}
+                                >
+                                  {t("tasks.admin.allTasks.description", {
+                                    ns: "screens",
+                                  })}{" "}
+                                </Text>
+                                <Text
+                                  style={[
+                                    styles.descriptionText,
+                                    { color: theme.colors.onSurface },
+                                  ]}
+                                  numberOfLines={1}
+                                  ellipsizeMode="tail"
+                                >
+                                  {task.description}
+                                </Text>
+                              </View>
+                            )}
 
                             <View
                               style={{
@@ -243,7 +254,7 @@ export default function AllTasks() {
                                 alignItems: "center",
                                 position: "absolute",
                                 right: 0,
-                                top: "40%",
+                                top: task.description != "" ? "30%" : undefined,
                               }}
                             >
                               <Icon source="chevron-right" size={32} />
@@ -302,30 +313,35 @@ export default function AllTasks() {
                           </Text>
                         </View>
 
-                        <View
-                          style={{ flexDirection: "row", alignItems: "center" }}
-                        >
-                          <Text
-                            style={[
-                              { color: theme.colors.onSurface },
-                              styles.textBold,
-                            ]}
+                        {task.description != "" && (
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                            }}
                           >
-                            {t("tasks.admin.allTasks.description", {
-                              ns: "screens",
-                            })}{" "}
-                          </Text>
-                          <Text
-                            style={[
-                              styles.descriptionText,
-                              { color: theme.colors.onSurface },
-                            ]}
-                            numberOfLines={1}
-                            ellipsizeMode="tail"
-                          >
-                            {task.description}
-                          </Text>
-                        </View>
+                            <Text
+                              style={[
+                                { color: theme.colors.onSurface },
+                                styles.textBold,
+                              ]}
+                            >
+                              {t("tasks.admin.allTasks.description", {
+                                ns: "screens",
+                              })}{" "}
+                            </Text>
+                            <Text
+                              style={[
+                                styles.descriptionText,
+                                { color: theme.colors.onSurface },
+                              ]}
+                              numberOfLines={1}
+                              ellipsizeMode="tail"
+                            >
+                              {task.description}
+                            </Text>
+                          </View>
+                        )}
 
                         <View
                           style={{
@@ -333,7 +349,7 @@ export default function AllTasks() {
                             alignItems: "center",
                             position: "absolute",
                             right: 0,
-                            top: "40%",
+                            top: task.description != "" ? "30%" : undefined,
                           }}
                         >
                           <Icon source="chevron-right" size={32} />

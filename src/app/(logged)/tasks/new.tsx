@@ -3,6 +3,7 @@ import {
   Pressable,
   TouchableWithoutFeedback,
   View,
+  ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useAppTheme } from "@/hooks/useAppTheme";
@@ -72,6 +73,18 @@ export default function NewTask() {
 
   const [loading, setLoading] = useState(false);
   const [role, setRole] = useState<string | null>(null);
+
+  const [repeatEnabled, setRepeatEnabled] = useState(false);
+  const [repeatFrequency, setRepeatFrequency] = useState<
+    "DAILY" | "WEEKLY" | "MONTHLY"
+  >("DAILY");
+  const [repeatInterval, setRepeatInterval] = useState<string>("1");
+  const [repeatEndType, setRepeatEndType] = useState<
+    "NEVER" | "DATE" | "COUNT"
+  >("NEVER");
+  const [repeatEndDate, setRepeatEndDate] = useState(new Date());
+  const [showRepeatEndDate, setShowRepeatEndDate] = useState(false);
+  const [repeatEndCount, setRepeatEndCount] = useState<string>("10");
 
   const onChangeDate = (event: DateTimePickerEvent, selectedDate?: Date) => {
     if (date === selectedDate) {
@@ -278,8 +291,8 @@ export default function NewTask() {
 
           const privateDataDoc = await getDoc(doc(userRef, "private", "data"));
           const privateData = privateDataDoc.data();
-
-          const dataTask = {
+          // eslint-disable-next-line
+          const dataTask: any = {
             userId,
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -288,6 +301,26 @@ export default function NewTask() {
             isCompleted: false,
             deadline: deadline !== dateNow ? deadline : null,
           };
+          if (repeatEnabled) {
+            const intervalNum = Math.max(
+              1,
+              parseInt(repeatInterval || "1", 10),
+            ); // eslint-disable-next-line
+            const repeat: any = {
+              frequency: repeatFrequency,
+              interval: intervalNum,
+              endType: repeatEndType,
+              createdCount: 0,
+              startDate: deadline !== dateNow ? deadline : new Date(),
+            };
+            if (repeatEndType === "DATE") repeat.endDate = repeatEndDate;
+            if (repeatEndType === "COUNT")
+              repeat.endCount = Math.max(
+                1,
+                parseInt(repeatEndCount || "1", 10),
+              );
+            dataTask.repeat = repeat;
+          }
           await addDoc(tasksCollection, dataTask);
 
           await sendPushNotification(privateData?.pushToken, userData.name);
@@ -311,12 +344,16 @@ export default function NewTask() {
             )
           }
         />
-        <View style={{ flex: 1, padding: 16, alignItems: "center" }}>
+        <ScrollView
+          style={{ flex: 1, padding: 16 }}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ flexGrow: 1, alignItems: "center" }}
+        >
           <CustomCard
             title={t("home.newTask.title")}
-            cardStyle={{ width: "95%", borderRadius: 24 }}
+            cardStyle={{ width: "95%", borderRadius: 24, flexGrow: 1 }}
           >
-            <View className="gap-5">
+            <View className="gap-5" style={{ flexGrow: 1 }}>
               <View className="gap-5">
                 <TextInput
                   mode="outlined"
@@ -382,6 +419,178 @@ export default function NewTask() {
                     : t("home.newTask.selectDate", { ns: "translation" })}
                 </Text>
               </Pressable>
+              {/* Repetition Section */}
+              <View>
+                <Text className="text-2xl">Repetição</Text>
+              </View>
+              <View
+                style={{
+                  backgroundColor: theme.custom.cardTaskBackground,
+                  borderRadius: 12,
+                  paddingVertical: 8,
+                  paddingHorizontal: 8,
+                  gap: 8,
+                }}
+              >
+                <Pressable
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    paddingVertical: 4,
+                  }}
+                  onPress={() => setRepeatEnabled((v) => !v)}
+                >
+                  <Text className="text-xl">Ativar repetição</Text>
+                  <Checkbox status={repeatEnabled ? "checked" : "unchecked"} />
+                </Pressable>
+
+                {repeatEnabled && (
+                  <View style={{ gap: 12 }}>
+                    <View style={{ gap: 6 }}>
+                      <Text className="text-xl">Frequência</Text>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          gap: 8,
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        {(["DAILY", "WEEKLY", "MONTHLY"] as const).map(
+                          (opt) => (
+                            <Pressable
+                              key={opt}
+                              onPress={() => setRepeatFrequency(opt)}
+                              style={{
+                                paddingVertical: 6,
+                                paddingHorizontal: 10,
+                                borderRadius: 8,
+                                backgroundColor:
+                                  repeatFrequency === opt
+                                    ? theme.colors.primary
+                                    : theme.custom.cardColor,
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  color:
+                                    repeatFrequency === opt
+                                      ? "white"
+                                      : theme.colors.onBackground,
+                                  fontSize: 16,
+                                }}
+                              >
+                                {opt === "DAILY"
+                                  ? "Diária"
+                                  : opt === "WEEKLY"
+                                    ? "Semanal"
+                                    : "Mensal"}
+                              </Text>
+                            </Pressable>
+                          ),
+                        )}
+                      </View>
+                    </View>
+
+                    <View style={{ gap: 6 }}>
+                      <Text className="text-xl">Intervalo</Text>
+                      <TextInput
+                        mode="outlined"
+                        keyboardType="number-pad"
+                        value={repeatInterval}
+                        onChangeText={setRepeatInterval}
+                        style={{
+                          backgroundColor: theme.custom.cardTaskBackground,
+                        }}
+                      />
+                      <Text style={{ opacity: 0.7 }}>
+                        A cada {repeatInterval || 1}{" "}
+                        {repeatFrequency === "DAILY"
+                          ? "dia(s)"
+                          : repeatFrequency === "WEEKLY"
+                            ? "semana(s)"
+                            : "mês(es)"}
+                      </Text>
+                    </View>
+
+                    <View style={{ gap: 6 }}>
+                      <Text className="text-xl">Término</Text>
+                      <View style={{ flexDirection: "row", gap: 8 }}>
+                        {(["NEVER", "DATE", "COUNT"] as const).map((opt) => (
+                          <Pressable
+                            key={opt}
+                            onPress={() => setRepeatEndType(opt)}
+                            style={{
+                              paddingVertical: 6,
+                              paddingHorizontal: 10,
+                              borderRadius: 8,
+                              backgroundColor:
+                                repeatEndType === opt
+                                  ? theme.colors.primary
+                                  : theme.custom.cardColor,
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color:
+                                  repeatEndType === opt
+                                    ? "white"
+                                    : theme.colors.onBackground,
+                                fontSize: 16,
+                              }}
+                            >
+                              {opt === "NEVER"
+                                ? "Nunca"
+                                : opt === "DATE"
+                                  ? "Data"
+                                  : "Ocorrências"}
+                            </Text>
+                          </Pressable>
+                        ))}
+                      </View>
+
+                      {repeatEndType === "DATE" && (
+                        <>
+                          <Pressable
+                            className="items-center py-2 rounded-lg"
+                            style={{ backgroundColor: theme.custom.cardColor }}
+                            onPress={() => setShowRepeatEndDate(true)}
+                          >
+                            <Text className="text-xl">
+                              {repeatEndDate.toLocaleDateString()}
+                            </Text>
+                          </Pressable>
+                          {showRepeatEndDate && (
+                            <DateTimePicker
+                              value={repeatEndDate}
+                              mode="date"
+                              display="default"
+                              onChange={(e, d) => {
+                                if (e.type === "set" && d) setRepeatEndDate(d);
+                                setShowRepeatEndDate(false);
+                              }}
+                              textColor="white"
+                              minimumDate={new Date()}
+                            />
+                          )}
+                        </>
+                      )}
+
+                      {repeatEndType === "COUNT" && (
+                        <TextInput
+                          mode="outlined"
+                          keyboardType="number-pad"
+                          value={repeatEndCount}
+                          onChangeText={setRepeatEndCount}
+                          style={{
+                            backgroundColor: theme.custom.cardTaskBackground,
+                          }}
+                        />
+                      )}
+                    </View>
+                  </View>
+                )}
+              </View>
               <Text className="text-2xl">
                 {t("home.newTask.selectmembers", { ns: "translation" })}
               </Text>
@@ -488,7 +697,7 @@ export default function NewTask() {
               />
             )}
           </CustomCard>
-        </View>
+        </ScrollView>
       </View>
     </TouchableWithoutFeedback>
   );

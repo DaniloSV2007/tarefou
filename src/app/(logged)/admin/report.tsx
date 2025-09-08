@@ -4,7 +4,7 @@ import { RefreshControl, ScrollView, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
 import { Card } from "react-native-paper";
-import ContentLoader, { Circle,  Rect } from "react-content-loader/native";
+import ContentLoader, { Circle, Rect } from "react-content-loader/native";
 import CustomCard from "@/components/GlobalComp/CustomCard";
 import CardInfo from "@/components/Report/CardInfo";
 import { UserTasksType } from "./home";
@@ -55,7 +55,7 @@ export default function Report() {
       const updatedUsers = await Promise.all(
         usersData.map(async (user) => {
           const userId = querySnapshot.docs.find(
-            (doc) => doc.data().username === user.username
+            (doc) => doc.data().username === user.username,
           )?.id;
 
           if (!userId) return user;
@@ -78,7 +78,7 @@ export default function Report() {
           });
 
           return { ...user, tasks };
-        })
+        }),
       );
 
       setUsers(updatedUsers); // define novamente com as tarefas preenchidas
@@ -165,6 +165,7 @@ export default function Report() {
             onRefresh={getUsers}
           />
         }
+        contentContainerStyle={{ paddingBottom: 100 }}
       >
         <View style={{ alignItems: "center", gap: 16, paddingBottom: 12 }}>
           {!refreshing ? (
