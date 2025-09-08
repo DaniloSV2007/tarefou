@@ -1,13 +1,8 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
-import {
-  Text,
-  StyleSheet,
-  View,
-  Image,
-  Pressable,
-} from "react-native";
+import { Text, StyleSheet, View, Image, Pressable } from "react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { AppTheme } from "@/themes";
 
 interface GoogleButtonProps {
   onPress: () => void;
@@ -16,16 +11,14 @@ interface GoogleButtonProps {
 export default function GoogleButton({ onPress }: GoogleButtonProps) {
   const theme = useAppTheme();
   const { t } = useTranslation();
+  const styles = makeStyles(theme);
 
   return (
     <View style={{ borderRadius: 32, overflow: "hidden" }}>
       <Pressable
-        style={[
-          styles.button,
-          { backgroundColor: theme.custom.cardTaskBackground },
-        ]}
+        style={[styles.button, { backgroundColor: theme.colors.surface }]}
         android_ripple={{
-          color: theme.custom.ripple,
+          color: theme.colors.primaryContainer,
         }}
         onPress={onPress}
       >
@@ -35,7 +28,7 @@ export default function GoogleButton({ onPress }: GoogleButtonProps) {
           }}
           style={styles.logo}
         />
-        <Text style={[styles.text, { color: theme.colors.onBackground }]}>
+        <Text style={[styles.text, { color: theme.colors.onSurface }]}>
           {t("login.loginWithGoogle")}
         </Text>
       </Pressable>
@@ -43,23 +36,24 @@ export default function GoogleButton({ onPress }: GoogleButtonProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    borderColor: "#666",
-    borderWidth: 1,
-    borderRadius: 32,
-    paddingVertical: 10,
-  },
-  logo: {
-    width: 42,
-    height: 42,
-    marginRight: 12,
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: "500",
-  },
-});
+const makeStyles = (theme: AppTheme) =>
+  StyleSheet.create({
+    button: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      borderColor: theme.colors.outline,
+      borderWidth: 1,
+      borderRadius: 32,
+      paddingVertical: 10,
+    },
+    logo: {
+      width: 42,
+      height: 42,
+      marginRight: 12,
+    },
+    text: {
+      fontSize: 24,
+      fontWeight: "500",
+    },
+  });

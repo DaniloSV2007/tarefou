@@ -1,12 +1,8 @@
 import TopBar from "@/components/TopBar";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useLocalSearchParams } from "expo-router";
-import { View, StyleSheet,  Pressable } from "react-native";
-import {
-  Avatar,
-  Card,
-  Text,
-} from "react-native-paper";
+import { View, StyleSheet, Pressable } from "react-native";
+import { Avatar, Card, Text } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ImageView from "react-native-image-viewing";
@@ -21,7 +17,6 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
-import { ImageSource } from "react-native-image-viewing/dist/@types";
 
 export type User = {
   name: string;
@@ -60,11 +55,11 @@ export default function UserProfile() {
   const memberData: User = {
     ...memberDataRaw,
     birthday: new Date(memberDataRaw.birthday.seconds * 1000),
-    createdAt: new Date(memberDataRaw.createdAt.seconds * 1000)
+    createdAt: new Date(memberDataRaw.createdAt.seconds * 1000),
   };
 
   const [image, setImage] = useState<string | undefined>();
-  const [imageArray, setImageArray] = useState<{uri:string | null}[]>([
+  const [imageArray, setImageArray] = useState<{ uri: string | null }[]>([
     { uri: memberData.avatar ?? null },
   ]);
   const [visible, setIsVisible] = useState(false);
@@ -73,7 +68,7 @@ export default function UserProfile() {
     ? new Date().getFullYear() - memberData.birthday.getFullYear()
     : "";
 
-  const formatDate = (created: Date ) => {
+  const formatDate = (created: Date) => {
     if (!created) return;
 
     const date = new Date(created);
@@ -100,7 +95,7 @@ export default function UserProfile() {
     try {
       const q = query(
         usersCollection,
-        where("username", "==", memberData.username)
+        where("username", "==", memberData.username),
       );
       const querySnapshot = await getDocs(q);
 
@@ -136,7 +131,10 @@ export default function UserProfile() {
       >
         <View style={styles.content}>
           <Card
-            style={[styles.card, { backgroundColor: theme.custom?.cardColor }]}
+            style={[
+              styles.card,
+              { backgroundColor: theme.custom?.cardColor, minWidth: "90%" },
+            ]}
           >
             <Card.Title
               title={t("member.profile.personalInfo.title", { ns: "screens" })}
@@ -198,7 +196,7 @@ export default function UserProfile() {
           </Card>
 
           <ImageView
-            images={imageArray as unknown as ImageSource[]}
+            images={imageArray as []}
             imageIndex={0}
             visible={visible}
             onRequestClose={() => setIsVisible(false)}

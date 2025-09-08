@@ -8,7 +8,7 @@ import {
   Platform,
   StyleSheet,
 } from "react-native";
-import {  Text } from "react-native-paper";
+import { Text } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useEffect, useState } from "react";
@@ -33,10 +33,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -67,7 +64,6 @@ export default function Register() {
   const [familyName, setFamilyName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-
   const { login } = useAuth();
   const usersCollection = collection(db, "users");
   const familiesCollection = collection(db, "families");
@@ -91,9 +87,13 @@ export default function Register() {
     if (!token) return;
 
     try {
-      const uid = auth.currentUser?.uid as string;
+      const uid = auth.currentUser?.uid;
 
-      const privateUserData = collection(usersCollection, uid, "private");
+      const privateUserData = collection(
+        usersCollection,
+        uid as string,
+        "private",
+      );
       const q = query(privateUserData, where("email", "==", email.trim()));
       const querySnapshot = await getDocs(q);
 
@@ -113,8 +113,8 @@ export default function Register() {
   };
 
   const handleRegister = async () => {
-    if(isLoading) return
-    setIsLoading(true)
+    if (isLoading) return;
+    setIsLoading(true);
 
     if (role === "FAMILY_ADMIN") {
       const familyData = {
@@ -133,7 +133,7 @@ export default function Register() {
         const userCredential = await signInWithEmailAndPassword(
           auth,
           email,
-          password
+          password,
         );
         const uid = userCredential.user.uid;
 
@@ -159,8 +159,8 @@ export default function Register() {
         handleLogin(privateData.email, password);
       } catch (error) {
         console.error(error);
-      }finally{
-        setIsLoading(false)
+      } finally {
+        setIsLoading(false);
       }
     } else {
       const uid = auth.currentUser?.uid;
@@ -168,7 +168,7 @@ export default function Register() {
       const privateUserData = collection(
         usersCollection,
         uid as string,
-        "private"
+        "private",
       );
 
       const data = {
@@ -193,8 +193,8 @@ export default function Register() {
         }
       } catch (error) {
         console.error("Falha ao criar o usuário: ", error);
-      }finally{
-        setIsLoading(false)
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -202,7 +202,7 @@ export default function Register() {
   useEffect(() => {
     if (name !== "") {
       setFamilyName(
-        t("register.familyName.value", { name: name.split(" ")[0] })
+        t("register.familyName.value", { name: name.split(" ")[0] }),
       );
     }
   }, [name]);

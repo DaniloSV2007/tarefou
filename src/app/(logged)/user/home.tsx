@@ -1,6 +1,6 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { RefreshControl, StyleSheet, View } from "react-native";
-import { Button, Card, Text } from "react-native-paper";
+import { Card, Text } from "react-native-paper";
 import React, { useCallback, useEffect, useState } from "react";
 import TopBar from "@/components/TopBar";
 import { useTranslation } from "react-i18next";
@@ -16,7 +16,14 @@ import { db } from "@/services/FirebaseConfig";
 import NetInfo from "@react-native-community/netinfo";
 import { useDatabase } from "@/database/useDatabase";
 import uuid from "react-native-uuid";
-import { useRouter } from "expo-router";
+
+interface TaskISO
+  extends Omit<Task, "createdAt" | "updatedAt" | "deadline" | "isCompleted"> {
+  createdAt: string;
+  updatedAt?: string;
+  deadline?: string | null;
+  isCompleted: 1 | 0;
+}
 
 export default function UserHome() {
   const theme = useAppTheme();
@@ -24,7 +31,6 @@ export default function UserHome() {
   const database = useDatabase();
   const usersCollection = collection(db, "users");
   const tasksCollection = collection(db, "tasks");
-  const router = useRouter();
 
   const [refreshing, setRefreshing] = useState(true);
 
@@ -98,45 +104,45 @@ export default function UserHome() {
             createdAt: data.createdAt
               ? new Date(
                   data.createdAt.seconds * 1000 +
-                    data.createdAt.nanoseconds / 1000000
+                    data.createdAt.nanoseconds / 1000000,
                 )
               : undefined,
             updatedAt: data.updatedAt
               ? new Date(
                   data.updatedAt.seconds * 1000 +
-                    data.updatedAt.nanoseconds / 1000000
+                    data.updatedAt.nanoseconds / 1000000,
                 )
               : undefined,
             deadline: data.deadline
               ? new Date(
                   data.deadline.seconds * 1000 +
-                    data.deadline.nanoseconds / 1000000
+                    data.deadline.nanoseconds / 1000000,
                 )
               : undefined,
             isCompleted: data.isCompleted ?? false,
-          };
+          } as Task;
         });
 
-        const taskIsoString: any[] = tasks.map((doc) => {
+        const taskIsoString: TaskISO[] = tasks.map((doc) => {
           const data = doc.data();
           const createdAt = data.createdAt
             ? new Date(
                 data.createdAt.seconds * 1000 +
-                  data.createdAt.nanoseconds / 1000000
+                  data.createdAt.nanoseconds / 1000000,
               )
             : undefined;
 
           const updatedAt = data.updatedAt
             ? new Date(
                 data.updatedAt.seconds * 1000 +
-                  data.updatedAt.nanoseconds / 1000000
+                  data.updatedAt.nanoseconds / 1000000,
               )
             : undefined;
 
           const deadline = data.deadline
             ? new Date(
                 data.deadline.seconds * 1000 +
-                  data.deadline.nanoseconds / 1000000
+                  data.deadline.nanoseconds / 1000000,
               )
             : undefined;
 
@@ -149,7 +155,7 @@ export default function UserHome() {
             updatedAt: updatedAt?.toISOString(),
             deadline: deadline?.toISOString() ?? null,
             isCompleted: data.isCompleted ? 1 : 0,
-          };
+          } as TaskISO;
         });
 
         setTasks(tasksWithDefaults);
@@ -163,7 +169,7 @@ export default function UserHome() {
     }
   };
 
-  const saveLocalDb = async (tasksDb: any[], userId: string) => {
+  const saveLocalDb = async (tasksDb: TaskISO[], userId: string) => {
     if (tasksDb.length <= 0) return;
 
     const db = await database.getDatabase();
@@ -200,9 +206,14 @@ export default function UserHome() {
     try {
       const res = await database.getTasksByUser(userId);
       if (Array.isArray(res)) {
-        const tasks = res as Task[];
-        setTasks(tasks);
-        console.log(tasks);
+        const tasks = (res as TaskISO[]).map((task) => ({
+          ...task,
+          createdAt: task.createdAt ? new Date(task.createdAt) : undefined,
+          updatedAt: task.updatedAt ? new Date(task.updatedAt) : undefined,
+          deadline: task.deadline ? new Date(task.deadline) : undefined,
+          isCompleted: task.isCompleted === 1,
+        }));
+        setTasks(tasks as Task[]);
       }
     } catch (error) {
       console.log(error);
@@ -293,7 +304,9 @@ export default function UserHome() {
             {tasks.filter((task: Task) => {
               if (!task.deadline || task.isCompleted) return false;
               const date = new Date();
-              const isCloseToDeadline = new Date(task.deadline);
+              const isCloseToDeadline = new Date(
+                task.deadline as unknown as string,
+              );
               isCloseToDeadline.setDate(isCloseToDeadline.getDate() - 2);
               if (date >= isCloseToDeadline) return true;
 

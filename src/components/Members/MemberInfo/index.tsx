@@ -1,11 +1,7 @@
 import { useLanguageContext } from "@/context/LanguageContext";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useRouter } from "expo-router";
-import {
-  Pressable,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Pressable, TouchableOpacity, View } from "react-native";
 import {
   Text,
   Card,
@@ -20,7 +16,6 @@ import ImageView from "react-native-image-viewing";
 import React from "react";
 import { UserType } from "@/app/(logged)/admin/members";
 import { Timestamp } from "firebase/firestore";
-import { ImageSource } from "react-native-image-viewing/dist/@types";
 
 interface Props {
   user: UserType;
@@ -39,10 +34,7 @@ type User = {
 };
 
 function isTimestamp(obj: Timestamp | Date | undefined): obj is Timestamp {
-  return (
-    obj !== undefined &&
-    typeof (obj as Timestamp).toDate === "function"
-  );
+  return obj !== undefined && typeof (obj as Timestamp).toDate === "function";
 }
 
 export default function MemberInfo({
@@ -57,8 +49,6 @@ export default function MemberInfo({
 
   const userWithoutAvatar: UserType = { ...user, avatar: "" };
 
-  
-
   // Converte os campos Timestamp para Date, se necessário
   const memberData: User = {
     ...userWithoutAvatar,
@@ -70,16 +60,15 @@ export default function MemberInfo({
       : userWithoutAvatar.createdAt,
   };
 
-  const [imageArray, setImageArray] = useState<{uri:string | null}[]>();
-
+  const [imageArray, setImageArray] = useState<{ uri: string | null }[]>();
 
   const [visible, setIsVisible] = useState(false);
 
-  useEffect(()=>{
-    if(!imageArray) setImageArray([{ uri: user.avatar  }])
-  },[])
+  useEffect(() => {
+    if (!imageArray) setImageArray([{ uri: user.avatar }]);
+  }, []);
 
-  const formatDate = (created:  Date) => {
+  const formatDate = (created: Date) => {
     if (!created) return;
     const date = new Date(created);
     if (isNaN(date.getTime())) return;
@@ -98,6 +87,7 @@ export default function MemberInfo({
 
   return (
     <Card
+      mode="contained"
       style={{
         width: "90%",
         paddingVertical: 12,
@@ -109,7 +99,7 @@ export default function MemberInfo({
       <TouchableRipple
         onPress={() =>
           router.push(
-            `/member/${encodeURIComponent(JSON.stringify(userWithoutAvatar))}`
+            `/member/${encodeURIComponent(JSON.stringify(userWithoutAvatar))}`,
           )
         }
         borderless={false}
@@ -168,7 +158,7 @@ export default function MemberInfo({
               {t("memberCard.placeholder", { ns: "components" })}
             </Text>
             <ImageView
-              images={imageArray as unknown as ImageSource[]}
+              images={imageArray as []}
               imageIndex={0}
               visible={visible}
               onRequestClose={() => setIsVisible(false)}

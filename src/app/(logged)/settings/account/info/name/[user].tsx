@@ -71,7 +71,7 @@ export default function ChangeName() {
       name: text.trim(),
     };
     try {
-      const userRef = doc(db, "users", String(auth.currentUser?.uid as string));
+      const userRef = doc(db, "users", String(auth.currentUser?.uid));
       await updateDoc(userRef, data);
 
       router.replace("/admin/members");

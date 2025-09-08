@@ -17,24 +17,21 @@ import MemberInfoLoading from "@/components/Members/MemberInfoLoading";
 import EditMember from "@/components/Members/EditMember";
 import { Text } from "react-native-paper";
 import * as Notifications from "expo-notifications";
-import {
-  doc,
-  getDoc,
-  Timestamp,
-} from "firebase/firestore";
+import { doc, getDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
 import getFamilyId from "@/utils/getFamilyId";
 import getUsersInfo from "@/utils/getUsersInfo";
 import { Family } from "../member/familySettings/[family]";
 
 export interface UserType {
+  id: string; // Added id property
   name: string;
   username: string;
-  birthday:  Timestamp;
+  birthday: Timestamp;
   email: string;
   role: string;
   avatar: string;
-  createdAt?:  Timestamp;
+  createdAt?: Timestamp;
   familyId?: string;
 }
 
@@ -94,7 +91,7 @@ export default function Members() {
     if (!owner) return;
 
     const ownerIndex = usersDb.findIndex(
-      (user: UserType) => user.username === owner
+      (user: UserType) => user.username === owner,
     );
     if (ownerIndex !== -1) {
       const newUsers = [...usersDb];
@@ -137,7 +134,11 @@ export default function Members() {
       const family = await getDoc(familyDoc);
       const data = family.data();
       if (data) {
-        setFamilyInfo({ ...data, id: familyDoc.id, users } as unknown as Family);
+        setFamilyInfo({
+          ...data,
+          id: familyDoc.id,
+          users,
+        } as Family);
         findFamilyOwner(users, data.owner);
         setFamilyName(data.name);
       }
@@ -166,7 +167,7 @@ export default function Members() {
   const onStateChange = ({ open }: { open: boolean }) => setState({ open });
 
   const { open } = state;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const shareWhatsapp = async () => {
     const username = await AsyncStorage.getItem("username");
     if (!username) return;
@@ -365,7 +366,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   fab: {
-    marginBottom: 0,
+    marginBottom: 76,
   },
   card: {
     width: "90%",

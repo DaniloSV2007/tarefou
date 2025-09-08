@@ -49,7 +49,7 @@ export default function PressableButton({
         style,
       ]}
       className={className}
-      android_ripple={{ color: theme.custom.ripple }}
+      android_ripple={{ color: theme.colors.primaryContainer }}
       onPress={onPress}
     >
       <View className="flex-row">
@@ -60,7 +60,7 @@ export default function PressableButton({
         ) : null}
 
         <Text
-          style={[{ color: theme.colors.onBackground }, titleStyle]}
+          style={[{ color: theme.colors.onSurface }, titleStyle]}
           className={"text-3xl" + (titleClassName ?? "")}
         >
           {title}
@@ -72,7 +72,7 @@ export default function PressableButton({
           <Icon
             source="chevron-right"
             size={24}
-            color={theme.colors.onBackground}
+            color={theme.colors.onSurfaceVariant}
           />
         </View>
       )}

@@ -4,16 +4,14 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   View,
-  
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  
 } from "react-native";
-import {  Text } from "react-native-paper";
+import { Text } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import TopBar from "@/components/TopBar";
 import NameAndUsername from "@/components/Register/NameAndUsername";
@@ -32,9 +30,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
-import {
-  getAuth,
-} from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
@@ -73,7 +69,7 @@ export default function GoogleRegister() {
       try {
         const q = query(
           usersCollection,
-          where("email", "==", userGoogle?.user.email)
+          where("email", "==", userGoogle?.user.email),
         );
         const querySnapshot = await getDocs(q);
 
@@ -84,7 +80,8 @@ export default function GoogleRegister() {
           const currentAge =
             new Date().getFullYear() -
             new Date(
-              data.birthday.seconds * 1000 + data.birthday.nanoseconds / 1000000
+              data.birthday.seconds * 1000 +
+                data.birthday.nanoseconds / 1000000,
             ).getFullYear();
 
           setAge(currentAge);
@@ -105,13 +102,17 @@ export default function GoogleRegister() {
   const getUserData = async (token: string) => {
     if (!token) return;
 
-    const uid = auth.currentUser?.uid as string;
-    const privateUserData = collection(usersCollection, uid, "private");
+    const uid = auth.currentUser?.uid;
+    const privateUserData = collection(
+      usersCollection,
+      uid as string,
+      "private",
+    );
 
     try {
       const q = query(
         privateUserData,
-        where("email", "==", userGoogle?.user.email)
+        where("email", "==", userGoogle?.user.email),
       );
       const querySnapshot = await getDocs(q);
 
@@ -130,16 +131,19 @@ export default function GoogleRegister() {
   };
 
   const handleRegister = async () => {
-    if(isLoading) return
-    setIsLoading(true)
+    if (isLoading) return;
+    setIsLoading(true);
     const token = await user?.getIdToken();
-    const uid = auth.currentUser?.uid as string;
-    const privateUserData = collection(usersCollection, uid, "private");
-    
+    const uid = auth.currentUser?.uid;
+    const privateUserData = collection(
+      usersCollection,
+      uid as string,
+      "private",
+    );
 
     const q = query(
       privateUserData,
-      where("email", "==", userGoogle?.user.email)
+      where("email", "==", userGoogle?.user.email),
     );
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) return;
@@ -178,8 +182,8 @@ export default function GoogleRegister() {
         }
       } catch (error) {
         console.error(error);
-      }finally{
-        setIsLoading(false)
+      } finally {
+        setIsLoading(false);
       }
     } else {
       const data = {
@@ -203,8 +207,8 @@ export default function GoogleRegister() {
         }
       } catch (error) {
         console.error(error);
-      }finally{
-        setIsLoading(false)
+      } finally {
+        setIsLoading(false);
       }
     }
   };

@@ -30,6 +30,7 @@ export default function CustomCard({
 
   return (
     <Card
+      mode="contained"
       style={[
         {
           backgroundColor: theme.custom.cardColor,
@@ -40,15 +41,14 @@ export default function CustomCard({
       className={className}
     >
       <Card.Title
-        //   t("home.resume.title")
         title={title}
-        titleStyle={[{ fontSize: 28 }, titleStyle]}
+        titleStyle={[
+          { fontSize: 28, color: theme.colors.onSurface },
+          titleStyle,
+        ]}
       />
       <Card.Content style={{ gap: 16 }}>
-        <View style={contentStyle}>
-          {children}
-          {/* <CardInfo tasksInfo={stats.today} /> */}
-        </View>
+        <View style={contentStyle}>{children}</View>
       </Card.Content>
     </Card>
   );

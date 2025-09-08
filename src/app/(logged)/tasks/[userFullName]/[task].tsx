@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator, Pressable } from "react-native";
+import { View, Text, ActivityIndicator, Pressable, Alert } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -11,10 +11,12 @@ import { Task } from "../[tasks]";
 import api from "@/services/api";
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
   query,
+  Timestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -38,6 +40,7 @@ export default function TaskDetails() {
   const [role, setRole] = useState("");
 
   const [changing, setChanging] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const getUserRole = async () => {
@@ -75,7 +78,7 @@ export default function TaskDetails() {
 
   const sendPushNotification = async (username: string, userName: string) => {
     if (!username || !userName) return setChanging(false);
-    
+
     const q = query(usersCollection, where("username", "==", username));
     const querySnapshot = await getDocs(q);
 
@@ -126,6 +129,43 @@ export default function TaskDetails() {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const getDeadlineDate = () => {
+    const dl: string | Timestamp | undefined = taskData?.deadline;
+    if (!dl) return undefined;
+    if (typeof dl === "string") return new Date(dl);
+    if (dl?.toDate) return dl.toDate();
+    if (typeof dl?.seconds === "number") return new Date(dl.seconds * 1000);
+    return undefined;
+  };
+
+  const handleDelete = async () => {
+    if (!taskData?.id || deleting) return;
+    Alert.alert(
+      "Excluir tarefa",
+      "Tem certeza? Esta ação não pode ser desfeita.",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Excluir",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              setDeleting(true);
+              const taskDoc = doc(tasksCollection, taskData.id);
+              await deleteDoc(taskDoc);
+              router.back();
+            } catch (err) {
+              console.error("Error deleting task:", err);
+              Alert.alert("Erro", "Não foi possível excluir a tarefa.");
+            } finally {
+              setDeleting(false);
+            }
+          },
+        },
+      ],
+    );
   };
 
   if (loading) {
@@ -187,6 +227,24 @@ export default function TaskDetails() {
           cardStyle={{ borderRadius: 24, marginTop: -36 }}
           contentStyle={{ gap: 24 }}
         >
+          {/* Responsável */}
+          {params?.userFullName && (
+            <View className="gap-1 mt-2">
+              <Text
+                className="text-2xl font-bold"
+                style={{ color: theme.colors.onBackground }}
+              >
+                Responsável:
+              </Text>
+              <Text
+                className="text-xl"
+                style={{ color: theme.colors.onBackground, opacity: 0.9 }}
+              >
+                {params.userFullName}
+              </Text>
+            </View>
+          )}
+
           {taskData.description && (
             <View className="gap-2 mt-6">
               <Text
@@ -205,6 +263,7 @@ export default function TaskDetails() {
             </View>
           )}
 
+          {/* Status */}
           <View className={"gap-2" + !taskData.description && "mt-6"}>
             <Text
               className="text-3xl font-bold"
@@ -222,6 +281,24 @@ export default function TaskDetails() {
             </Text>
           </View>
 
+          {/* Prazo */}
+          {getDeadlineDate() && (
+            <View className="gap-1">
+              <Text
+                className="text-3xl font-bold"
+                style={{ color: theme.colors.onBackground }}
+              >
+                Prazo:
+              </Text>
+              <Text
+                className="text-2xl"
+                style={{ color: theme.colors.onBackground }}
+              >
+                {getDeadlineDate()?.toLocaleDateString()}
+              </Text>
+            </View>
+          )}
+
           {role === "MEMBER" && !taskData.isCompleted && (
             <Pressable
               android_ripple={{ color: theme.custom.ripple }}
@@ -235,6 +312,24 @@ export default function TaskDetails() {
               {!changing ? (
                 <Text style={{ color: "white" }} className="text-2xl">
                   {t("tasks.user.taskInfo.markDone", { ns: "screens" })}
+                </Text>
+              ) : (
+                <ActivityIndicator color={"white"} size={32} />
+              )}
+            </Pressable>
+          )}
+
+          {role === "FAMILY_ADMIN" && (
+            <Pressable
+              android_ripple={{ color: theme.custom.ripple }}
+              onPress={handleDelete}
+              disabled={deleting}
+              className="py-3 rounded-2xl items-center"
+              style={{ backgroundColor: theme.colors.error }}
+            >
+              {!deleting ? (
+                <Text style={{ color: "white" }} className="text-2xl">
+                  Excluir Tarefa
                 </Text>
               ) : (
                 <ActivityIndicator color={"white"} size={32} />

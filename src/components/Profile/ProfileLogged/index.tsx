@@ -1,13 +1,8 @@
 import { useAppTheme } from "@/hooks/useAppTheme";
-import {  useEffect,  useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
-import {
-  StyleSheet,
-  View,
-} from "react-native";
-import {
-  Portal,
-} from "react-native-paper";
+import { StyleSheet, View } from "react-native";
+import { Portal } from "react-native-paper";
 import AvatarProfile, { ImageURI } from "../Avatar";
 import ImageView from "react-native-image-viewing";
 import QRCode from "react-native-qrcode-svg";
@@ -17,11 +12,8 @@ import * as Brightness from "expo-brightness";
 import logoLight from "@/assets/Profile/splash-icon-light.png";
 import logoDark from "@/assets/Profile/splash-icon-dark.png";
 import { useThemeContext } from "@/context/ThemeContext";
-import { ImageSource } from "react-native-image-viewing/dist/@types";
-
 export default function ProfileLogged() {
-
-  const [image, setImage] = useState<ImageURI>();
+  const [image, setImage] = useState<{ uri: string }>();
   const [visible, setIsVisible] = useState(false);
 
   const [qrVisible, setQrVisible] = useState(false);
@@ -36,7 +28,7 @@ export default function ProfileLogged() {
       AsyncStorage.getItem("username").then(setUsername);
     }, []);
 
-    if (!username) return null; 
+    if (!username) return null;
 
     return (
       <QRCode
@@ -50,7 +42,6 @@ export default function ProfileLogged() {
       />
     );
   };
-
 
   useEffect(() => {
     if (qrVisible) {
@@ -79,7 +70,9 @@ export default function ProfileLogged() {
         ]}
       >
         <AvatarProfile
-          setImageProp={(image: ImageURI[]) => setImage(image[0])}
+          setImageProp={(image: ImageURI[]) =>
+            setImage(image[0] ? { uri: image[0].uri ?? "" } : undefined)
+          }
           setIsVisible={setIsVisible}
           setQrVisible={setQrVisible}
         />
@@ -123,7 +116,7 @@ export default function ProfileLogged() {
         )}
 
         <ImageView
-          images={image as unknown as ImageSource[]}
+          images={image ? [image] : []}
           imageIndex={0}
           visible={visible}
           onRequestClose={() => setIsVisible(false)}

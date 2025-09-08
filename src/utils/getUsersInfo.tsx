@@ -11,7 +11,7 @@ export default async function getUsersInfo(familyId: string) {
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty) {
       const usersDocs = querySnapshot.docs;
-      const users = usersDocs.map((user) => user.data());
+      const users = usersDocs.map((user) => ({ id: user.id, ...user.data() }));
       return users;
     } else return null;
   } catch (error) {

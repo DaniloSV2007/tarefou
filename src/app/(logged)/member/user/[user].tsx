@@ -2,13 +2,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import TopBar from "@/components/TopBar";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import {
-  Avatar,
-  Button,
-  Card,
-  Snackbar,
-  Text,
-} from "react-native-paper";
+import { Avatar, Button, Card, Snackbar, Text } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useLanguageContext } from "@/context/LanguageContext";
@@ -29,8 +23,7 @@ import { auth, db } from "@/services/FirebaseConfig";
 import { ImageSource } from "react-native-image-viewing/dist/@types";
 import { User, UserRaw } from "../[user]";
 
-
-export default function User() {
+export default function UserAdd() {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -56,7 +49,7 @@ export default function User() {
   const memberData: User = {
     ...memberDataRaw,
     birthday: new Date(memberDataRaw.birthday.seconds * 100),
-    createdAt: new Date(memberDataRaw.createdAt?.seconds * 1000)
+    createdAt: new Date(memberDataRaw.createdAt?.seconds * 1000),
   };
 
   const age = memberData.birthday
@@ -129,31 +122,25 @@ export default function User() {
     try {
       const q = query(
         usersCollection,
-        where("username", "==", memberData.username)
+        where("username", "==", memberData.username),
       );
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
         const user = querySnapshot.docs[0];
-        const userRef = user.ref;
+        const userDoc = doc(usersCollection, user.id);
+        console.log(userDoc);
+        const userData = user.data();
 
-        console.log("User Ref: ", userRef);
-
-        const userPrivateRef = doc(userRef, "private", "data");
-        const userPrivate = await getDoc(userPrivateRef);
-        const userPrivateData = userPrivate.data();
-
-        console.log("User Private Data: ", userPrivateData);
-
-        if (userPrivateData?.familyId === familyId) {
+        if (userData?.familyId === familyId) {
           handleError(
-            t("members.newMember.userInfo.alreadyExists", { ns: "screens" })
+            t("members.newMember.userInfo.alreadyExists", { ns: "screens" }),
           );
           router.replace("/admin/members");
           return;
         }
 
-        await updateDoc(userPrivateRef, data);
+        await updateDoc(userDoc, data);
 
         router.replace("/admin/members");
       }
@@ -176,7 +163,7 @@ export default function User() {
     try {
       const q = query(
         usersCollection,
-        where("username", "==", memberData.username)
+        where("username", "==", memberData.username),
       );
       const querySnapshot = await getDocs(q);
 
@@ -210,7 +197,7 @@ export default function User() {
         <Card
           style={[styles.card, { backgroundColor: theme.custom.cardColor }]}
         >
-          <Card.Content style={[styles.content, ]}>
+          <Card.Content style={[styles.content]}>
             <View style={styles.avatar}>
               {image ? (
                 <Pressable onPress={() => setIsVisible(true)}>
@@ -311,6 +298,7 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 32,
     paddingBottom: 16,
+    width: "90%",
   },
   content: { gap: 8, paddingBottom: 24 },
   subtitle: {

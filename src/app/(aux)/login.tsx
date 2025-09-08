@@ -9,11 +9,7 @@ import {
   StyleSheet,
   Pressable,
 } from "react-native";
-import {
-  ActivityIndicator,
-  IconButton,
-  Text,
-} from "react-native-paper";
+import { ActivityIndicator, IconButton, Text } from "react-native-paper";
 import { Link, useRouter } from "expo-router";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useEffect, useState } from "react";
@@ -40,9 +36,7 @@ import {
   getDoc,
   setDoc,
 } from "firebase/firestore";
-import {
-  GoogleSignin,
-} from "@react-native-google-signin/google-signin";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { WEB_CLIENT_ID } from "@env";
 
 export default function Login() {
@@ -105,9 +99,13 @@ export default function Login() {
     if (!token) return;
 
     try {
-      const uid = auth.currentUser?.uid as string;
+      const uid = auth.currentUser?.uid;
 
-      const privateUserData = collection(usersCollection, uid, "private");
+      const privateUserData = collection(
+        usersCollection,
+        uid as string,
+        "private",
+      );
       const q = query(privateUserData, where("email", "==", email.trim()));
       const querySnapshot = await getDocs(q);
 
@@ -169,17 +167,21 @@ export default function Login() {
           familyName: string | null;
           givenName: string | null;
         }
-      | undefined
+      | undefined,
   ) => {
     if (!token || !user) return;
 
     try {
-      const uid = auth.currentUser?.uid as string;
+      const uid = auth.currentUser?.uid;
 
-      const privateUserData = collection(usersCollection, uid, "private");
+      const privateUserData = collection(
+        usersCollection,
+        uid as string,
+        "private",
+      );
       const res = await fetch(
         "https://people.googleapis.com/v1/people/me?personFields=birthdays",
-        { headers: { Authorization: `Bearer ${specialToken}` } }
+        { headers: { Authorization: `Bearer ${specialToken}` } },
       );
       const resData = await res.json();
 

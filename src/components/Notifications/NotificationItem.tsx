@@ -103,7 +103,7 @@ export function NotificationItem({
     backgroundColor: interpolateColor(
       translationX.value,
       [SWIPE_THRESHOLD_LEFT, 0, SWIPE_THRESHOLD_RIGHT],
-      ["red", theme.custom.cardColor, "dodgerblue"]
+      [theme.colors.error, theme.colors.surface, theme.colors.primary]
     ),
   }));
 
@@ -145,11 +145,11 @@ export function NotificationItem({
           <Icon
             source={viewedStatus ? "email" : "email-open"}
             size={28}
-            color="white"
+            color={theme.colors.onPrimary}
           />
         </Animated.View>
         <Animated.View style={[styles.rightIcon, rightIconStyle]}>
-          <Icon source="trash-can-outline" size={28} color="white" />
+          <Icon source="trash-can-outline" size={28} color={theme.colors.onError} />
         </Animated.View>
       </Animated.View>
 
@@ -160,13 +160,13 @@ export function NotificationItem({
             animatedStyle,
             {
               backgroundColor: viewedStatus
-                ? theme.custom.cardColor
-                : theme.custom.cardTaskBackground,
+                ? theme.colors.surface
+                : theme.colors.surfaceVariant,
             },
           ]}
         >
           <Pressable
-            android_ripple={{ color: theme.custom.ripple }}
+            android_ripple={{ color: theme.colors.primaryContainer }}
             onPress={handleNotifPress}
             style={{
               paddingHorizontal: 12,
@@ -178,7 +178,7 @@ export function NotificationItem({
               <View style={{ width: "75%" }}>
                 <Text
                   style={{
-                    color: theme.colors.onBackground,
+                    color: theme.colors.onSurface,
                     opacity: viewedStatus ? 0.5 : undefined,
                   }}
                   numberOfLines={1}
@@ -196,7 +196,7 @@ export function NotificationItem({
               >
                 <Text
                   style={{
-                    color: theme.colors.onBackground,
+                    color: theme.colors.onSurface,
                     opacity: viewedStatus ? 0.5 : undefined,
                   }}
                 >
@@ -206,7 +206,7 @@ export function NotificationItem({
             </View>
             <Text
               style={{
-                color: theme.colors.onBackground,
+                color: theme.colors.onSurface,
                 opacity: viewedStatus ? 0.5 : undefined,
               }}
               className={"line-clamp-2"}

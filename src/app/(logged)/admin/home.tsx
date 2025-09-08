@@ -1,11 +1,11 @@
-import {  useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import { ActivityIndicator, Card, FAB } from "react-native-paper";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import React, { useCallback, useEffect, useState } from "react";
 import TopBar from "@/components/TopBar";
 import { useTranslation } from "react-i18next";
-import ContentLoader, {  Rect } from "react-content-loader/native";
+import ContentLoader, { Rect } from "react-content-loader/native";
 import CustomCard from "@/components/GlobalComp/CustomCard";
 import CardInfo from "@/components/Report/CardInfo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -57,29 +57,18 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (users.map((user: UserTasksType) => user.tasks).length > 0) {
-      setTasks(users.flatMap((user: UserTasksType) => user.tasks ?? []));
-    }
-    if (
-      users.length > 0 &&
-      users.some((user) => !user.tasks || user.tasks.length === 0)
-    ) {
-      users.map((user) => {
-        getUsersTasks(user.username);
-      });
-    }
+    setTasks(users.flatMap((user: UserTasksType) => user.tasks ?? []));
   }, [users]);
 
+  // const filterUsers = async (users: UserType[]) => {
+  //   const newUsers = users
+  //     .filter((user: UserType) => user.role !== "FAMILY_ADMIN")
+  //     .map((user: UserType) => ({ ...user, tasks: [] }));
 
-  const filterUsers = async (users: UserType[]) => {
-    const newUsers = users
-      .filter((user: UserType) => user.role !== "FAMILY_ADMIN")
-      .map((user: UserType) => ({ ...user, tasks: [] }));
-
-    await AsyncStorage.setItem("numOfMembersTasks", `${newUsers.length}`);
-    setUsersLength(newUsers.length);
-    setUsers(newUsers);
-  };
+  //   await AsyncStorage.setItem("numOfMembersTasks", `${newUsers.length}`);
+  //   setUsersLength(newUsers.length);
+  //   setUsers(newUsers);
+  // };
 
   const getUsers = async () => {
     setLoadingUsers(true);
@@ -92,14 +81,31 @@ export default function Home() {
       return;
     }
     try {
-      const users = await getUsersInfo(familyId);
-      if (users) {
-        await filterUsers(users as UserType[]);
+      const usersData = await getUsersInfo(familyId);
+      if (usersData) {
+        const filteredUsers = usersData
+          .filter((user: any) => user.role !== "FAMILY_ADMIN")
+          .map((user: any) => ({ ...(user as UserType), tasks: [] }));
+
+        await AsyncStorage.setItem(
+          "numOfMembersTasks",
+          `${filteredUsers.length}`,
+        );
+        setUsersLength(filteredUsers.length);
+
+        const userIds = filteredUsers.map((user) => user.id); // Assuming user.id exists and is the userId for tasks
+        const allTasks = await fetchTasksForUsers(userIds);
+
+        const usersWithTasks = filteredUsers.map((user) => ({
+          ...user,
+          tasks: allTasks.filter((task) => task.userId === user.id),
+        }));
+
+        setUsers(usersWithTasks);
         getFamilyInfo(familyInfo?.id);
-        setLoadingUsers(false);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Erro while retrieving users: ", error);
     } finally {
       setRefreshing(false);
       setLoadingUsers(false);
@@ -113,10 +119,54 @@ export default function Home() {
       const familyDoc = doc(db, "families", familyId);
       const family = await getDoc(familyDoc);
 
-      setFamilyInfo(family.data as unknown as Family);
+      setFamilyInfo(family.data() as Family);
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const fetchTasksForUsers = async (userIds: string[]): Promise<Task[]> => {
+    if (userIds.length === 0) return [];
+
+    const tasksCollection = collection(db, "tasks");
+    let allFetchedTasks: Task[] = [];
+    const chunkSize = 10; // Firebase 'in' query limit
+
+    for (let i = 0; i < userIds.length; i += chunkSize) {
+      const chunk = userIds.slice(i, i + chunkSize);
+      const q = query(tasksCollection, where("userId", "in", chunk));
+      const querySnapshot = await getDocs(q);
+      const tasksWithDefaults: Task[] = querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          title: data.title ?? "",
+          userId: data.userId ?? "",
+          description: data.description,
+          createdAt: data.createdAt
+            ? new Date(
+                data.createdAt.seconds * 1000 +
+                  data.createdAt.nanoseconds / 1000000,
+              )
+            : undefined,
+          updatedAt: data.updatedAt
+            ? new Date(
+                data.updatedAt.seconds * 1000 +
+                  data.updatedAt.nanoseconds / 1000000,
+              )
+            : undefined,
+          deadline: data.deadline
+            ? new Date(
+                data.deadline.seconds * 1000 +
+                  data.deadline.nanoseconds / 1000000,
+              )
+            : undefined,
+          isCompleted: data.isCompleted ?? false,
+        } as Task;
+      });
+      allFetchedTasks = allFetchedTasks.concat(tasksWithDefaults);
+    }
+    return allFetchedTasks;
   };
 
   const membersLength = async () => {
@@ -124,62 +174,6 @@ export default function Home() {
     const lenghtNum = parseInt(lenght ?? "0");
     if (lenghtNum) {
       setUsersLength(lenghtNum);
-    }
-  };
-
-  const getUsersTasks = async (username: string) => {
-    if (!username) throw new Error("User not found");
-    try {
-      const q = query(usersCollection, where("username", "==", username));
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        const userId = querySnapshot.docs[0].id;
-
-        const taskQ = query(tasksCollection, where("userId", "==", userId));
-        const tasksQuerySnapshot = await getDocs(taskQ);
-        if (querySnapshot.empty) return;
-
-        const tasks = tasksQuerySnapshot.docs;
-
-        const tasksWithDefaults: Task[] = tasks.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            title: data.title ?? "",
-            userId: data.userId ?? "",
-            description: data.description,
-            createdAt: data.createdAt
-              ? new Date(
-                  data.createdAt.seconds * 1000 +
-                    data.createdAt.nanoseconds / 1000000
-                )
-              : undefined,
-            updatedAt: data.updatedAt
-              ? new Date(
-                  data.updatedAt.seconds * 1000 +
-                    data.updatedAt.nanoseconds / 1000000
-                )
-              : undefined,
-            deadline: data.deadline
-              ? new Date(
-                  data.deadline.seconds * 1000 +
-                    data.deadline.nanoseconds / 1000000
-                )
-              : undefined,
-            isCompleted: data.isCompleted ?? false,
-          };
-        });
-
-        const newUsers = users.map((user) =>
-          user.username === username
-            ? { ...user, tasks: tasksWithDefaults }
-            : user
-        );
-        setUsers(newUsers);
-      }
-    } catch (error) {
-      console.error(error);
     }
   };
 
@@ -262,6 +256,7 @@ export default function Home() {
             )}
             {Array.from({ length: usersLength }).map((_, i) => (
               <Card
+                mode="contained"
                 key={i}
                 style={[
                   styles.card,
@@ -305,8 +300,8 @@ export default function Home() {
         }
         contentContainerStyle={{
           gap: 16,
-          flex: 1,
           alignItems: users.length === 0 ? "center" : undefined,
+          paddingBottom: 126,
         }}
       >
         <View style={styles.content}>
@@ -358,7 +353,7 @@ const styles = StyleSheet.create({
   fab: {
     position: "absolute",
     right: 16,
-    bottom: 24,
+    bottom: 100,
     zIndex: 1000,
   },
   card: {

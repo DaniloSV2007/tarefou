@@ -43,7 +43,7 @@ export default function FamilySettings() {
         decoded.users.map(async (user) => {
           const avatar = await getAvatarFromServer(user.username);
           return { ...user, avatar };
-        })
+        }),
       );
 
       setFamilyInfo({ ...decoded, users: updatedUsers });
@@ -95,6 +95,7 @@ export default function FamilySettings() {
           <Card
             className="rounded-s-3xl rounded-e-3xl w-[91%] mt-5 py-4"
             style={{ backgroundColor: theme.custom.cardColor }}
+            mode="contained"
           >
             <Card.Content className="gap-2">
               <Pressable

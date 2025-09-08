@@ -21,7 +21,7 @@ export type Task = {
   description?: string;
   createdAt?: Date;
   updatedAt?: Date;
-  deadline?:  Timestamp;
+  deadline?: Timestamp;
   isCompleted?: boolean;
   userId: string;
 };
@@ -140,7 +140,7 @@ export default function AllTasks() {
                   (task.description
                     ?.toLowerCase()
                     .includes(searchValue.toLowerCase()) ??
-                    false)
+                    false),
               ).length === 0 ? (
                 <View className="items-center">
                   <Text className="text-2xl">
@@ -158,7 +158,7 @@ export default function AllTasks() {
                         (task.description
                           ?.toLowerCase()
                           .includes(searchValue.toLowerCase()) ??
-                          false)
+                          false),
                     )
                     .map((task) => (
                       <Card

@@ -49,7 +49,7 @@ export default function AccountInfo() {
   }, [userData]);
 
   const getUserData = async () => {
-    const userId = auth.currentUser?.uid as string;
+    const userId = auth.currentUser?.uid;
     if (!userId) {
       console.error("No userId found");
       return;

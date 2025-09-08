@@ -40,7 +40,7 @@ import { ExpoPushToken } from "expo-notifications";
 import { Family } from "../admin/home";
 
 interface UserSelection extends UserType {
-  selected?: boolean
+  selected?: boolean;
 }
 
 export default function NewTask() {
@@ -107,7 +107,7 @@ export default function NewTask() {
 
   useEffect(() => {
     if (data.length > 0) {
-      const usersSelected = data.filter((user: UserSelection ) => user.selected);
+      const usersSelected = data.filter((user: UserSelection) => user.selected);
       if (usersSelected) {
         setUsersSelected(usersSelected);
       }
@@ -121,14 +121,14 @@ export default function NewTask() {
           (users ?? []).map(async (user) => {
             const avatar = await getAvatarDatabase(user.username);
             return { ...user, avatar };
-          })
+          }),
         );
         setFamilyInfo({ ...familyInfo, users: updatedUsers } as Family);
         setData(
           updatedUsers.map((user: UserType) => ({
             ...user,
             selected: false,
-          }))
+          })),
         );
         setAvatarsFetched(true);
       }
@@ -201,7 +201,7 @@ export default function NewTask() {
       const familyDoc = doc(db, "families", familyId);
       const family = await getDoc(familyDoc);
 
-      setFamilyInfo(family.data as unknown as Family);
+      setFamilyInfo(family.data() as Family);
     } catch (error) {
       console.error(error);
     }
@@ -227,9 +227,12 @@ export default function NewTask() {
 
   const sendPushNotification = async (
     pushToken: string | ExpoPushToken,
-    userName: string
+    userName: string,
   ) => {
-    if (!pushToken || !userName) return setLoading(false);
+    if (!pushToken || !userName) {
+      setLoading(false);
+      router.replace("/admin/home");
+    }
 
     const data = {
       token: pushToken,
@@ -265,12 +268,17 @@ export default function NewTask() {
       try {
         const qUser = query(
           usersCollection,
-          where("username", "==", usersSelected[i].username)
+          where("username", "==", usersSelected[i].username),
         );
         const userQuerySnapshot = await getDocs(qUser);
         if (!userQuerySnapshot.empty) {
           const userData = userQuerySnapshot.docs[0].data();
           const userId = userQuerySnapshot.docs[0].id;
+          const userRef = userQuerySnapshot.docs[0].ref;
+
+          const privateDataDoc = await getDoc(doc(userRef, "private", "data"));
+          const privateData = privateDataDoc.data();
+
           const dataTask = {
             userId,
             createdAt: new Date(),
@@ -282,10 +290,10 @@ export default function NewTask() {
           };
           await addDoc(tasksCollection, dataTask);
 
-          await sendPushNotification(userData.pushToken, userData.name);
+          await sendPushNotification(privateData?.pushToken, userData.name);
         }
       } catch (error) {
-        console.error(error);
+        console.error("Erro ao criar tarefa: ", error);
         setLoading(false);
       }
     }
@@ -299,7 +307,7 @@ export default function NewTask() {
           isBackButtonEnable={true}
           backButtonHref={() =>
             router.replace(
-              `/(logged)/${role === "MEMBER" ? "user" : "admin"}/home`
+              `/(logged)/${role === "MEMBER" ? "user" : "admin"}/home`,
             )
           }
         />
@@ -419,8 +427,8 @@ export default function NewTask() {
                         onPress={() => {
                           setData((prevData) =>
                             prevData.map((u, idx) =>
-                              idx === i ? { ...u, selected: !u.selected } : u
-                            )
+                              idx === i ? { ...u, selected: !u.selected } : u,
+                            ),
                           );
                         }}
                       />
@@ -429,8 +437,8 @@ export default function NewTask() {
                         onPress={() => {
                           setData((prevData) =>
                             prevData.map((u, idx) =>
-                              idx === i ? { ...u, selected: !u.selected } : u
-                            )
+                              idx === i ? { ...u, selected: !u.selected } : u,
+                            ),
                           );
                         }}
                       >

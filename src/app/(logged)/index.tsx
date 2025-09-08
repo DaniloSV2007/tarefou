@@ -6,27 +6,27 @@ import { useRouter } from "expo-router";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useEffect } from "react";
 import { View } from "react-native";
+import { ActivityIndicator } from "react-native-paper";
 
 export default function Logged() {
   const { logout } = useAuth();
   const router = useRouter();
   const theme = useAppTheme();
   const usersCollection = collection(db, "users");
-  
+
   const getRole = async () => {
     let role = await AsyncStorage.getItem("userRole");
     if (!role) {
-        role = await getRoleDatabase();
-        await AsyncStorage.setItem("userRole", role as string);
+      role = await getRoleDatabase();
+      await AsyncStorage.setItem("userRole", role as string);
     }
-    
+
     if (role === "MEMBER") {
       router.replace("/user/home");
     } else {
       router.replace("/admin/home");
     }
-  }
-  
+  };
 
   const getRoleDatabase = async () => {
     const username = await AsyncStorage.getItem("username");
@@ -38,7 +38,7 @@ export default function Logged() {
         clearTimeout(timer);
       };
     }
-    try{
+    try {
       const q = query(usersCollection, where("username", "==", username));
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
@@ -56,6 +56,8 @@ export default function Logged() {
   }, []);
 
   return (
-    <View style={{ backgroundColor: theme.colors.background, flex: 1 }}></View>
+    <View style={{ backgroundColor: theme.colors.background, flex: 1 }}>
+      <ActivityIndicator />
+    </View>
   );
 }
