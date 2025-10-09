@@ -1,6 +1,6 @@
 import { View, Text, ActivityIndicator, Pressable, Alert } from "react-native";
 import React, { useState, useEffect } from "react";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import TopBar from "@/components/TopBar";
 import { Button } from "react-native-paper";
@@ -24,7 +24,7 @@ import {
 import { db } from "@/services/FirebaseConfig";
 
 export default function TaskDetails() {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const router = useRouter();
   const { t } = useTranslation();
   const tasksCollection = collection(db, "tasks");
@@ -352,7 +352,7 @@ export default function TaskDetails() {
 
           {role === "MEMBER" && !taskData.isCompleted && (
             <Pressable
-              android_ripple={{ color: theme.custom.ripple }}
+              android_ripple={{ color: theme.colors.ripple }}
               onPress={changeStatus}
               disabled={changing}
               className="py-3 rounded-2xl items-center"
@@ -372,7 +372,7 @@ export default function TaskDetails() {
 
           {role === "FAMILY_ADMIN" && (
             <Pressable
-              android_ripple={{ color: theme.custom.ripple }}
+              android_ripple={{ color: theme.colors.ripple }}
               onPress={handleDelete}
               disabled={deleting}
               className="py-3 rounded-2xl items-center"

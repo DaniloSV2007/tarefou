@@ -2,9 +2,9 @@ import Menu from "@/components/Profile/Menu";
 import ProfileLogged from "@/components/Profile/ProfileLogged";
 import TopBar from "@/components/TopBar";
 import { useCallback, useRef, useState } from "react";
-import {  Button } from "react-native-paper";
+import { Button } from "react-native-paper";
 import { useAuth } from "@/context/AuthContext";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
@@ -14,8 +14,8 @@ import ConfirmLogout from "@/components/Profile/Menu/ConfirmLogout";
 import Constants from "expo-constants";
 
 export default function Profile() {
-  const {  logout } = useAuth();
-  const theme = useAppTheme();
+  const { logout } = useAuth();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const router = useRouter();
 

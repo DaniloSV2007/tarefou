@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from "react-native";
 import React from "react";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 // import { useAuth } from "@/context/AuthContext";
 // import { useTranslation } from "react-i18next";
 // import { useRouter } from "expo-router";
@@ -14,7 +14,7 @@ interface OptionProps {
 }
 
 export default function Option({ title, onPress }: OptionProps) {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   // const { t } = useTranslation();
   // const router = useRouter();
   // const usersCollection = collection(db, "users");
@@ -29,7 +29,7 @@ export default function Option({ title, onPress }: OptionProps) {
         paddingHorizontal: 12,
         paddingVertical: 20,
       }}
-      android_ripple={{ color: theme.custom.ripple }}
+      android_ripple={{ color: theme.colors.ripple }}
       onPress={onPress}
     >
       <Text style={{ color: theme.colors.onBackground }} className="text-2xl">

@@ -11,7 +11,6 @@ import * as SystemUI from "expo-system-ui";
 import { useEffect, useState } from "react";
 import { SQLiteProvider } from "expo-sqlite";
 import { setupDB } from "@/database/setupDB";
-import { useAppTheme } from "@/hooks/useAppTheme";
 import * as Updates from "expo-updates";
 import Update from "@/components/Update";
 import * as StatusBar from "expo-status-bar";
@@ -45,7 +44,7 @@ let googleConfigured = false;
 
 function RootInnerLayout() {
   const { theme, isDark } = useThemeContext();
-  const appTheme = useAppTheme();
+
   const auth = getAuth();
   const usersCollection = collection(db, "users");
 
@@ -177,7 +176,7 @@ function RootInnerLayout() {
                 <BottomSheetModalProvider>
                   <View
                     style={{
-                      backgroundColor: appTheme.colors.background,
+                      backgroundColor: theme.colors.background,
                       flex: 1,
                     }}
                   >
@@ -186,7 +185,7 @@ function RootInnerLayout() {
                         headerShown: false,
                         animation: "none",
                         contentStyle: {
-                          backgroundColor: appTheme.colors.background,
+                          backgroundColor: theme.colors.background,
                         },
                       }}
                     />

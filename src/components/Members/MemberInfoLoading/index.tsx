@@ -1,19 +1,17 @@
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import ContentLoader, { Circle, Rect } from "react-content-loader/native";
 import { StyleSheet } from "react-native";
 import { Card } from "react-native-paper";
 
-
-
 export default function MemberInfoLoading() {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
 
   const MembersLoading = () => (
     <ContentLoader
       viewBox="0 0 380 70"
       animate={true}
       speed={2}
-      backgroundColor={theme.custom.cardTaskBackground}
+      backgroundColor={theme.colors.cardTaskBackground}
       foregroundColor="gray"
       width={476}
       height={218}
@@ -33,7 +31,7 @@ export default function MemberInfoLoading() {
       style={[
         styles.card,
         {
-          backgroundColor: theme.custom.cardColor,
+          backgroundColor: theme.colors.cardColor,
           marginBottom: 16,
           paddingTop: 0,
         },

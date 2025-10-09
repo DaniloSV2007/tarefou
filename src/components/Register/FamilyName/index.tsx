@@ -2,9 +2,10 @@ import { useTranslation } from "react-i18next";
 import React, { useState } from "react";
 import { StyleSheet, View, TextInput } from "react-native";
 import { Button } from "react-native-paper";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 
-interface FamilyNameProps { // eslint-disable-next-line
+interface FamilyNameProps {
+  // eslint-disable-next-line
   setPage: (page: any) => void;
   familyName: string;
   setFamilyName: (familyName: string) => void;
@@ -17,7 +18,7 @@ export default function FamilyName({
 }: FamilyNameProps) {
   const { t } = useTranslation();
   const [isfamilyFocused, setIsFamilyFocused] = useState(false);
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
 
   return (
     <>
@@ -25,11 +26,11 @@ export default function FamilyName({
         style={[
           styles.input,
           {
-            backgroundColor: theme.custom.cardTaskBackground,
+            backgroundColor: theme.colors.cardTaskBackground,
             color: theme.colors.onBackground,
             borderColor: isfamilyFocused
               ? theme.colors.onBackground
-              : theme.custom.inputFocusBorder,
+              : theme.colors.inputFocusBorder,
             borderWidth: isfamilyFocused ? 2 : 1,
           },
         ]}
@@ -50,7 +51,7 @@ export default function FamilyName({
           mode="contained"
           style={[
             styles.backButton,
-            { backgroundColor: theme.custom.cardTaskBackground },
+            { backgroundColor: theme.colors.cardTaskBackground },
           ]}
           labelStyle={[styles.buttonText, { color: theme.colors.onBackground }]}
           children={t("common.back", { ns: "components" })}

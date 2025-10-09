@@ -1,11 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import {
-  Button,
-  Divider,
-  Snackbar,
-  Text,
-  useTheme,
-} from "react-native-paper";
+import { Button, Divider, Snackbar, Text } from "react-native-paper";
 import Constants from "expo-constants";
 import TopBar from "@/components/TopBar";
 import { useTranslation } from "react-i18next";
@@ -13,13 +7,13 @@ import React, { useEffect, useState } from "react";
 import * as Updates from "expo-updates";
 import Update from "@/components/Update";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useThemeContext } from "@/context/ThemeContext";
 
 export default function AppInfo() {
-  const theme = useTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
 
-  const { isUpdateAvailable } =
-    Updates.useUpdates();
+  const { isUpdateAvailable } = Updates.useUpdates();
 
   const [isChecking, setIsChecking] = useState(false);
   const [updatedVisible, setUpdatedVisible] = useState(false);
@@ -48,7 +42,7 @@ export default function AppInfo() {
   };
 
   useEffect(() => {
-    let hideSnackbar: number;
+    let hideSnackbar: ReturnType<typeof setTimeout>;
     if (updatedVisible) {
       hideSnackbar = setTimeout(() => {
         setUpdatedVisible(false);

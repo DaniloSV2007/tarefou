@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
 import { View, StyleSheet, Pressable } from "react-native";
 import { useTranslation } from "react-i18next";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { BlurView } from "expo-blur";
 
 type AppRoutes = {
@@ -19,7 +19,7 @@ interface TabBarProps {
 }
 
 export default function CustomTabBar({ routesProps }: TabBarProps) {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const pathname = usePathname();
   const router = useRouter();
   const insets = useSafeAreaInsets();

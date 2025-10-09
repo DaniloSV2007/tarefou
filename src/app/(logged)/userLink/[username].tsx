@@ -1,5 +1,5 @@
 import TopBar from "@/components/TopBar";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useLocalSearchParams } from "expo-router";
 import { View, StyleSheet, Pressable } from "react-native";
 import { Avatar, Card, Text } from "react-native-paper";
@@ -9,14 +9,19 @@ import ImageView from "react-native-image-viewing";
 import { useEffect, useState } from "react";
 import { useLanguageContext } from "@/context/LanguageContext";
 import React from "react";
-import { collection, getDocs, query, Timestamp, where } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  Timestamp,
+  where,
+} from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
 import { UserType } from "../admin/members";
 import { ImageSource } from "react-native-image-viewing/dist/@types";
 
-
 export default function UserLink() {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const usersCollection = collection(db, "users");
@@ -42,7 +47,7 @@ export default function UserLink() {
 
     const birthDate = new Date(
       memberData.birthday.seconds * 1000 +
-        memberData.birthday.nanoseconds / 1000000
+        memberData.birthday.nanoseconds / 1000000,
     );
     const now = new Date();
     const calculatedAge = now.getFullYear() - birthDate.getFullYear();
@@ -80,7 +85,7 @@ export default function UserLink() {
   const formatDate = (created: Timestamp) => {
     if (!created) return;
     const date = new Date(
-      created.seconds * 1000 + created.nanoseconds / 1000000
+      created.seconds * 1000 + created.nanoseconds / 1000000,
     );
     if (isNaN(date.getTime())) return;
 
@@ -102,7 +107,7 @@ export default function UserLink() {
     try {
       const q = query(
         usersCollection,
-        where("username", "==", memberData?.username)
+        where("username", "==", memberData?.username),
       );
       const querySnapshot = await getDocs(q);
 
@@ -138,7 +143,7 @@ export default function UserLink() {
       >
         <View style={styles.content}>
           <Card
-            style={[styles.card, { backgroundColor: theme.custom?.cardColor }]}
+            style={[styles.card, { backgroundColor: theme.colors.cardColor }]}
           >
             <Card.Title
               title={t("member.profile.personalInfo.title", { ns: "screens" })}
@@ -154,8 +159,8 @@ export default function UserLink() {
                       }}
                       size={150}
                       style={{
-                        backgroundColor: theme.custom.cardColor,
-                        borderColor: theme.custom.cardTaskBackground,
+                        backgroundColor: theme.colors.cardColor,
+                        borderColor: theme.colors.cardTaskBackground,
                         borderWidth: 1,
                       }}
                     />
@@ -165,8 +170,8 @@ export default function UserLink() {
                     icon={"account"}
                     size={150}
                     style={{
-                      backgroundColor: theme.custom.cardColor,
-                      borderColor: theme.custom.cardTaskBackground,
+                      backgroundColor: theme.colors.cardColor,
+                      borderColor: theme.colors.cardTaskBackground,
                       borderWidth: 1,
                     }}
                   />

@@ -6,7 +6,7 @@ import {
   ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useRouter } from "expo-router";
 import TopBar from "@/components/TopBar";
 import { useTranslation } from "react-i18next";
@@ -45,7 +45,7 @@ interface UserSelection extends UserType {
 }
 
 export default function NewTask() {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const router = useRouter();
   const { t } = useTranslation();
   const usersCollection = collection(db, "users");
@@ -363,7 +363,7 @@ export default function NewTask() {
                   placeholderTextColor={theme.colors.onSurfaceDisabled}
                   style={[
                     styles.input,
-                    { backgroundColor: theme.custom.cardTaskBackground },
+                    { backgroundColor: theme.colors.cardTaskBackground },
                   ]}
                   textColor={theme.colors.onBackground}
                   value={title}
@@ -387,7 +387,7 @@ export default function NewTask() {
                   style={[
                     styles.input,
                     {
-                      backgroundColor: theme.custom.cardTaskBackground,
+                      backgroundColor: theme.colors.cardTaskBackground,
                     },
                   ]}
                   textColor={theme.colors.onBackground}
@@ -404,16 +404,16 @@ export default function NewTask() {
                   onChangeText={(text) => setDescription(text)}
                 />
               </View>
-              <Text className="text-2xl">
+              <Text className="text-2xl" style={{ color: theme.colors.onBackground }}>
                 {t("home.newTask.selectDeadline", { ns: "translation" })}
               </Text>
               <Pressable
                 className="px-6 py-3 min-w-4/6 rounded-lg"
-                style={{ backgroundColor: theme.custom.cardTaskBackground }}
-                android_ripple={{ color: theme.custom.ripple }}
+                style={{ backgroundColor: theme.colors.cardTaskBackground }}
+                android_ripple={{ color: theme.colors.ripple }}
                 onPress={() => setShowDate(true)}
               >
-                <Text className="text-xl">
+                <Text className="text-xl" style={{ color: theme.colors.onBackground }}>
                   {deadlineString !== ""
                     ? deadlineString
                     : t("home.newTask.selectDate", { ns: "translation" })}
@@ -421,11 +421,11 @@ export default function NewTask() {
               </Pressable>
               {/* Repetition Section */}
               <View>
-                <Text className="text-2xl">Repetição</Text>
+                <Text className="text-2xl" style={{ color: theme.colors.onBackground }}>Repetição</Text>
               </View>
               <View
                 style={{
-                  backgroundColor: theme.custom.cardTaskBackground,
+                  backgroundColor: theme.colors.cardTaskBackground,
                   borderRadius: 12,
                   paddingVertical: 8,
                   paddingHorizontal: 8,
@@ -441,14 +441,14 @@ export default function NewTask() {
                   }}
                   onPress={() => setRepeatEnabled((v) => !v)}
                 >
-                  <Text className="text-xl">Ativar repetição</Text>
+                  <Text className="text-xl" style={{ color: theme.colors.onBackground }}>Ativar repetição</Text>
                   <Checkbox status={repeatEnabled ? "checked" : "unchecked"} />
                 </Pressable>
 
                 {repeatEnabled && (
                   <View style={{ gap: 12 }}>
                     <View style={{ gap: 6 }}>
-                      <Text className="text-xl">Frequência</Text>
+                      <Text className="text-xl" style={{ color: theme.colors.onBackground }}>Frequência</Text>
                       <View
                         style={{
                           flexDirection: "row",
@@ -468,7 +468,7 @@ export default function NewTask() {
                                 backgroundColor:
                                   repeatFrequency === opt
                                     ? theme.colors.primary
-                                    : theme.custom.cardColor,
+                                    : theme.colors.cardColor,
                               }}
                             >
                               <Text
@@ -493,17 +493,17 @@ export default function NewTask() {
                     </View>
 
                     <View style={{ gap: 6 }}>
-                      <Text className="text-xl">Intervalo</Text>
+                      <Text className="text-xl" style={{ color: theme.colors.onBackground }}>Intervalo</Text>
                       <TextInput
                         mode="outlined"
                         keyboardType="number-pad"
                         value={repeatInterval}
                         onChangeText={setRepeatInterval}
                         style={{
-                          backgroundColor: theme.custom.cardTaskBackground,
+                          backgroundColor: theme.colors.cardTaskBackground,
                         }}
                       />
-                      <Text style={{ opacity: 0.7 }}>
+                      <Text style={{ opacity: 0.7, color: theme.colors.onBackground }}>
                         A cada {repeatInterval || 1}{" "}
                         {repeatFrequency === "DAILY"
                           ? "dia(s)"
@@ -514,7 +514,7 @@ export default function NewTask() {
                     </View>
 
                     <View style={{ gap: 6 }}>
-                      <Text className="text-xl">Término</Text>
+                      <Text className="text-xl" style={{ color: theme.colors.onBackground }}>Término</Text>
                       <View style={{ flexDirection: "row", gap: 8 }}>
                         {(["NEVER", "DATE", "COUNT"] as const).map((opt) => (
                           <Pressable
@@ -527,7 +527,7 @@ export default function NewTask() {
                               backgroundColor:
                                 repeatEndType === opt
                                   ? theme.colors.primary
-                                  : theme.custom.cardColor,
+                                  : theme.colors.cardColor,
                             }}
                           >
                             <Text
@@ -553,7 +553,7 @@ export default function NewTask() {
                         <>
                           <Pressable
                             className="items-center py-2 rounded-lg"
-                            style={{ backgroundColor: theme.custom.cardColor }}
+                            style={{ backgroundColor: theme.colors.cardColor }}
                             onPress={() => setShowRepeatEndDate(true)}
                           >
                             <Text className="text-xl">
@@ -583,7 +583,7 @@ export default function NewTask() {
                           value={repeatEndCount}
                           onChangeText={setRepeatEndCount}
                           style={{
-                            backgroundColor: theme.custom.cardTaskBackground,
+                            backgroundColor: theme.colors.cardTaskBackground,
                           }}
                         />
                       )}
@@ -591,12 +591,12 @@ export default function NewTask() {
                   </View>
                 )}
               </View>
-              <Text className="text-2xl">
+              <Text className="text-2xl" style={{ color: theme.colors.onBackground }}>
                 {t("home.newTask.selectmembers", { ns: "translation" })}
               </Text>
               <View
                 style={{
-                  backgroundColor: theme.custom.cardTaskBackground,
+                  backgroundColor: theme.colors.cardTaskBackground,
                   borderRadius: 12,
                   paddingVertical: 4,
                   paddingHorizontal: 4,
@@ -614,8 +614,9 @@ export default function NewTask() {
                           ns: "translation",
                         })
                   }
+                  titleStyle={{ color: theme.colors.onBackground }}
                   style={{
-                    backgroundColor: theme.custom.cardTaskBackground,
+                    backgroundColor: theme.colors.cardTaskBackground,
                   }}
                 >
                   {data.map((user, i) => (
@@ -623,6 +624,7 @@ export default function NewTask() {
                       <List.Item
                         style={{ paddingLeft: 8 }}
                         title={user.name}
+                        titleStyle={{ color: theme.colors.onBackground }}
                         left={() =>
                           user.avatar ? (
                             <Avatar.Image
@@ -663,7 +665,7 @@ export default function NewTask() {
                 disabled={loading}
                 className="items-center py-2 rounded-lg"
                 style={{ backgroundColor: theme.colors.primary }}
-                android_ripple={{ color: theme.custom.ripple }}
+                android_ripple={{ color: theme.colors.ripple }}
                 onPress={createTask}
               >
                 {loading ? (

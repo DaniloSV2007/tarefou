@@ -1,4 +1,4 @@
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { Button, Dialog, Portal, Text } from "react-native-paper";
 
@@ -13,7 +13,7 @@ export default function ConfirmLogout({
   logout: () => void;
   close: () => void | void;
 }) {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   return (
     <Portal>

@@ -1,22 +1,25 @@
 import { useThemeContext } from "@/context/ThemeContext";
-import { useAppTheme } from "@/hooks/useAppTheme";
 import { TouchableOpacity, StyleSheet, View } from "react-native";
 import { Card, Divider, Icon, RadioButton, Text } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 
 export default function ThemeSection() {
-  const { toggleTheme, themePreference } = useThemeContext();
-  const theme = useAppTheme();
+  const { toggleTheme, themePreference, theme } = useThemeContext();
   const { t } = useTranslation();
 
   return (
     <Card
       mode="contained"
-      style={[{ backgroundColor: theme.custom.cardColor }, styles.card]}
+      style={[{ backgroundColor: theme.colors.cardColor }, styles.card]}
     >
       <Card.Title
         title={t("settings.theme.title")}
-        titleStyle={{ fontSize: 28, fontWeight: "bold", marginBottom: "-4%" }}
+        titleStyle={{
+          fontSize: 28,
+          fontWeight: "bold",
+          marginBottom: "-4%",
+          color: theme.colors.onBackground,
+        }}
         left={() => (
           <Icon source="brush-variant" size={42} color={theme.colors.primary} />
         )}
@@ -27,8 +30,16 @@ export default function ThemeSection() {
           style={styles.themeContainer}
         >
           <View style={styles.themeContainer}>
-            <Icon source="theme-light-dark" size={32} />
-            <Text style={styles.themeText}>{t("settings.theme.system")}</Text>
+            <Icon
+              color={theme.colors.onBackground}
+              source="theme-light-dark"
+              size={32}
+            />
+            <Text
+              style={[styles.themeText, { color: theme.colors.onBackground }]}
+            >
+              {t("settings.theme.system")}
+            </Text>
             <View style={styles.radioButton}>
               <RadioButton
                 value="device"
@@ -46,8 +57,16 @@ export default function ThemeSection() {
           style={styles.themeContainer}
         >
           <View style={styles.themeContainer}>
-            <Icon source="white-balance-sunny" size={32} />
-            <Text style={styles.themeText}>{t("settings.theme.light")}</Text>
+            <Icon
+              color={theme.colors.onBackground}
+              source="white-balance-sunny"
+              size={32}
+            />
+            <Text
+              style={[styles.themeText, { color: theme.colors.onBackground }]}
+            >
+              {t("settings.theme.light")}
+            </Text>
             <View style={styles.radioButton}>
               <RadioButton
                 value="light"
@@ -66,10 +85,18 @@ export default function ThemeSection() {
         >
           <View style={styles.themeContainer}>
             <View style={{ transform: [{ rotate: "30deg" }] }}>
-              <Icon source="moon-waxing-crescent" size={32} />
+              <Icon
+                color={theme.colors.onBackground}
+                source="moon-waxing-crescent"
+                size={32}
+              />
             </View>
 
-            <Text style={styles.themeText}>{t("settings.theme.dark")}</Text>
+            <Text
+              style={[styles.themeText, { color: theme.colors.onBackground }]}
+            >
+              {t("settings.theme.dark")}
+            </Text>
             <View style={styles.radioButton}>
               <RadioButton
                 value="device"

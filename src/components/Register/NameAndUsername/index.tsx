@@ -1,12 +1,13 @@
 import { StyleSheet, TextInput, View } from "react-native";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useState, useEffect, useRef } from "react";
 import React from "react";
 import { Button, Text } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
-interface NameAndUsernameProps { // eslint-disable-next-line
+interface NameAndUsernameProps {
+  // eslint-disable-next-line
   setPage: (number: any) => void;
   name?: string;
   setName?: (name: string) => void;
@@ -21,7 +22,7 @@ export default function NameAndUsername({
   username,
   setUsername,
 }: NameAndUsernameProps) {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const [isFocusedName, setIsFocusedName] = useState(false);
   const [isFocusedUsername, setIsFocusedUsername] = useState(false);
   const [error, setError] = useState("");
@@ -89,11 +90,11 @@ export default function NameAndUsername({
           style={[
             styles.input,
             {
-              backgroundColor: theme.custom.cardTaskBackground,
+              backgroundColor: theme.colors.cardTaskBackground,
               color: theme.colors.onBackground,
               borderColor: isFocusedName
                 ? theme.colors.onBackground
-                : theme.custom.inputFocusBorder,
+                : theme.colors.inputFocusBorder,
               borderWidth: isFocusedName ? 2 : 1,
             },
           ]}
@@ -126,11 +127,11 @@ export default function NameAndUsername({
           style={[
             styles.input,
             {
-              backgroundColor: theme.custom.cardTaskBackground,
+              backgroundColor: theme.colors.cardTaskBackground,
               color: theme.colors.onBackground,
               borderColor: isFocusedUsername
                 ? theme.colors.onBackground
-                : theme.custom.inputFocusBorder,
+                : theme.colors.inputFocusBorder,
               borderWidth: isFocusedUsername ? 2 : 1,
               paddingLeft: 32,
             },
@@ -175,7 +176,7 @@ export default function NameAndUsername({
           onPress={() => setPage((prev: number) => prev - 1)}
           style={[
             styles.backButton,
-            { backgroundColor: theme.custom.cardTaskBackground },
+            { backgroundColor: theme.colors.cardTaskBackground },
           ]}
           labelStyle={[styles.buttonText, { color: theme.colors.onSurface }]}
         >

@@ -1,12 +1,10 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import {
-  Button,
-} from "react-native-paper";
+import { Button } from "react-native-paper";
 import React, { useState } from "react";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 
 interface BirthdayProps {
@@ -22,7 +20,7 @@ export default function Birthday({
   setBirthday,
   setAge,
 }: BirthdayProps) {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [error, setError] = useState("");
@@ -37,7 +35,7 @@ export default function Birthday({
     const minDate = new Date(
       today.getFullYear() - 3,
       today.getMonth(),
-      today.getDate()
+      today.getDate(),
     );
     if (date > minDate) {
       setError(t("register.error.birthday"));
@@ -50,7 +48,7 @@ export default function Birthday({
     const minDate = new Date(
       today.getFullYear() - 3,
       today.getMonth(),
-      today.getDate()
+      today.getDate(),
     );
 
     if (date > minDate) {
@@ -85,14 +83,14 @@ export default function Birthday({
 
       <View
         style={{
-          backgroundColor: theme.custom.cardTaskBackground,
+          backgroundColor: theme.colors.cardTaskBackground,
           borderRadius: 12,
           padding: 4,
         }}
       >
         <Pressable
           onPress={() => setShow(true)}
-          android_ripple={{ color: theme.custom.ripple }}
+          android_ripple={{ color: theme.colors.ripple }}
           style={{
             borderRadius: 12,
             padding: 8,
@@ -110,7 +108,7 @@ export default function Birthday({
             ]}
           >
             {date.toLocaleDateString(
-              ["pt", "en"].includes(i18n.language) ? i18n.language : "en"
+              ["pt", "en"].includes(i18n.language) ? i18n.language : "en",
             )}
           </Text>
         </Pressable>
@@ -129,7 +127,7 @@ export default function Birthday({
           onPress={() => setPage(2)}
           style={[
             styles.backButton,
-            { backgroundColor: theme.custom.cardTaskBackground },
+            { backgroundColor: theme.colors.cardTaskBackground },
           ]}
           labelStyle={[styles.buttonText, { color: theme.colors.onBackground }]}
         >

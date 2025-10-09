@@ -10,12 +10,11 @@ import { Appearance, useColorScheme } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { lightTheme } from "@/themes/light";
 import { darkTheme } from "@/themes/dark";
-import { ThemeBase } from "react-native-paper";
 
 type ThemePreference = 0 | 1 | 2;
 
 interface ThemeContextType {
-  theme: ThemeBase;
+  theme: typeof lightTheme;
   toggleTheme: (mode?: ThemePreference) => Promise<void>;
   isDark: boolean;
   themePreference: ThemePreference;
@@ -64,7 +63,6 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
       themePreference === 0
         ? systemColorScheme === "dark"
         : themePreference === 2;
-
     setIsDark(effectiveDark);
   }, [themePreference, systemColorScheme]);
 
@@ -101,7 +99,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
         ...baseTheme.colors,
         secondaryContainer: "transparent",
       },
-    };
+    } as typeof lightTheme;
   }, [isDark]);
 
   return (

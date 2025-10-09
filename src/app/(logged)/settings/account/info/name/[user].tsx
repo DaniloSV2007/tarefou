@@ -6,26 +6,21 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import TopBar from "@/components/TopBar";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import {
-  ActivityIndicator,
-  Text,
-  TextInput,
-} from "react-native-paper";
+import { ActivityIndicator, Text, TextInput } from "react-native-paper";
 import PasswordConfirmation from "@/components/PasswordConfirmation";
-import {  doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { auth, db } from "@/services/FirebaseConfig";
 import { UserType } from "@/app/(logged)/admin/members";
 
 export default function ChangeName() {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams();
-
 
   const [userData, setUserData] = useState<UserType>();
 
@@ -54,10 +49,10 @@ export default function ChangeName() {
 
   useEffect(() => {
     const showSub = Keyboard.addListener("keyboardDidShow", () =>
-      setKeyboardVisible(true)
+      setKeyboardVisible(true),
     );
     const hideSub = Keyboard.addListener("keyboardDidHide", () =>
-      setKeyboardVisible(false)
+      setKeyboardVisible(false),
     );
     getUserDataParams();
     return () => {
@@ -166,7 +161,7 @@ export default function ChangeName() {
                   paddingHorizontal: 16,
                   borderRadius: 999,
                 }}
-                android_ripple={{ color: theme.custom.ripple }}
+                android_ripple={{ color: theme.colors.ripple }}
               >
                 {updating ? (
                   <ActivityIndicator color="white" />
@@ -190,4 +185,3 @@ export default function ChangeName() {
     </KeyboardAvoidingView>
   );
 }
-

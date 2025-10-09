@@ -1,9 +1,9 @@
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { Stack } from "expo-router";
 import { View } from "react-native";
 
 export default function MembersLayout() {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   return (
     <View style={{ backgroundColor: theme.colors.background, flex: 1 }}>
       <Stack

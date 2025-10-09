@@ -2,7 +2,7 @@ import { useState } from "react";
 import { View } from "react-native";
 import { Dialog, Menu, Button, Text, Portal } from "react-native-paper";
 import { UserType } from "@/app/(logged)/admin/members";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import {
   collection,
@@ -21,7 +21,7 @@ type Props = {
 };
 
 export default function EditMember({ user, setEditVisible, reflesh }: Props) {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const usersCollection = collection(db, "users");
 
@@ -167,7 +167,7 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
             onPress={() => setConfirmationVisible(true)}
             style={{ borderRadius: 12, paddingHorizontal: 5 }}
             disabled={loading}
-            rippleColor={theme.custom.ripple}
+            rippleColor={theme.colors.ripple}
           >
             {t("members.edit.removeFamily", { ns: "screens" })}
           </Button>
@@ -211,7 +211,7 @@ export default function EditMember({ user, setEditVisible, reflesh }: Props) {
               onPress={handleRemove}
               style={{ borderRadius: 12, paddingHorizontal: 5 }}
               disabled={loading}
-              rippleColor={theme.custom.ripple}
+              rippleColor={theme.colors.ripple}
             >
               {t("members.edit.removeButton", {
                 ns: "screens",

@@ -1,4 +1,4 @@
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { RefreshControl, StyleSheet, View } from "react-native";
 import { Card, Text } from "react-native-paper";
 import React, { useCallback, useEffect, useState } from "react";
@@ -26,7 +26,7 @@ interface TaskISO
 }
 
 export default function UserHome() {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const database = useDatabase();
   const usersCollection = collection(db, "users");
@@ -227,7 +227,7 @@ export default function UserHome() {
       style={[
         styles.card,
         {
-          backgroundColor: theme.custom.cardColor,
+          backgroundColor: theme.colors.cardColor,
           marginBottom: 16,
           paddingBottom: 12,
           paddingTop: 0,
@@ -239,7 +239,7 @@ export default function UserHome() {
           viewBox="0 0 380 70"
           animate={true}
           speed={2}
-          backgroundColor={theme.custom.cardTaskBackground}
+          backgroundColor={theme.colors.cardTaskBackground}
           foregroundColor="gray"
           width={476}
           height={152}
@@ -266,7 +266,7 @@ export default function UserHome() {
           refreshControl={
             <RefreshControl
               colors={[theme.colors.onBackground]}
-              progressBackgroundColor={theme.custom.cardTaskBackground}
+              progressBackgroundColor={theme.colors.cardTaskBackground}
               refreshing={refreshing}
               onRefresh={onRefresh}
             />
@@ -287,7 +287,7 @@ export default function UserHome() {
         refreshControl={
           <RefreshControl
             colors={[theme.colors.onBackground]}
-            progressBackgroundColor={theme.custom.cardTaskBackground}
+            progressBackgroundColor={theme.colors.cardTaskBackground}
             refreshing={refreshing}
             onRefresh={onRefresh}
           />

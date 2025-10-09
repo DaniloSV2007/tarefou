@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import TopBar from "@/components/TopBar";
 import { useRouter } from "expo-router";
@@ -21,7 +21,7 @@ type User = {
 };
 
 export default function AccountInfo() {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const router = useRouter();
   const usersCollection = collection(db, "users");
@@ -83,7 +83,7 @@ export default function AccountInfo() {
   const formatDate = (created: Timestamp) => {
     if (!created) return;
     const date = new Date(
-      created.seconds * 1000 + created.nanoseconds / 1000000
+      created.seconds * 1000 + created.nanoseconds / 1000000,
     );
 
     const day = date.getDate().toString().padStart(2, "0");

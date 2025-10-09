@@ -2,13 +2,13 @@ import { useEffect } from "react";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 import { View } from "react-native";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { ActivityIndicator } from "react-native-paper";
 
 export default function Index() {
   const { isLoggedIn } = useAuth();
   const router = useRouter();
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
 
   useEffect(() => {
     if (isLoggedIn) {

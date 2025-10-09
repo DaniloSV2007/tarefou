@@ -1,12 +1,11 @@
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View, StyleSheet, Alert, Pressable } from "react-native";
-import { Text, FAB, Avatar,  IconButton } from "react-native-paper";
+import { Text, FAB, Avatar, IconButton } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import imagePlaceholder from "@/assets/Profile/user.png";
 import * as SystemUI from "expo-system-ui";
-import { useThemeContext } from "@/context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "@/context/AuthContext";
 import Menu from "../Menu";
@@ -22,20 +21,20 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "@/services/FirebaseConfig";
 
-export type ImageURI ={
-  uri: string | null,
-}
+export type ImageURI = {
+  uri: string | null;
+};
 
 export default function AvatarProfile({
   setImageProp,
   setIsVisible,
   setQrVisible,
 }: {
-  setImageProp: (image:ImageURI[]) => void;
-  setIsVisible: (state:boolean) => void;
-  setQrVisible: (state:boolean) => void
-} ) {
-  const theme = useAppTheme();
+  setImageProp: (image: ImageURI[]) => void;
+  setIsVisible: (state: boolean) => void;
+  setQrVisible: (state: boolean) => void;
+}) {
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const { isDark } = useThemeContext();
   const { isLoggedIn } = useAuth();
@@ -67,8 +66,6 @@ export default function AvatarProfile({
   useEffect(() => {
     SystemUI.setBackgroundColorAsync(isDark ? "#000" : "#fff");
   }, [isDark]);
-
-
 
   useEffect(() => {
     if (image !== null) {
@@ -231,8 +228,8 @@ export default function AvatarProfile({
               source={image ? { uri: image } : { uri: placeholder }}
               size={150}
               style={{
-                backgroundColor: theme.custom.cardColor,
-                borderColor: theme.custom.cardTaskBackground,
+                backgroundColor: theme.colors.cardColor,
+                borderColor: theme.colors.cardTaskBackground,
                 borderWidth: 1,
               }}
             />
@@ -242,8 +239,8 @@ export default function AvatarProfile({
             icon={"account"}
             size={150}
             style={{
-              backgroundColor: theme.custom.cardColor,
-              borderColor: theme.custom.cardTaskBackground,
+              backgroundColor: theme.colors.cardColor,
+              borderColor: theme.colors.cardTaskBackground,
               borderWidth: 1,
             }}
           />
@@ -252,13 +249,13 @@ export default function AvatarProfile({
           <FAB
             icon="camera-outline"
             onPress={openMenu}
-            rippleColor={theme.custom.ripple}
+            rippleColor={theme.colors.ripple}
             color={theme.colors.onBackground}
             mode="flat"
             style={[
               styles.editButton,
               {
-                backgroundColor: theme.custom.cardTaskBackground,
+                backgroundColor: theme.colors.cardTaskBackground,
               },
             ]}
           />
@@ -311,7 +308,7 @@ export default function AvatarProfile({
         <IconButton
           icon={"qrcode"}
           iconColor={theme.colors.onBackground}
-          containerColor={theme.custom.cardTaskBackground}
+          containerColor={theme.colors.cardTaskBackground}
           style={{ borderRadius: 12 }}
           onPress={() => setQrVisible(true)}
         />

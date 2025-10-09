@@ -10,7 +10,7 @@ import {
 import { useEffect, useState } from "react";
 import React from "react";
 import TopBar from "@/components/TopBar";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { Card, Icon, Searchbar } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import { Timestamp } from "firebase/firestore";
@@ -42,7 +42,7 @@ interface User {
 
 export default function AllTasks() {
   const params = useLocalSearchParams<{ tasks: string }>();
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -127,7 +127,7 @@ export default function AllTasks() {
               onChangeText={(text) => setSearchValue(text)}
               style={{
                 width: "90%",
-                backgroundColor: theme.custom.cardTaskBackground,
+                backgroundColor: theme.colors.cardTaskBackground,
               }}
               inputStyle={{ color: theme.colors.onBackground, fontSize: 24 }}
             />
@@ -175,14 +175,14 @@ export default function AllTasks() {
                         style={[
                           styles.card,
                           {
-                            backgroundColor: theme.custom.cardColor,
+                            backgroundColor: theme.colors.cardColor,
                             paddingHorizontal: 16,
                             alignSelf: "center",
                           },
                         ]}
                       >
                         <Pressable
-                          android_ripple={{ color: theme.custom.ripple }}
+                          android_ripple={{ color: theme.colors.ripple }}
                           onPress={() => handleTaskPress(task)}
                         >
                           <Card.Content style={styles.tasksContainer}>
@@ -273,14 +273,14 @@ export default function AllTasks() {
                     style={[
                       styles.card,
                       {
-                        backgroundColor: theme.custom.cardColor,
+                        backgroundColor: theme.colors.cardColor,
                         paddingHorizontal: 16,
                         alignSelf: "center",
                       },
                     ]}
                   >
                     <Pressable
-                      android_ripple={{ color: theme.custom.ripple }}
+                      android_ripple={{ color: theme.colors.ripple }}
                       onPress={() => handleTaskPress(task)}
                     >
                       <Card.Content style={styles.tasksContainer}>

@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { Button,  Text } from "react-native-paper";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { Button, Text } from "react-native-paper";
+import { useThemeContext } from "@/context/ThemeContext";
 import { Checkbox, ActivityIndicator } from "react-native-paper";
 import { useState } from "react";
 
@@ -18,7 +18,7 @@ export default function TermsOfService({
   setPage,
 }: TermsOfServiceProps) {
   const { t } = useTranslation();
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const [isTermsChecked, setIsTermsChecked] = useState(false);
 
   return (
@@ -42,7 +42,7 @@ export default function TermsOfService({
             setPage(1);
           }}
         >
-          {t("common.cancel", {ns:'components'})}
+          {t("common.cancel", { ns: "components" })}
         </Button>
         <Button
           style={
@@ -62,7 +62,7 @@ export default function TermsOfService({
           {isLoading ? (
             <ActivityIndicator color="white" size={20} />
           ) : (
-            t("common.confirm",{ns:'components'})
+            t("common.confirm", { ns: "components" })
           )}
         </Button>
       </View>

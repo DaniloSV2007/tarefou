@@ -1,5 +1,5 @@
 import TopBar from "@/components/TopBar";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { RefreshControl, ScrollView, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
@@ -15,7 +15,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
 
 export default function Report() {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const usersCollection = collection(db, "users");
   const tasksCollection = collection(db, "tasks");
@@ -114,7 +114,7 @@ export default function Report() {
   const MyLoader = () => (
     <Card
       style={{
-        backgroundColor: theme.custom.cardColor,
+        backgroundColor: theme.colors.cardColor,
         width: "90%",
         overflow: "hidden",
         paddingVertical: 12,
@@ -129,7 +129,7 @@ export default function Report() {
           viewBox="0 0 380 70"
           animate={true}
           speed={2}
-          backgroundColor={theme.custom.cardTaskBackground}
+          backgroundColor={theme.colors.cardTaskBackground}
           foregroundColor="gray"
           width={476}
           height={364}
@@ -160,7 +160,7 @@ export default function Report() {
         refreshControl={
           <RefreshControl
             colors={[theme.colors.onBackground]}
-            progressBackgroundColor={theme.custom.cardTaskBackground}
+            progressBackgroundColor={theme.colors.cardTaskBackground}
             refreshing={refreshing}
             onRefresh={getUsers}
           />

@@ -1,4 +1,4 @@
-import React, { RefObject,  useState } from "react";
+import React, { RefObject, useState } from "react";
 import { Text, StyleSheet, Dimensions } from "react-native";
 import {
   Gesture,
@@ -15,7 +15,7 @@ import Animated, {
   runOnJS,
 } from "react-native-reanimated";
 import { Icon } from "react-native-paper";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { View } from "react-native";
 import { useRouter } from "expo-router";
 
@@ -24,9 +24,9 @@ const SWIPE_THRESHOLD_LEFT = -width * 0.15;
 const SWIPE_THRESHOLD_RIGHT = width * 0.15;
 
 export type NotifDataType = {
-  href?: string | null,
-  notificationId: string
-}
+  href?: string | null;
+  notificationId: string;
+};
 
 export function NotificationItem({
   title,
@@ -49,11 +49,11 @@ export function NotificationItem({
 }) {
   const translationX = useSharedValue(0);
   const height = useSharedValue(80);
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const router = useRouter();
 
   const [viewedStatus, setViewedStatus] = useState<boolean>(
-    viewed ? true : false
+    viewed ? true : false,
   );
 
   const handleDelete = () => {
@@ -103,7 +103,7 @@ export function NotificationItem({
     backgroundColor: interpolateColor(
       translationX.value,
       [SWIPE_THRESHOLD_LEFT, 0, SWIPE_THRESHOLD_RIGHT],
-      [theme.colors.error, theme.colors.surface, theme.colors.primary]
+      [theme.colors.error, theme.colors.surface, theme.colors.primary],
     ),
   }));
 
@@ -124,6 +124,7 @@ export function NotificationItem({
     const dateNow = new Date();
     const createdDate = new Date(time);
     const diff = Math.floor((dateNow.getTime() - createdDate.getTime()) / 1000);
+    if (diff >= 216000) return `Há ${Math.floor(diff / 216000)}d`;
     if (diff >= 3600) return `Há ${Math.floor(diff / 3600)}h`;
     if (diff >= 60) return `Há ${Math.floor(diff / 60)}m`;
     return `Há ${diff}s`;
@@ -149,7 +150,11 @@ export function NotificationItem({
           />
         </Animated.View>
         <Animated.View style={[styles.rightIcon, rightIconStyle]}>
-          <Icon source="trash-can-outline" size={28} color={theme.colors.onError} />
+          <Icon
+            source="trash-can-outline"
+            size={28}
+            color={theme.colors.onError}
+          />
         </Animated.View>
       </Animated.View>
 
@@ -160,8 +165,8 @@ export function NotificationItem({
             animatedStyle,
             {
               backgroundColor: viewedStatus
-                ? theme.colors.surface
-                : theme.colors.surfaceVariant,
+                ? theme.colors.cardTaskBackground
+                : theme.colors.cardColor,
             },
           ]}
         >

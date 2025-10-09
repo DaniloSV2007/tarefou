@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import TopBar from "@/components/TopBar";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { Avatar, Button, Card, Snackbar, Text } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -24,7 +24,7 @@ import { ImageSource } from "react-native-image-viewing/dist/@types";
 import { User, UserRaw } from "../[user]";
 
 export default function UserAdd() {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const params = useLocalSearchParams<{ user: string }>();
@@ -195,7 +195,7 @@ export default function UserAdd() {
         ]}
       >
         <Card
-          style={[styles.card, { backgroundColor: theme.custom.cardColor }]}
+          style={[styles.card, { backgroundColor: theme.colors.cardColor }]}
         >
           <Card.Content style={[styles.content]}>
             <View style={styles.avatar}>
@@ -205,8 +205,8 @@ export default function UserAdd() {
                     source={image ? { uri: image } : { uri: placeholder }}
                     size={150}
                     style={{
-                      backgroundColor: theme.custom.cardColor,
-                      borderColor: theme.custom.cardTaskBackground,
+                      backgroundColor: theme.colors.cardColor,
+                      borderColor: theme.colors.cardTaskBackground,
                       borderWidth: 1,
                     }}
                   />
@@ -216,8 +216,8 @@ export default function UserAdd() {
                   icon={"account"}
                   size={150}
                   style={{
-                    backgroundColor: theme.custom.cardColor,
-                    borderColor: theme.custom.cardTaskBackground,
+                    backgroundColor: theme.colors.cardColor,
+                    borderColor: theme.colors.cardTaskBackground,
                     borderWidth: 1,
                   }}
                 />

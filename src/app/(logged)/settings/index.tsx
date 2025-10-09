@@ -2,7 +2,6 @@ import ThemeSection from "@/components/Settings/ThemeSection";
 import LanguageSection from "@/components/Settings/LanguageSection";
 import TopBar from "@/components/TopBar";
 import { StyleSheet, View } from "react-native";
-import { useTheme } from "react-native-paper";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native-gesture-handler";
@@ -10,9 +9,10 @@ import OptionsSection from "@/components/Settings/OptionsSection";
 import Option from "@/components/Settings/OptionsSection/Option";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useThemeContext } from "@/context/ThemeContext";
 
 export default function Settings() {
-  const theme = useTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const router = useRouter();
 

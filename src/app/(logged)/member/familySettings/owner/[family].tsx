@@ -5,7 +5,7 @@ import {
   View,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import TopBar from "@/components/TopBar";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -33,14 +33,14 @@ import {
 import { db } from "@/services/FirebaseConfig";
 
 type Data = {
-  label: string,
-  value: string,
-  avatar: string,
-  role: string
-}
+  label: string;
+  value: string;
+  avatar: string;
+  role: string;
+};
 
 export default function ChangeFamilyName() {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -66,7 +66,7 @@ export default function ChangeFamilyName() {
     setFamilyInfo(familyDecoded);
     if (familyDecoded?.users && familyDecoded.owner) {
       const nonOwnerUsers = familyDecoded.users.filter(
-        (user: UserType) => user.username !== familyDecoded.owner
+        (user: UserType) => user.username !== familyDecoded.owner,
       );
       setData(
         nonOwnerUsers.map((user: UserType) => ({
@@ -74,7 +74,7 @@ export default function ChangeFamilyName() {
           value: user.username,
           avatar: user.avatar,
           role: user.role,
-        }))
+        })),
       );
     }
   }, []);
@@ -86,7 +86,7 @@ export default function ChangeFamilyName() {
           familyInfo.users.map(async (user) => {
             const avatar = await getAvatarDatabase(user.username);
             return { ...user, avatar };
-          })
+          }),
         );
         setFamilyInfo({ ...familyInfo, users: updatedUsers });
         setAvatarsFetched(true);
@@ -98,7 +98,7 @@ export default function ChangeFamilyName() {
   useEffect(() => {
     if (familyInfo?.users && familyInfo.owner) {
       const nonOwnerUsers = familyInfo.users.filter(
-        (user: UserType) => user.username !== familyInfo.owner
+        (user: UserType) => user.username !== familyInfo.owner,
       );
       setData(
         nonOwnerUsers.map((user: UserType) => ({
@@ -106,7 +106,7 @@ export default function ChangeFamilyName() {
           value: user.username,
           avatar: user.avatar,
           role: user.role,
-        }))
+        })),
       );
     }
   }, [familyInfo]);
@@ -186,7 +186,7 @@ export default function ChangeFamilyName() {
               }}
               placeholderStyle={{ color: theme.colors.onBackground }}
               style={{
-                backgroundColor: theme.custom.cardColor,
+                backgroundColor: theme.colors.cardColor,
                 paddingVertical: 20,
                 paddingHorizontal: 12,
                 borderRadius: 12,
@@ -195,7 +195,7 @@ export default function ChangeFamilyName() {
               }}
               itemTextStyle={{ color: "white" }}
               containerStyle={{
-                backgroundColor: theme.custom.cardColor,
+                backgroundColor: theme.colors.cardColor,
                 borderWidth: 0,
                 marginTop: -2,
                 borderBottomEndRadius: 12,
@@ -205,7 +205,7 @@ export default function ChangeFamilyName() {
               itemContainerStyle={{
                 paddingHorizontal: 4,
               }}
-              activeColor={theme.custom.cardTaskBackground}
+              activeColor={theme.colors.cardTaskBackground}
               renderItem={(item) => (
                 <View
                   style={{
@@ -291,7 +291,7 @@ export default function ChangeFamilyName() {
                 paddingHorizontal: 16,
                 borderRadius: 999,
               }}
-              android_ripple={{ color: theme.custom.ripple }}
+              android_ripple={{ color: theme.colors.ripple }}
             >
               {updating ? (
                 <ActivityIndicator color="white" />

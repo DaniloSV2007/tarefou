@@ -1,4 +1,4 @@
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { View, StyleSheet } from "react-native";
 import { Text, ProgressBar } from "react-native-paper";
 import { useTranslation } from "react-i18next";
@@ -19,7 +19,7 @@ export default function CardInfo({
   isWeek = false,
   reflesh,
 }: CardInfoProps) {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
 
   const [completedTasks, setCompletedTasks] = useState(0);

@@ -1,4 +1,7 @@
-import { NotifDataType, NotificationItem } from "@/components/Notifications/NotificationItem";
+import {
+  NotifDataType,
+  NotificationItem,
+} from "@/components/Notifications/NotificationItem";
 import TopBar from "@/components/TopBar";
 import {
   collection,
@@ -17,15 +20,13 @@ import {
   GestureHandlerRootView,
   ScrollView,
 } from "react-native-gesture-handler";
-import {  Button } from "react-native-paper";
+import { Button } from "react-native-paper";
 import { db } from "@/services/FirebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAnimatedRef } from "react-native-reanimated";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
-
-
 
 interface notification {
   notificationId: string;
@@ -37,7 +38,7 @@ interface notification {
 }
 
 export default function Notifications() {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const { notification } = usePushNotifications();
 
@@ -102,11 +103,15 @@ export default function Notifications() {
   };
 
   const changeViewed = async (id: string, status: boolean) => {
+    const userId = await AsyncStorage.getItem("userId");
+    if (!userId) return;
+
     console.log(status, id);
     try {
       const q = query(
         notificationCollections,
-        where("notificationId", "==", id)
+        where("notificationId", "==", id),
+        where("userId", "==", userId), // Add userId filter here
       );
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
@@ -123,12 +128,16 @@ export default function Notifications() {
   };
 
   const deleteNotif = async (id: string) => {
+    const userId = await AsyncStorage.getItem("userId");
+    if (!userId) return;
+
     setNotif((prev) => prev.filter((n) => n.notificationId !== id));
 
     try {
       const q = query(
         notificationCollections,
-        where("notificationId", "==", id)
+        where("notificationId", "==", id),
+        where("userId", "==", userId), // Add userId filter here
       );
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
@@ -148,10 +157,14 @@ export default function Notifications() {
     try {
       const notifsNotRead = notif.filter((n) => !n.viewed);
 
+      const userId = await AsyncStorage.getItem("userId");
+      if (!userId) return;
+
       for (const n of notifsNotRead) {
         const q = query(
           notificationCollections,
-          where("notificationId", "==", n.notificationId)
+          where("notificationId", "==", n.notificationId),
+          where("userId", "==", userId), // Add userId filter here
         );
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
@@ -195,7 +208,7 @@ export default function Notifications() {
           refreshControl={
             <RefreshControl
               colors={[theme.colors.onBackground]}
-              progressBackgroundColor={theme.custom.cardTaskBackground}
+              progressBackgroundColor={theme.colors.cardTaskBackground}
               refreshing={refreshing}
               onRefresh={onRefresh}
             />
@@ -229,12 +242,12 @@ export default function Notifications() {
                 (a, b) =>
                   new Date(
                     b.createdAt.seconds * 1000 +
-                      b.createdAt.nanoseconds / 1000000
+                      b.createdAt.nanoseconds / 1000000,
                   ).getTime() -
                   new Date(
                     a.createdAt.seconds * 1000 +
-                      a.createdAt.nanoseconds / 1000000
-                  ).getTime()
+                      a.createdAt.nanoseconds / 1000000,
+                  ).getTime(),
               )
               .sort((a, b) => Number(a.viewed) - Number(b.viewed))
               .map((n, i) => (
@@ -246,7 +259,7 @@ export default function Notifications() {
                   data={n.data}
                   createAt={new Date(
                     n.createdAt.seconds * 1000 +
-                      n.createdAt.nanoseconds / 1000000
+                      n.createdAt.nanoseconds / 1000000,
                   ).toISOString()}
                   changeViewed={(status: boolean) =>
                     changeViewed(n.notificationId, status)

@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { ActivityIndicator, Button } from "react-native-paper";
 import { useAuth } from "@/context/AuthContext";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
@@ -16,7 +16,7 @@ import Constants from "expo-constants";
 
 export default function Profile() {
   const { isLoggedIn, isLoading, logout } = useAuth();
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const router = useRouter();
 

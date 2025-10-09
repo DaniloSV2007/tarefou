@@ -1,4 +1,4 @@
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { Text, StyleSheet, View, Image, Pressable } from "react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -9,7 +9,7 @@ interface GoogleButtonProps {
 }
 
 export default function GoogleButton({ onPress }: GoogleButtonProps) {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const styles = makeStyles(theme);
 

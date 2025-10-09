@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { ActivityIndicator, IconButton, Text } from "react-native-paper";
 import { Link, useRouter } from "expo-router";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useEffect, useState } from "react";
 import React from "react";
 import TopBar from "@/components/TopBar";
@@ -42,7 +42,7 @@ import { WEB_CLIENT_ID } from "@env";
 export default function Login() {
   const { login } = useAuth();
   const router = useRouter();
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const usersCollection = collection(db, "users");
 
@@ -246,11 +246,11 @@ export default function Login() {
                 style={[
                   styles.input,
                   {
-                    backgroundColor: theme.custom.cardTaskBackground,
+                    backgroundColor: theme.colors.cardTaskBackground,
                     color: theme.colors.onBackground,
                     borderColor: isFocusedEmail
                       ? theme.colors.onBackground
-                      : theme.custom.inputFocusBorder,
+                      : theme.colors.inputFocusBorder,
                     borderWidth: isFocusedEmail ? 2 : 1,
                   },
                 ]}
@@ -272,11 +272,11 @@ export default function Login() {
                   style={[
                     styles.input,
                     {
-                      backgroundColor: theme.custom.cardTaskBackground,
+                      backgroundColor: theme.colors.cardTaskBackground,
                       color: theme.colors.onBackground,
                       borderColor: isFocusedPassword
                         ? theme.colors.onBackground
-                        : theme.custom.inputFocusBorder,
+                        : theme.colors.inputFocusBorder,
                       borderWidth: isFocusedPassword ? 2 : 1,
                     },
                   ]}
@@ -331,7 +331,7 @@ export default function Login() {
               </Text>
 
               <Pressable
-                android_ripple={{ color: theme.custom.ripple }}
+                android_ripple={{ color: theme.colors.ripple }}
                 onPress={handleLogin}
                 style={[
                   styles.loginButton,

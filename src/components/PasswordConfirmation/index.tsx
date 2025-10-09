@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import React, { useState } from "react";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { Portal, Dialog, Text, TextInput } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -34,7 +34,7 @@ export default function PasswordConfirmation({
   setUpdating,
   onPasswordConfirmation,
 }: Props) {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const usersCollection = collection(db, "users");
 
@@ -58,7 +58,7 @@ export default function PasswordConfirmation({
           const credential = EmailAuthProvider.credential(email, password);
           const authenticate = await reauthenticateWithCredential(
             user,
-            credential
+            credential,
           );
           if ((await authenticate.user.getIdToken()) !== "") {
             onPasswordConfirmation();

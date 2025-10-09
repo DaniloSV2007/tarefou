@@ -7,7 +7,7 @@ import {
   ViewStyle,
 } from "react-native";
 import React from "react";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { Icon } from "react-native-paper";
 
 interface OptionProps {
@@ -33,7 +33,7 @@ export default function PressableButton({
   className,
   leftIcon,
 }: OptionProps) {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
 
   return (
     <Pressable

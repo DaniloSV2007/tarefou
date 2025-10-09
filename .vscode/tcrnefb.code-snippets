@@ -14,7 +14,7 @@
       "import { db } from \"@/services/FirebaseConfig\";",
       "",
       "export default function $1() {",
-      "  const theme = useAppTheme();",
+      "  const { theme } = useThemeContext();;",
       "  const { t } = useTranslation();",
       "  const router = useRouter();",
       "const usersCollection = collection(db, \"users\")",

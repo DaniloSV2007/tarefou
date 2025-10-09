@@ -68,7 +68,7 @@ export const usePushNotifications = (): PushNotificationState => {
           name: "Todas as notificações",
           importance: Notification.AndroidImportance.MAX,
           vibrationPattern: [0, 250, 250, 250],
-          lightColor: "ff231f7c",
+          lightColor: "#ff231f7c",
         });
       }
       console.log(token);

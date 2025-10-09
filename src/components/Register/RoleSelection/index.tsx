@@ -1,10 +1,11 @@
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Icon, Text } from "react-native-paper";
 
-interface RoleSelectionProps { // eslint-disable-next-line
+interface RoleSelectionProps {
+  // eslint-disable-next-line
   setPage: (page: any) => void;
   setRole: (role: string) => void;
   age: number;
@@ -15,7 +16,7 @@ export default function RoleSelection({
   setRole,
   age,
 }: RoleSelectionProps) {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
 
   const handleRoleSelection = (role: string) => {
@@ -35,7 +36,7 @@ export default function RoleSelection({
           style={[
             styles.card,
             {
-              backgroundColor: theme.custom.cardTaskBackground,
+              backgroundColor: theme.colors.cardTaskBackground,
               borderColor: theme.colors.primary,
             },
           ]}
@@ -53,7 +54,7 @@ export default function RoleSelection({
             style={[
               styles.card,
               {
-                backgroundColor: theme.custom.cardTaskBackground,
+                backgroundColor: theme.colors.cardTaskBackground,
                 borderColor: theme.colors.primary,
               },
             ]}
@@ -71,7 +72,7 @@ export default function RoleSelection({
             mode="contained"
             style={[
               styles.backButton,
-              { backgroundColor: theme.custom.cardTaskBackground },
+              { backgroundColor: theme.colors.cardTaskBackground },
             ]}
             labelStyle={[
               styles.buttonText,

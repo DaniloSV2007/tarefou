@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import TopBar from "@/components/TopBar";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { Button, HelperText, Text, TextInput } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -17,7 +17,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
 
 export default function FindByUsername() {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const insets = useSafeAreaInsets();
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
@@ -32,7 +32,9 @@ export default function FindByUsername() {
     setLoading(true);
     if (username.trim() === "") {
       setError(
-        t("members.newMember.findUsername.errors.inputEmpty", { ns: "screens" })
+        t("members.newMember.findUsername.errors.inputEmpty", {
+          ns: "screens",
+        }),
       );
       return;
     }
@@ -40,7 +42,7 @@ export default function FindByUsername() {
       const usernameNoSpace = username.trim();
       const q = query(
         usersCollection,
-        where("username", "==", usernameNoSpace)
+        where("username", "==", usernameNoSpace),
       );
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
@@ -56,13 +58,13 @@ export default function FindByUsername() {
         setError(
           t("members.newMember.findUsername.errors.userNotExist", {
             ns: "screens",
-          })
+          }),
         );
       }
     } catch (error) {
       console.error(error);
       setError(
-        t("members.newMember.findUsername.errors.ops", { ns: "screens" })
+        t("members.newMember.findUsername.errors.ops", { ns: "screens" }),
       );
     } finally {
       setLoading(false);

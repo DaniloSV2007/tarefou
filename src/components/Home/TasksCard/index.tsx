@@ -1,4 +1,4 @@
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { Link, useRouter } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 import { Card, Divider, Icon, Text } from "react-native-paper";
@@ -19,7 +19,7 @@ export default function TasksCard({
   isMember = false,
   deadlineCloseList = false,
 }: TasksCardProps) {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const router = useRouter();
   const { t } = useTranslation();
   const [linkColor, setLinkColor] = useState(theme.colors.onBackground);
@@ -65,7 +65,7 @@ export default function TasksCard({
         style={[
           styles.card,
           {
-            backgroundColor: theme.custom.cardColor,
+            backgroundColor: theme.colors.cardColor,
             paddingBottom: 12,
           },
         ]}
@@ -128,7 +128,7 @@ export default function TasksCard({
       <Card
         style={[
           styles.card,
-          { backgroundColor: theme.custom.cardColor, width: "90%" },
+          { backgroundColor: theme.colors.cardColor, width: "90%" },
         ]}
         mode="elevated"
       >
@@ -147,7 +147,7 @@ export default function TasksCard({
                   <React.Fragment key={task.id}>
                     <Pressable
                       style={styles.taskContainer}
-                      android_ripple={{ color: theme.custom.ripple }}
+                      android_ripple={{ color: theme.colors.ripple }}
                       onPress={() => handleTaskPress(task)}
                     >
                       {task.isCompleted ? (
@@ -211,7 +211,7 @@ export default function TasksCard({
                     <React.Fragment key={task.id}>
                       <Pressable
                         style={styles.taskContainer}
-                        android_ripple={{ color: theme.custom.ripple }}
+                        android_ripple={{ color: theme.colors.ripple }}
                         onPress={() => handleTaskPress(task)}
                       >
                         {task.isCompleted ? (
@@ -336,7 +336,7 @@ export default function TasksCard({
     <Card
       style={[
         styles.card,
-        { backgroundColor: theme.custom.cardColor, width: "90%" },
+        { backgroundColor: theme.colors.cardColor, width: "90%" },
       ]}
       mode="elevated"
     >
@@ -363,7 +363,7 @@ export default function TasksCard({
               <React.Fragment key={task.id}>
                 <Pressable
                   style={styles.taskContainer}
-                  android_ripple={{ color: theme.custom.ripple }}
+                  android_ripple={{ color: theme.colors.ripple }}
                   onPress={() => handleTaskPress(task)}
                 >
                   {task.isCompleted ? (

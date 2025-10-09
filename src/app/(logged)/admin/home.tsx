@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import { ActivityIndicator, Card, FAB } from "react-native-paper";
-import { useAppTheme } from "@/hooks/useAppTheme";
+
 import React, { useCallback, useEffect, useState } from "react";
 import TopBar from "@/components/TopBar";
 import { useTranslation } from "react-i18next";
@@ -24,6 +24,7 @@ import { db } from "@/services/FirebaseConfig";
 import TasksCard from "@/components/Home/TasksCard";
 import getUsersInfo from "@/utils/getUsersInfo";
 import getFamilyId from "@/utils/getFamilyId";
+import { useThemeContext } from "@/context/ThemeContext";
 
 export interface UserTasksType extends UserType {
   tasks?: Task[] | undefined;
@@ -38,7 +39,7 @@ export interface Family {
 
 export default function Home() {
   const router = useRouter();
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const usersCollection = collection(db, "users");
   const tasksCollection = collection(db, "tasks");
@@ -55,6 +56,8 @@ export default function Home() {
   useEffect(() => {
     reflesh();
   }, []);
+
+  useEffect(() => console.log(theme), []);
 
   useEffect(() => {
     setTasks(users.flatMap((user: UserTasksType) => user.tasks ?? []));
@@ -206,7 +209,7 @@ export default function Home() {
       viewBox="0 0 380 70"
       animate={true}
       speed={2}
-      backgroundColor={theme.custom.cardTaskBackground}
+      backgroundColor={theme.colors.cardTaskBackground}
       foregroundColor="gray"
       width={476}
       height={152}
@@ -236,7 +239,7 @@ export default function Home() {
           refreshControl={
             <RefreshControl
               colors={[theme.colors.onBackground]}
-              progressBackgroundColor={theme.custom.cardTaskBackground}
+              progressBackgroundColor={theme.colors.cardTaskBackground}
               refreshing={refreshing}
               onRefresh={onRefresh}
             />
@@ -261,7 +264,7 @@ export default function Home() {
                 style={[
                   styles.card,
                   {
-                    backgroundColor: theme.custom.cardColor,
+                    backgroundColor: theme.colors.cardColor,
                     marginBottom: 16,
                     paddingBottom: 12,
                     paddingTop: 0,
@@ -293,7 +296,7 @@ export default function Home() {
         refreshControl={
           <RefreshControl
             colors={[theme.colors.onBackground]}
-            progressBackgroundColor={theme.custom.cardTaskBackground}
+            progressBackgroundColor={theme.colors.cardTaskBackground}
             refreshing={refreshing}
             onRefresh={onRefresh}
           />

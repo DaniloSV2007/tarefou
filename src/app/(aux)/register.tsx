@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Text } from "react-native-paper";
 import { useRouter } from "expo-router";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useEffect, useState } from "react";
 import React from "react";
 import TopBar from "@/components/TopBar";
@@ -49,7 +49,7 @@ const steps = [
 
 export default function Register() {
   const { t } = useTranslation();
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const [page, setPage] = useState<number>(1);
   const router = useRouter();
   const { expoPushToken } = usePushNotifications();

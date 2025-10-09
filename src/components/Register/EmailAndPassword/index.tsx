@@ -1,8 +1,8 @@
 import React from "react";
 import { Pressable, StyleSheet, TextInput } from "react-native";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useState } from "react";
-import {  IconButton, Text } from "react-native-paper";
+import { IconButton, Text } from "react-native-paper";
 import { Link, useRouter } from "expo-router";
 import { ActivityIndicator } from "react-native-paper";
 import { View } from "react-native";
@@ -10,10 +10,7 @@ import GoogleButton from "@/components/GlobalComp/GoogleButton";
 import { isValidEmail } from "@/utils/isValidEmail";
 import { useTranslation } from "react-i18next";
 
-import {
-  createUserWithEmailAndPassword,
-  getAuth,
-} from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 
 interface EmailAndPasswordProps {
   setPage: (page: number) => void;
@@ -30,7 +27,7 @@ export default function EmailAndPassword({
   password,
   setPassword,
 }: EmailAndPasswordProps) {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const [isFocusedEmail, setIsFocusedEmail] = useState(false);
   const [isFocusedPassword, setIsFocusedPassword] = useState(false);
@@ -44,7 +41,7 @@ export default function EmailAndPassword({
 
   const handleContinue = async () => {
     const trimmedEmail = email.trim().toLowerCase();
-    setIsLoading(true)
+    setIsLoading(true);
 
     if (!trimmedEmail || !password) {
       setError(t("register.error.fillAllFields"));
@@ -59,9 +56,11 @@ export default function EmailAndPassword({
       setError("");
       setPage(2);
     } catch (error) {
-      console.error("Erro while registering user: ", error)
+      console.error("Erro while registering user: ", error);
       setError(t("register.error.emailExists"));
-    }finally {setIsLoading(false)}
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const passwordHandler = (text: string) => {
@@ -82,11 +81,11 @@ export default function EmailAndPassword({
         style={[
           styles.input,
           {
-            backgroundColor: theme.custom.cardTaskBackground,
+            backgroundColor: theme.colors.cardTaskBackground,
             color: theme.colors.onBackground,
             borderColor: isFocusedEmail
               ? theme.colors.onBackground
-              : theme.custom.inputFocusBorder,
+              : theme.colors.inputFocusBorder,
             borderWidth: isFocusedEmail ? 2 : 1,
           },
         ]}
@@ -106,11 +105,11 @@ export default function EmailAndPassword({
           style={[
             styles.input,
             {
-              backgroundColor: theme.custom.cardTaskBackground,
+              backgroundColor: theme.colors.cardTaskBackground,
               color: theme.colors.onBackground,
               borderColor: isFocusedPassword
                 ? theme.colors.onBackground
-                : theme.custom.inputFocusBorder,
+                : theme.colors.inputFocusBorder,
               borderWidth: isFocusedPassword ? 2 : 1,
             },
           ]}
@@ -164,7 +163,7 @@ export default function EmailAndPassword({
               : { backgroundColor: theme.colors.primary },
           ]}
           android_ripple={{
-            color: theme.custom.ripple,
+            color: theme.colors.ripple,
           }}
           disabled={email === "" || password.length < 8}
         >

@@ -1,5 +1,5 @@
 import MemberInfo from "@/components/Members/MemberInfo";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import {
   View,
   StyleSheet,
@@ -46,7 +46,7 @@ Notifications.setNotificationHandler({
 });
 
 export default function Members() {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -225,7 +225,7 @@ export default function Members() {
             open={open}
             visible
             icon={open ? "close" : "plus"}
-            rippleColor={theme.custom.ripple}
+            rippleColor={theme.colors.ripple}
             color="white"
             backdropColor="#2e2e2ebf"
             fabStyle={[{ backgroundColor: theme.colors.primary }, styles.fab]}
@@ -278,6 +278,7 @@ export default function Members() {
             onPress={() =>
               router.push(`/member/familySettings/${familyEncoded}`)
             }
+            color={theme.colors.onBackground}
             style={{ margin: 0 }}
           />
         )}
@@ -293,7 +294,7 @@ export default function Members() {
         refreshControl={
           <RefreshControl
             colors={[theme.colors.onBackground]}
-            progressBackgroundColor={theme.custom.cardTaskBackground}
+            progressBackgroundColor={theme.colors.cardTaskBackground}
             refreshing={refreshing}
             onRefresh={onRefresh}
           />
@@ -309,7 +310,10 @@ export default function Members() {
         ))}
         {usersLength === 0 && (
           <View className="flex-1 items-center justify-center px-6">
-            <Text className="text-xl">
+            <Text
+              style={{ color: theme.colors.onBackground }}
+              className="text-xl"
+            >
               {t("members.noMembersFound", { ns: "screens" })}
             </Text>
           </View>
@@ -329,7 +333,7 @@ export default function Members() {
         open={open}
         visible
         icon={open ? "close" : "plus"}
-        rippleColor={theme.custom.ripple}
+        rippleColor={theme.colors.ripple}
         color="white"
         backdropColor="#2e2e2ebf"
         fabStyle={[{ backgroundColor: theme.colors.primary }, styles.fab]}

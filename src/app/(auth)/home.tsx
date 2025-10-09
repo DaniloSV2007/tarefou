@@ -1,15 +1,15 @@
 import { useRouter } from "expo-router";
 import { StyleSheet, View } from "react-native";
-import { Button,  Text } from "react-native-paper";
+import { Button, Text } from "react-native-paper";
 import React from "react";
 import TopBar from "@/components/TopBar";
 import { useTranslation } from "react-i18next";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import GoogleButton from "@/components/GlobalComp/GoogleButton";
 
 export default function Home() {
   const router = useRouter();
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { i18n, t } = useTranslation();
 
   return (
@@ -62,10 +62,10 @@ export default function Home() {
               i18n.changeLanguage(newLang);
             }}
             style={{
-              backgroundColor: theme.custom.cardTaskBackground,
+              backgroundColor: theme.colors.cardTaskBackground,
               marginTop: 12,
             }}
-            rippleColor={theme.custom.ripple}
+            rippleColor={theme.colors.ripple}
             labelStyle={{ color: theme.colors.onBackground }}
           >
             {i18n.language === "en"

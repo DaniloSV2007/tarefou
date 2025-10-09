@@ -1,11 +1,11 @@
 import SwipeItem from "@/components/Notifications/SwipeItem";
 import TopBar from "@/components/TopBar";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { Text, View } from "react-native";
 
 export default function Rewards() {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>

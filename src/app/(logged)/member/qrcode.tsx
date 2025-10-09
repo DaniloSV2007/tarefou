@@ -1,8 +1,12 @@
-import { BarcodeScanningResult, CameraView, useCameraPermissions } from "expo-camera";
+import {
+  BarcodeScanningResult,
+  CameraView,
+  useCameraPermissions,
+} from "expo-camera";
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { View, Text, Button, StyleSheet, Image } from "react-native";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import TopBar from "@/components/TopBar";
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
@@ -25,7 +29,7 @@ const AnimatedImage = Animated.createAnimatedComponent(Image);
 export default function QRCode() {
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const router = useRouter();
   const isFocused = useIsFocused();
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +45,7 @@ export default function QRCode() {
         easing: Easing.inOut(Easing.ease),
       }),
       -1,
-      true
+      true,
     );
   }, []);
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 // import { useTranslation } from "react-i18next";
 // import { useRouter } from "expo-router";
 // import { collection } from "firebase/firestore";
@@ -11,7 +11,7 @@ interface OptionsSectionProps {
 }
 
 export default function OptionsSection({ children }: OptionsSectionProps) {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   // const { t } = useTranslation();
   // const router = useRouter();
   // const usersCollection = collection(db, "users");
@@ -24,7 +24,7 @@ export default function OptionsSection({ children }: OptionsSectionProps) {
       style={[
         {
           paddingHorizontal: 4,
-          backgroundColor: theme.custom.cardColor,
+          backgroundColor: theme.colors.cardColor,
           width: "90%",
           borderRadius: 24,
         },

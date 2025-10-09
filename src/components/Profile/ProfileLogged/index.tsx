@@ -1,4 +1,4 @@
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useEffect, useState } from "react";
 import React from "react";
 import { StyleSheet, View } from "react-native";
@@ -11,14 +11,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Brightness from "expo-brightness";
 import logoLight from "@/assets/Profile/splash-icon-light.png";
 import logoDark from "@/assets/Profile/splash-icon-dark.png";
-import { useThemeContext } from "@/context/ThemeContext";
 export default function ProfileLogged() {
   const [image, setImage] = useState<{ uri: string }>();
   const [visible, setIsVisible] = useState(false);
 
   const [qrVisible, setQrVisible] = useState(false);
 
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { isDark } = useThemeContext();
 
   const QrCode = () => {
@@ -98,7 +97,7 @@ export default function ProfileLogged() {
                 style={{
                   padding: 40,
                   borderRadius: 24,
-                  backgroundColor: theme.custom.cardColor,
+                  backgroundColor: theme.colors.cardColor,
                 }}
               >
                 <View

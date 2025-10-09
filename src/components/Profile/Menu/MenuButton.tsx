@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import React from "react";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { Divider, Icon, Text, TouchableRipple } from "react-native-paper";
 import { MenuProps } from ".";
 
@@ -16,13 +16,13 @@ export default function MenuButton({
   icon,
   onPress,
 }: MenuProps & MenuButtonProps) {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
 
   return (
     <>
       <TouchableRipple
         style={styles.button}
-        rippleColor={theme.custom.ripple}
+        rippleColor={theme.colors.ripple}
         onPress={() => {
           onPress();
           close();

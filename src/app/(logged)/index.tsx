@@ -1,5 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { db } from "@/services/FirebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -11,7 +11,7 @@ import { ActivityIndicator } from "react-native-paper";
 export default function Logged() {
   const { logout } = useAuth();
   const router = useRouter();
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const usersCollection = collection(db, "users");
 
   const getRole = async () => {

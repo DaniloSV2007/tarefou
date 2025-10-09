@@ -6,7 +6,7 @@ import {
   View,
 } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import TopBar from "@/components/TopBar";
 import { useRouter } from "expo-router";
@@ -19,7 +19,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/services/FirebaseConfig";
 
 export default function tasks() {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const router = useRouter();
   const usersCollection = collection(db, "users");
@@ -72,19 +72,19 @@ export default function tasks() {
             createdAt: data.createdAt
               ? new Date(
                   data.createdAt.seconds * 1000 +
-                    data.createdAt.nanoseconds / 1000000
+                    data.createdAt.nanoseconds / 1000000,
                 )
               : undefined,
             updatedAt: data.updatedAt
               ? new Date(
                   data.updatedAt.seconds * 1000 +
-                    data.updatedAt.nanoseconds / 1000000
+                    data.updatedAt.nanoseconds / 1000000,
                 )
               : undefined,
             deadline: data.deadline
               ? new Date(
                   data.deadline.seconds * 1000 +
-                    data.deadline.nanoseconds / 1000000
+                    data.deadline.nanoseconds / 1000000,
                 )
               : undefined,
             isCompleted: data.isCompleted ?? false,
@@ -141,7 +141,7 @@ export default function tasks() {
           refreshControl={
             <RefreshControl
               colors={[theme.colors.onBackground]}
-              progressBackgroundColor={theme.custom.cardTaskBackground}
+              progressBackgroundColor={theme.colors.cardTaskBackground}
               refreshing={refreshing}
               onRefresh={onRefresh}
             />
@@ -156,7 +156,7 @@ export default function tasks() {
               onChangeText={(text) => setSearchValue(text)}
               style={{
                 width: "90%",
-                backgroundColor: theme.custom.cardTaskBackground,
+                backgroundColor: theme.colors.cardTaskBackground,
               }}
               inputStyle={{ color: theme.colors.onBackground, fontSize: 24 }}
               onFocus={() => setIsFocus(true)}
@@ -171,7 +171,7 @@ export default function tasks() {
                 (task.description
                   ?.toLowerCase()
                   .includes(searchValue.toLowerCase()) ??
-                  false)
+                  false),
             );
             if (filteredTasks.length === 0) {
               return (
@@ -192,14 +192,14 @@ export default function tasks() {
                 style={[
                   styles.card,
                   {
-                    backgroundColor: theme.custom.cardColor,
+                    backgroundColor: theme.colors.cardColor,
                     paddingHorizontal: 16,
                     alignSelf: "center",
                   },
                 ]}
               >
                 <Pressable
-                  android_ripple={{ color: theme.custom.ripple }}
+                  android_ripple={{ color: theme.colors.ripple }}
                   onPress={() => goToTaksDetails(task)}
                 >
                   <Card.Content style={styles.tasksContainer}>

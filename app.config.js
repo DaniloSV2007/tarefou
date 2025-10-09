@@ -1,7 +1,7 @@
 export default {
   name: "Tarefou!",
   slug: "checklistapp",
-  version: "1.1.6",
+  version: "1.1.8",
   scheme: "tarefou",
   icon: "./assets/adaptive-icon.png",
   orientation: "portrait",
@@ -67,7 +67,6 @@ export default {
   androidNavigationBar: {
     backgroundColor: "#00000000",
   },
-  sdkVersion: "53.0.0",
   platforms: ["ios", "android"],
   runtimeVersion: {
     policy: "appVersion",

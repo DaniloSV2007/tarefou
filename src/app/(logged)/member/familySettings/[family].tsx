@@ -1,6 +1,6 @@
 import { Pressable, ScrollView, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import TopBar from "@/components/TopBar";
@@ -19,7 +19,7 @@ export type Family = {
 };
 
 export default function FamilySettings() {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams();
@@ -94,12 +94,12 @@ export default function FamilySettings() {
         <View className="flex-1 items-center">
           <Card
             className="rounded-s-3xl rounded-e-3xl w-[91%] mt-5 py-4"
-            style={{ backgroundColor: theme.custom.cardColor }}
+            style={{ backgroundColor: theme.colors.cardColor }}
             mode="contained"
           >
             <Card.Content className="gap-2">
               <Pressable
-                android_ripple={{ color: theme.custom.ripple }}
+                android_ripple={{ color: theme.colors.ripple }}
                 onPress={() =>
                   router.push({
                     pathname:
@@ -129,7 +129,7 @@ export default function FamilySettings() {
               </Pressable>
 
               <Pressable
-                android_ripple={{ color: theme.custom.ripple }}
+                android_ripple={{ color: theme.colors.ripple }}
                 onPress={() =>
                   router.push({
                     pathname: "/member/familySettings/owner/[family]",
@@ -159,7 +159,7 @@ export default function FamilySettings() {
               {/* <View className="w-full items-center">
                 <Pressable
                   className="px-4 py-4 rounded-2xl bg-red-500 flex-row"
-                  android_ripple={{ color: theme.custom.ripple }}
+                  android_ripple={{ color: theme.colors.ripple }}
                   onPress={() => setVisible(true)}
                 >
                   {updating ? (
@@ -189,9 +189,9 @@ export default function FamilySettings() {
                     key={user.username}
                     className="w-full p-5 rounded-2xl"
                     style={{
-                      backgroundColor: theme.custom.cardTaskBackground,
+                      backgroundColor: theme.colors.cardTaskBackground,
                     }}
-                    android_ripple={{ color: theme.custom.ripple }}
+                    android_ripple={{ color: theme.colors.ripple }}
                     onPress={() => goToUserInfo(user)}
                   >
                     <View className="flex-row gap-3">

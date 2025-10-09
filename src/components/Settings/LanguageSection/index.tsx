@@ -1,6 +1,6 @@
 import React from "react";
 import { useLanguageContext } from "@/context/LanguageContext";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Card, Divider, Icon, RadioButton, Text } from "react-native-paper";
 import { useTranslation } from "react-i18next";
@@ -10,7 +10,7 @@ import UsaFlag from "@/assets/flags/usa.png";
 
 export default function LanguageSection() {
   const { toggleLanguage, languagePreference } = useLanguageContext();
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   // const { tc, getCurrentLanguage } = useTranslations();
   // const currentLang = getCurrentLanguage();
@@ -18,11 +18,16 @@ export default function LanguageSection() {
   return (
     <Card
       mode="contained"
-      style={[{ backgroundColor: theme.custom.cardColor }, styles.card]}
+      style={[{ backgroundColor: theme.colors.cardColor }, styles.card]}
     >
       <Card.Title
         title={t("settings.language.title")}
-        titleStyle={{ fontSize: 28, fontWeight: "bold", marginBottom: "-4%" }}
+        titleStyle={{
+          fontSize: 28,
+          fontWeight: "bold",
+          marginBottom: "-4%",
+          color: theme.colors.onBackground,
+        }}
         left={() => (
           <Icon source="translate" size={42} color={theme.colors.primary} />
         )}
@@ -33,8 +38,17 @@ export default function LanguageSection() {
           style={styles.languageContainer}
         >
           <View style={styles.languageContainer}>
-            <Icon source="devices" size={32} />
-            <Text style={styles.languageText}>
+            <Icon
+              color={theme.colors.onBackground}
+              source="devices"
+              size={32}
+            />
+            <Text
+              style={[
+                styles.languageText,
+                { color: theme.colors.onBackground },
+              ]}
+            >
               {t("settings.language.system")}
             </Text>
             <View style={styles.radioButton}>
@@ -55,7 +69,12 @@ export default function LanguageSection() {
         >
           <View style={styles.languageContainer}>
             <Icon source={UsaFlag} size={32} />
-            <Text style={styles.languageText}>
+            <Text
+              style={[
+                styles.languageText,
+                { color: theme.colors.onBackground },
+              ]}
+            >
               {t("settings.language.english")}
             </Text>
             <View style={styles.radioButton}>
@@ -76,7 +95,12 @@ export default function LanguageSection() {
         >
           <View style={styles.languageContainer}>
             <Icon source={BrazilFlag} size={32} />
-            <Text style={styles.languageText}>
+            <Text
+              style={[
+                styles.languageText,
+                { color: theme.colors.onBackground },
+              ]}
+            >
               {t("settings.language.portuguese")}
             </Text>
             <View style={styles.radioButton}>

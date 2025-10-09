@@ -6,7 +6,7 @@ import {
   TextStyle,
 } from "react-native";
 import React from "react";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { Card } from "react-native-paper";
 
 interface CardButton {
@@ -26,14 +26,14 @@ export default function CustomCard({
   titleStyle,
   className,
 }: CardButton) {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
 
   return (
     <Card
       mode="contained"
       style={[
         {
-          backgroundColor: theme.custom.cardColor,
+          backgroundColor: theme.colors.cardColor,
         },
         styles.card,
         cardStyle,

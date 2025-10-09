@@ -1,4 +1,4 @@
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useRouter } from "expo-router";
 import { collection, getDocs, query, where } from "firebase/firestore";
@@ -31,7 +31,7 @@ interface Props {
 
 const TopBar = forwardRef((props: Props, ref) => {
   const router = useRouter();
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const notificationCollections = collection(db, "notifications");
 
   const [notifNumber, setNotifNumber] = useState(0);
@@ -80,7 +80,7 @@ const TopBar = forwardRef((props: Props, ref) => {
   useFocusEffect(
     useCallback(() => {
       getNotificationsNumber();
-    }, [])
+    }, []),
   );
 
   return (
@@ -111,6 +111,7 @@ const TopBar = forwardRef((props: Props, ref) => {
               icon="bell-outline"
               onPress={() => router.push("/notifications")}
               style={{ margin: 0 }}
+              color={theme.colors.onBackground}
             />
             {notifNumber > 0 && <Badge size={8} style={styles.badge} />}
           </View>

@@ -1,5 +1,5 @@
 import { useLanguageContext } from "@/context/LanguageContext";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useRouter } from "expo-router";
 import { Pressable, TouchableOpacity, View } from "react-native";
 import {
@@ -42,7 +42,7 @@ export default function MemberInfo({
   setUserInfo,
   setEditVisible,
 }: Props) {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const router = useRouter();
   const { t } = useTranslation();
   const { languagePreference } = useLanguageContext();
@@ -93,7 +93,7 @@ export default function MemberInfo({
         paddingVertical: 12,
         paddingBottom: 0,
         borderRadius: 16,
-        backgroundColor: theme.custom.cardColor,
+        backgroundColor: theme.colors.cardColor,
       }}
     >
       <TouchableRipple
@@ -103,7 +103,7 @@ export default function MemberInfo({
           )
         }
         borderless={false}
-        rippleColor={theme.custom.ripple}
+        rippleColor={theme.colors.ripple}
       >
         <View>
           <Card.Title
@@ -113,6 +113,7 @@ export default function MemberInfo({
               marginLeft: 10,
               marginBottom: -6,
               marginTop: 6,
+              color: theme.colors.onBackground,
             }}
             subtitle={
               <>
@@ -140,7 +141,7 @@ export default function MemberInfo({
             left={(props) =>
               user.avatar ? (
                 <Pressable
-                  android_ripple={{ color: theme.custom.ripple }}
+                  android_ripple={{ color: theme.colors.ripple }}
                   onPress={() => setIsVisible(true)}
                 >
                   <Avatar.Image
@@ -154,7 +155,10 @@ export default function MemberInfo({
             }
           />
           <Card.Content>
-            <Text variant="bodyMedium">
+            <Text
+              style={{ color: theme.colors.onBackground }}
+              variant="bodyMedium"
+            >
               {t("memberCard.placeholder", { ns: "components" })}
             </Text>
             <ImageView
@@ -183,10 +187,16 @@ export default function MemberInfo({
             >
               <Button
                 mode="outlined"
-                buttonColor={theme.custom.cardTaskBackground}
+                buttonColor={theme.colors.cardTaskBackground}
               >
-                <Icon source={"pencil"} size={16} />
-                <Text style={{ fontSize: 16 }}>
+                <Icon
+                  source={"pencil"}
+                  size={16}
+                  color={theme.colors.onBackground}
+                />
+                <Text
+                  style={{ fontSize: 16, color: theme.colors.onBackground }}
+                >
                   {t("memberCard.actions.edit", { ns: "components" })}
                 </Text>
               </Button>

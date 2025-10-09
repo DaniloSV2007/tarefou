@@ -1,5 +1,5 @@
 import TopBar from "@/components/TopBar";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useLocalSearchParams } from "expo-router";
 import { View, StyleSheet, Pressable } from "react-native";
 import { Avatar, Card, Text } from "react-native-paper";
@@ -39,7 +39,7 @@ export type UserRaw = {
 };
 
 export default function UserProfile() {
-  const theme = useAppTheme();
+  const { theme } = useThemeContext();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const usersCollection = collection(db, "users");
@@ -133,7 +133,7 @@ export default function UserProfile() {
           <Card
             style={[
               styles.card,
-              { backgroundColor: theme.custom?.cardColor, minWidth: "90%" },
+              { backgroundColor: theme.colors.cardColor, minWidth: "90%" },
             ]}
           >
             <Card.Title
@@ -150,8 +150,8 @@ export default function UserProfile() {
                       }}
                       size={150}
                       style={{
-                        backgroundColor: theme.custom.cardColor,
-                        borderColor: theme.custom.cardTaskBackground,
+                        backgroundColor: theme.colors.cardColor,
+                        borderColor: theme.colors.cardTaskBackground,
                         borderWidth: 1,
                       }}
                     />
@@ -161,8 +161,8 @@ export default function UserProfile() {
                     icon={"account"}
                     size={150}
                     style={{
-                      backgroundColor: theme.custom.cardColor,
-                      borderColor: theme.custom.cardTaskBackground,
+                      backgroundColor: theme.colors.cardColor,
+                      borderColor: theme.colors.cardTaskBackground,
                       borderWidth: 1,
                     }}
                   />
